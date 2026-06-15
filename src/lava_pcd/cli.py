@@ -41,6 +41,10 @@ def convert(
         DEFAULT_CHUNK_SIZE, "--chunk-size", "-c", min=1,
         help="Points read per chunk (lower = less memory).",
     ),
+    voxel: float = typer.Option(
+        0.0, "--voxel", "-v", min=0.0, prompt="Voxel size (0 = no downsampling)",
+        help="Voxel-downsample resolution in coordinate units (0 disables).",
+    ),
     origin: str = typer.Option(
         "header", "--origin", "-o",
         help="Local-origin shift: 'header' (LAS offset), 'none', or 'x,y,z'.",
@@ -69,7 +73,7 @@ def convert(
     try:
         result = laz_to_pcd(
             input, output, chunk_size=chunk_size, origin=origin_arg,
-            parallel=parallel, show_progress=not quiet,
+            voxel_size=voxel, parallel=parallel, show_progress=not quiet,
         )
     except (FileNotFoundError, ValueError) as err:
         typer.secho(f"error: {err}", fg=typer.colors.RED, err=True)
@@ -80,6 +84,13 @@ def convert(
         f"wrote {result.point_count:,} points -> {result.output_path}",
         fg=typer.colors.GREEN,
     )
+    if result.voxel_size > 0:
+        ratio = result.source_count / result.point_count if result.point_count else 0.0
+        typer.echo(
+            f"voxel downsample @ {result.voxel_size}: "
+            f"{result.source_count:,} -> {result.point_count:,} points "
+            f"({ratio:.1f}x reduction)"
+        )
     typer.echo(f"local origin (global = local + origin): {ox} {oy} {oz}")
     if result.sidecar_path is not None:
         typer.echo(f"origin metadata: {result.sidecar_path}")

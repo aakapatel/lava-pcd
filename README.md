@@ -18,17 +18,25 @@ This pulls `laspy[lazrs]` (a pure-Rust LAZ backend, so no external `laszip` is n
 ```bash
 lava-pcd convert input.laz output.pcd
 # options:
+#   -v / --voxel       voxel-downsample resolution in coord units (0 = off).
+#                      Prompted interactively if not given.
 #   -c / --chunk-size  points read per chunk (lower = less memory; default 5,000,000)
+#   -o / --origin      local-origin shift: 'header' (default), 'none', or 'x,y,z'
+#       --parallel     use the multi-threaded LAZ backend (faster; panics on some files)
 #   -q / --quiet       suppress the progress bar
 ```
+
+`--voxel`/`-v` downsamples to one centroid per cubic voxel of the given edge length
+(in coordinate units, e.g. metres). `0` disables it. Downsampling is streamed, so it
+stays memory-bounded even for hundred-million-point clouds.
 
 From Python:
 
 ```python
 from lava_pcd import laz_to_pcd
 
-n = laz_to_pcd("input.laz", "output.pcd", chunk_size=2_000_000)
-print(f"{n} points written")
+res = laz_to_pcd("input.laz", "output.pcd", voxel_size=0.1, chunk_size=2_000_000)
+print(f"{res.source_count} -> {res.point_count} points, origin {res.origin}")
 ```
 
 ## Viewing

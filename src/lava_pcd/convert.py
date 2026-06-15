@@ -10,6 +10,7 @@ from tqdm import tqdm
 
 from lava_pcd.io.laz_reader import DEFAULT_CHUNK_SIZE, LazChunkReader
 from lava_pcd.io.pcd_writer import BinaryPcdWriter
+from lava_pcd.voxel import VoxelDownsampler
 
 _LAZ_SUFFIXES = {".laz", ".las"}
 
@@ -22,6 +23,8 @@ class ConvertResult:
     origin: tuple[float, float, float]
     output_path: Path
     sidecar_path: Path | None
+    source_count: int = 0
+    voxel_size: float = 0.0
 
     def __int__(self) -> int:  # backwards-compatible: len-like usage
         return self.point_count
@@ -47,6 +50,7 @@ def laz_to_pcd(
     output_path: str | Path,
     chunk_size: int = DEFAULT_CHUNK_SIZE,
     origin: str | tuple[float, float, float] = "header",
+    voxel_size: float = 0.0,
     parallel: bool = False,
     write_sidecar: bool = True,
     show_progress: bool = True,
@@ -55,6 +59,10 @@ def laz_to_pcd(
 
     Reads the input in chunks of ``chunk_size`` points to keep memory bounded,
     streaming each chunk into the output PCD.
+
+    ``voxel_size`` > 0 voxel-downsamples the cloud (cubic voxels of that edge
+    length, in coordinate units) before writing; each output point is the
+    centroid of its voxel. ``voxel_size`` == 0 disables downsampling.
 
     ``origin`` controls the local-coordinate shift subtracted from XYZ (in
     float64, before the float32 cast) so large survey coordinates keep their
@@ -84,21 +92,39 @@ def laz_to_pcd(
             f"expected a .laz or .las input, got '{input_path.suffix}' ({input_path})"
         )
 
+    if voxel_size < 0:
+        raise ValueError(f"voxel_size must be >= 0, got {voxel_size}")
+
     with LazChunkReader(input_path, chunk_size=chunk_size, parallel=parallel) as reader:
-        total = reader.point_count
+        source_count = reader.point_count
         resolved_origin = _resolve_origin(origin, reader.header_offset)
-        with BinaryPcdWriter(output_path, num_points=total, origin=resolved_origin) as writer:
-            progress = tqdm(
-                total=total,
-                unit="pts",
-                unit_scale=True,
-                desc=input_path.name,
-                disable=not show_progress,
-            )
+        progress = tqdm(
+            total=source_count,
+            unit="pts",
+            unit_scale=True,
+            desc=input_path.name,
+            disable=not show_progress,
+        )
+
+        if voxel_size > 0:
+            # Aggregate voxels across all chunks; the final count is only known
+            # once everything has been read, so we write after accumulating.
+            downsampler = VoxelDownsampler(voxel_size)
             with progress:
                 for chunk in reader.chunks(origin=resolved_origin):
-                    writer.write_chunk(chunk)
+                    downsampler.add(chunk)
                     progress.update(len(chunk))
+            points = downsampler.result()
+            written = len(points)
+            with BinaryPcdWriter(output_path, num_points=written, origin=resolved_origin) as writer:
+                writer.write_chunk(points)
+        else:
+            written = source_count
+            with BinaryPcdWriter(output_path, num_points=written, origin=resolved_origin) as writer:
+                with progress:
+                    for chunk in reader.chunks(origin=resolved_origin):
+                        writer.write_chunk(chunk)
+                        progress.update(len(chunk))
 
     sidecar_path: Path | None = None
     if write_sidecar:
@@ -107,7 +133,9 @@ def laz_to_pcd(
             json.dumps(
                 {
                     "source": str(input_path),
-                    "point_count": total,
+                    "source_point_count": source_count,
+                    "point_count": written,
+                    "voxel_size": voxel_size,
                     "origin_xyz": list(resolved_origin),
                     "note": "global_xyz = local_xyz + origin_xyz",
                 },
@@ -116,8 +144,10 @@ def laz_to_pcd(
         )
 
     return ConvertResult(
-        point_count=total,
+        point_count=written,
         origin=resolved_origin,
         output_path=output_path,
         sidecar_path=sidecar_path,
+        source_count=source_count,
+        voxel_size=voxel_size,
     )

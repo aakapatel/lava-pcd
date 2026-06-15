@@ -98,6 +98,42 @@ def test_origin_shift_preserves_precision(tmp_path: Path) -> None:
     np.testing.assert_allclose(recovered, xyz, atol=1e-2)
 
 
+def test_voxel_downsample(tmp_path: Path) -> None:
+    # Two tight clusters > 1 voxel apart -> downsamples to ~2 points.
+    rng = np.random.default_rng(3)
+    a = np.array([1.0, 1.0, 1.0]) + rng.uniform(0, 0.05, size=(500, 3))
+    b = np.array([20.0, 20.0, 20.0]) + rng.uniform(0, 0.05, size=(500, 3))
+    xyz = np.vstack([a, b])
+    intensity = rng.integers(0, 65535, size=len(xyz), dtype=np.uint16)
+
+    las_path = tmp_path / "clusters.las"
+    pcd_path = tmp_path / "clusters.pcd"
+    _make_las(las_path, xyz, intensity)
+
+    result = laz_to_pcd(las_path, pcd_path, voxel_size=1.0, show_progress=False)
+    assert result.source_count == 1000
+    assert result.point_count == 2  # one centroid per cluster
+    assert result.voxel_size == 1.0
+
+    header, data = _read_pcd(pcd_path)
+    assert int(header["POINTS"]) == 2
+    centroids = np.sort(data[:, :3], axis=0)
+    expected = np.sort(np.vstack([a.mean(0), b.mean(0)]), axis=0)
+    np.testing.assert_allclose(centroids, expected, atol=0.05)
+
+
+def test_no_downsample_when_zero(tmp_path: Path) -> None:
+    rng = np.random.default_rng(4)
+    xyz = rng.uniform(-10, 10, size=(300, 3))
+    intensity = rng.integers(0, 65535, size=300, dtype=np.uint16)
+    las_path = tmp_path / "in.las"
+    pcd_path = tmp_path / "out.pcd"
+    _make_las(las_path, xyz, intensity)
+
+    result = laz_to_pcd(las_path, pcd_path, voxel_size=0.0, show_progress=False)
+    assert result.point_count == 300
+
+
 def test_missing_input(tmp_path: Path) -> None:
     with pytest.raises(FileNotFoundError):
         laz_to_pcd(tmp_path / "nope.laz", tmp_path / "out.pcd")
