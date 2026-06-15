@@ -47,7 +47,12 @@ class VoxelDownsampler:
         self._buffered = 0
 
     def add(self, points: np.ndarray) -> None:
-        """Add a ``(k, 4)`` chunk of ``x y z intensity``."""
+        """Add a ``(k, C)`` chunk whose first three columns are ``x, y, z``.
+
+        Remaining columns (e.g. intensity, r, g, b) are summed and later
+        averaged per voxel -- valid because colour channels are carried
+        unpacked.
+        """
         if points.shape[0] == 0:
             return
         pts = points.astype(np.float64, copy=False)
@@ -55,7 +60,7 @@ class VoxelDownsampler:
         uniq, inv = np.unique(vidx, axis=0, return_inverse=True)
         inv = inv.ravel()
         m = len(uniq)
-        acc = np.zeros((m, 4), dtype=np.float64)
+        acc = np.zeros((m, pts.shape[1]), dtype=np.float64)
         np.add.at(acc, inv, pts)
         cnt = np.bincount(inv, minlength=m).astype(np.float64)
 

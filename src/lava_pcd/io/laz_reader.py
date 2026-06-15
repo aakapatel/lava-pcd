@@ -20,6 +20,16 @@ import numpy as np
 
 DEFAULT_CHUNK_SIZE = 5_000_000
 
+# Internal per-point column layouts for each named schema. RGB channels are
+# carried as separate 0..255 float columns (so averaging during downsampling is
+# valid); they get packed into the single PCD ``rgb`` float field at write time.
+_SCHEMAS: dict[str, tuple[str, ...]] = {
+    "xyz": ("x", "y", "z"),
+    "intensity": ("x", "y", "z", "intensity"),
+    "rgb": ("x", "y", "z", "r", "g", "b"),
+    "all": ("x", "y", "z", "intensity", "r", "g", "b"),
+}
+
 
 def _resolve_backend(parallel: bool) -> "laspy.LazBackend | None":
     """Pick a LAZ backend. Default to single-threaded lazrs.
@@ -83,23 +93,58 @@ class LazChunkReader:
         off = self._require_reader().header.offsets
         return (float(off[0]), float(off[1]), float(off[2]))
 
+    @property
+    def has_rgb(self) -> bool:
+        """Whether the point format carries red/green/blue channels."""
+        dims = self._require_reader().header.point_format.dimension_names
+        return {"red", "green", "blue"}.issubset(set(dims))
+
+    def resolve_fields(self, fields: str) -> tuple[str, ...]:
+        """Map a schema name (incl. ``"auto"``) to internal column names.
+
+        ``"auto"`` picks ``rgb`` when the file has colour, else ``intensity``
+        (LiDAR intensity is meaningless/empty on many colourised products).
+        """
+        if fields == "auto":
+            fields = "rgb" if self.has_rgb else "intensity"
+        if fields not in _SCHEMAS:
+            raise ValueError(
+                f"unknown fields schema {fields!r}; "
+                f"choose from {sorted(_SCHEMAS) + ['auto']}"
+            )
+        cols = _SCHEMAS[fields]
+        if ("r" in cols) and not self.has_rgb:
+            raise ValueError(
+                f"schema {fields!r} needs RGB but this file has none "
+                f"(point format {self._require_reader().header.point_format.id})"
+            )
+        return cols
+
     def chunks(
-        self, origin: tuple[float, float, float] = (0.0, 0.0, 0.0)
+        self,
+        columns: tuple[str, ...],
+        origin: tuple[float, float, float] = (0.0, 0.0, 0.0),
     ) -> Iterator[np.ndarray]:
-        """Yield ``(k, 4)`` float32 arrays of columns ``x, y, z, intensity``.
+        """Yield ``(k, len(columns))`` float32 arrays for the given columns.
 
         ``origin`` is subtracted from the scaled coordinates **in float64**
         before downcasting to float32, preserving precision for large
-        (e.g. UTM) coordinates. Intensity (LAZ ``uint16``) is cast to float32.
+        (e.g. UTM) coordinates. RGB channels are scaled from 16-bit to 0..255.
         """
         reader = self._require_reader()
         ox, oy, oz = origin
+        shifts = {"x": ox, "y": oy, "z": oz}
         for points in reader.chunk_iterator(self.chunk_size):
-            out = np.empty((len(points), 4), dtype=np.float32)
-            out[:, 0] = np.asarray(points.x, dtype=np.float64) - ox
-            out[:, 1] = np.asarray(points.y, dtype=np.float64) - oy
-            out[:, 2] = np.asarray(points.z, dtype=np.float64) - oz
-            out[:, 3] = points.intensity
+            out = np.empty((len(points), len(columns)), dtype=np.float32)
+            for i, name in enumerate(columns):
+                if name in ("x", "y", "z"):
+                    coord = np.asarray(getattr(points, name), dtype=np.float64)
+                    out[:, i] = coord - shifts[name]
+                elif name == "intensity":
+                    out[:, i] = points.intensity
+                else:  # r, g, b: 16-bit -> 0..255
+                    channel = {"r": "red", "g": "green", "b": "blue"}[name]
+                    out[:, i] = np.asarray(getattr(points, channel)) / 257.0
             yield out
 
     def _require_reader(self) -> laspy.LasReader:

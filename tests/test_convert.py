@@ -2,7 +2,6 @@
 
 from __future__ import annotations
 
-import struct
 from pathlib import Path
 
 import laspy
@@ -12,21 +11,29 @@ import pytest
 from lava_pcd.convert import laz_to_pcd
 
 
-def _make_las(path: Path, xyz: np.ndarray, intensity: np.ndarray) -> None:
-    header = laspy.LasHeader(point_format=3, version="1.2")
+def _make_las(
+    path: Path,
+    xyz: np.ndarray,
+    intensity: np.ndarray,
+    rgb: np.ndarray | None = None,
+    offsets=(0.0, 0.0, 0.0),
+) -> None:
+    # Format 0 = xyz + intensity (no RGB); format 2 adds RGB.
+    point_format = 2 if rgb is not None else 0
+    header = laspy.LasHeader(point_format=point_format, version="1.2")
     # Fine scales so float32 round-trip stays well within tolerance.
     header.scales = [0.001, 0.001, 0.001]
-    header.offsets = [0.0, 0.0, 0.0]
+    header.offsets = list(offsets)
     las = laspy.LasData(header)
-    las.x = xyz[:, 0]
-    las.y = xyz[:, 1]
-    las.z = xyz[:, 2]
+    las.x, las.y, las.z = xyz[:, 0], xyz[:, 1], xyz[:, 2]
     las.intensity = intensity
+    if rgb is not None:
+        las.red, las.green, las.blue = rgb[:, 0], rgb[:, 1], rgb[:, 2]
     las.write(path)
 
 
 def _read_pcd(path: Path) -> tuple[dict, np.ndarray]:
-    """Parse a binary PCD into (header dict, (N, 4) float32 array)."""
+    """Parse a binary PCD into (header dict, (N, ncols) float32 array)."""
     with open(path, "rb") as fh:
         header = {}
         while True:
@@ -39,7 +46,8 @@ def _read_pcd(path: Path) -> tuple[dict, np.ndarray]:
                 break
         assert header["DATA"] == "binary"
         n = int(header["POINTS"])
-        data = np.frombuffer(fh.read(n * 4 * 4), dtype=np.float32).reshape(n, 4)
+        ncols = len(header["FIELDS"].split())
+        data = np.frombuffer(fh.read(n * ncols * 4), dtype=np.float32).reshape(n, ncols)
     return header, data
 
 
@@ -81,13 +89,7 @@ def test_origin_shift_preserves_precision(tmp_path: Path) -> None:
     las_path = tmp_path / "utm.las"
     pcd_path = tmp_path / "utm.pcd"
     # LAS header offset near the data -> used as origin by default.
-    header = laspy.LasHeader(point_format=3, version="1.2")
-    header.scales = [0.001, 0.001, 0.001]
-    header.offsets = list(base)
-    las = laspy.LasData(header)
-    las.x, las.y, las.z = xyz[:, 0], xyz[:, 1], xyz[:, 2]
-    las.intensity = intensity
-    las.write(las_path)
+    _make_las(las_path, xyz, intensity, offsets=tuple(base))
 
     result = laz_to_pcd(las_path, pcd_path, show_progress=False)
     np.testing.assert_allclose(result.origin, base, atol=1e-6)
@@ -132,6 +134,54 @@ def test_no_downsample_when_zero(tmp_path: Path) -> None:
 
     result = laz_to_pcd(las_path, pcd_path, voxel_size=0.0, show_progress=False)
     assert result.point_count == 300
+
+
+def _unpack_rgb(rgb_float: np.ndarray) -> np.ndarray:
+    packed = rgb_float.view(np.uint32)
+    r = (packed >> 16) & 0xFF
+    g = (packed >> 8) & 0xFF
+    b = packed & 0xFF
+    return np.column_stack([r, g, b]).astype(np.uint8)
+
+
+def test_rgb_auto_export(tmp_path: Path) -> None:
+    """A colourised cloud should export packed RGB by default ('auto')."""
+    rng = np.random.default_rng(5)
+    n = 800
+    xyz = rng.uniform(-10, 10, size=(n, 3))
+    intensity = np.zeros(n, dtype=np.uint16)  # empty intensity, like the real file
+    rgb8 = rng.integers(0, 256, size=(n, 3), dtype=np.uint16)
+    rgb16 = (rgb8 * 257).astype(np.uint16)  # 8-bit -> 16-bit, exact round-trip
+
+    las_path = tmp_path / "color.las"
+    pcd_path = tmp_path / "color.pcd"
+    _make_las(las_path, xyz, intensity, rgb=rgb16)
+
+    result = laz_to_pcd(las_path, pcd_path, show_progress=False)
+    assert result.fields == ("x", "y", "z", "rgb")
+
+    header, data = _read_pcd(pcd_path)
+    assert header["FIELDS"] == "x y z rgb"
+    np.testing.assert_allclose(data[:, :3], xyz, atol=1e-2)
+    np.testing.assert_array_equal(_unpack_rgb(data[:, 3]), rgb8.astype(np.uint8))
+
+
+def test_rgb_with_voxel_downsample(tmp_path: Path) -> None:
+    """RGB must survive downsampling (averaged per voxel, then re-packed)."""
+    rng = np.random.default_rng(6)
+    # One tight cluster, all the same colour -> single point keeps that colour.
+    xyz = np.array([5.0, 5.0, 5.0]) + rng.uniform(0, 0.05, size=(400, 3))
+    intensity = np.zeros(len(xyz), dtype=np.uint16)
+    rgb16 = np.full((len(xyz), 3), [100 * 257, 150 * 257, 200 * 257], dtype=np.uint16)
+
+    las_path = tmp_path / "c.las"
+    pcd_path = tmp_path / "c.pcd"
+    _make_las(las_path, xyz, intensity, rgb=rgb16)
+
+    result = laz_to_pcd(las_path, pcd_path, voxel_size=1.0, show_progress=False)
+    assert result.point_count == 1
+    _, data = _read_pcd(pcd_path)
+    np.testing.assert_array_equal(_unpack_rgb(data[:, 3])[0], [100, 150, 200])
 
 
 def test_missing_input(tmp_path: Path) -> None:

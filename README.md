@@ -18,6 +18,7 @@ This pulls `laspy[lazrs]` (a pure-Rust LAZ backend, so no external `laszip` is n
 ```bash
 lava-pcd convert input.laz output.pcd
 # options:
+#   -f / --fields      attributes to export: auto, xyz, intensity, rgb, all (default auto)
 #   -v / --voxel       voxel-downsample resolution in coord units (0 = off).
 #                      Prompted interactively if not given.
 #   -c / --chunk-size  points read per chunk (lower = less memory; default 5,000,000)
@@ -25,6 +26,11 @@ lava-pcd convert input.laz output.pcd
 #       --parallel     use the multi-threaded LAZ backend (faster; panics on some files)
 #   -q / --quiet       suppress the progress bar
 ```
+
+`--fields auto` exports **RGB** when the file is colourised (e.g. photogrammetry /
+aerial products, where LiDAR intensity is often empty), otherwise **intensity**. RGB is
+written as PCL's packed `rgb` float field, which `pcl_viewer` and Open3D colour by
+automatically. Use `intensity`, `rgb`, `xyz`, or `all` to force a choice.
 
 `--voxel`/`-v` downsamples to one centroid per cubic voxel of the given edge length
 (in coordinate units, e.g. metres). `0` disables it. Downsampling is streamed, so it

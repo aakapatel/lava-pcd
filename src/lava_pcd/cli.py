@@ -45,6 +45,10 @@ def convert(
         0.0, "--voxel", "-v", min=0.0, prompt="Voxel size (0 = no downsampling)",
         help="Voxel-downsample resolution in coordinate units (0 disables).",
     ),
+    fields: str = typer.Option(
+        "auto", "--fields", "-f",
+        help="Attributes to export: auto, xyz, intensity, rgb, all.",
+    ),
     origin: str = typer.Option(
         "header", "--origin", "-o",
         help="Local-origin shift: 'header' (LAS offset), 'none', or 'x,y,z'.",
@@ -73,7 +77,8 @@ def convert(
     try:
         result = laz_to_pcd(
             input, output, chunk_size=chunk_size, origin=origin_arg,
-            voxel_size=voxel, parallel=parallel, show_progress=not quiet,
+            voxel_size=voxel, fields=fields, parallel=parallel,
+            show_progress=not quiet,
         )
     except (FileNotFoundError, ValueError) as err:
         typer.secho(f"error: {err}", fg=typer.colors.RED, err=True)
@@ -84,6 +89,7 @@ def convert(
         f"wrote {result.point_count:,} points -> {result.output_path}",
         fg=typer.colors.GREEN,
     )
+    typer.echo(f"fields: {' '.join(result.fields)}")
     if result.voxel_size > 0:
         ratio = result.source_count / result.point_count if result.point_count else 0.0
         typer.echo(

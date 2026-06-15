@@ -9,7 +9,7 @@ from pathlib import Path
 from tqdm import tqdm
 
 from lava_pcd.io.laz_reader import DEFAULT_CHUNK_SIZE, LazChunkReader
-from lava_pcd.io.pcd_writer import BinaryPcdWriter
+from lava_pcd.io.pcd_writer import BinaryPcdWriter, pack_columns, pcd_fields_for
 from lava_pcd.voxel import VoxelDownsampler
 
 _LAZ_SUFFIXES = {".laz", ".las"}
@@ -25,6 +25,7 @@ class ConvertResult:
     sidecar_path: Path | None
     source_count: int = 0
     voxel_size: float = 0.0
+    fields: tuple[str, ...] = ()
 
     def __int__(self) -> int:  # backwards-compatible: len-like usage
         return self.point_count
@@ -51,14 +52,21 @@ def laz_to_pcd(
     chunk_size: int = DEFAULT_CHUNK_SIZE,
     origin: str | tuple[float, float, float] = "header",
     voxel_size: float = 0.0,
+    fields: str = "auto",
     parallel: bool = False,
     write_sidecar: bool = True,
     show_progress: bool = True,
 ) -> ConvertResult:
-    """Convert a ``.laz`` / ``.las`` file to a binary ``.pcd`` (x y z intensity).
+    """Convert a ``.laz`` / ``.las`` file to a binary ``.pcd``.
 
     Reads the input in chunks of ``chunk_size`` points to keep memory bounded,
     streaming each chunk into the output PCD.
+
+    ``fields`` selects which attributes to export:
+
+    * ``"auto"`` (default) -- RGB if the file has colour, else intensity.
+    * ``"xyz"`` / ``"intensity"`` / ``"rgb"`` / ``"all"`` -- explicit. ``rgb``
+      is written as PCL's packed ``rgb`` float field (coloured by ``pcl_viewer``).
 
     ``voxel_size`` > 0 voxel-downsamples the cloud (cubic voxels of that edge
     length, in coordinate units) before writing; each output point is the
@@ -98,6 +106,8 @@ def laz_to_pcd(
     with LazChunkReader(input_path, chunk_size=chunk_size, parallel=parallel) as reader:
         source_count = reader.point_count
         resolved_origin = _resolve_origin(origin, reader.header_offset)
+        columns = reader.resolve_fields(fields)
+        pcd_fields = pcd_fields_for(columns)
         progress = tqdm(
             total=source_count,
             unit="pts",
@@ -111,19 +121,23 @@ def laz_to_pcd(
             # once everything has been read, so we write after accumulating.
             downsampler = VoxelDownsampler(voxel_size)
             with progress:
-                for chunk in reader.chunks(origin=resolved_origin):
+                for chunk in reader.chunks(columns, origin=resolved_origin):
                     downsampler.add(chunk)
                     progress.update(len(chunk))
             points = downsampler.result()
             written = len(points)
-            with BinaryPcdWriter(output_path, num_points=written, origin=resolved_origin) as writer:
-                writer.write_chunk(points)
+            with BinaryPcdWriter(
+                output_path, num_points=written, fields=pcd_fields, origin=resolved_origin
+            ) as writer:
+                writer.write_chunk(pack_columns(points, columns))
         else:
             written = source_count
-            with BinaryPcdWriter(output_path, num_points=written, origin=resolved_origin) as writer:
+            with BinaryPcdWriter(
+                output_path, num_points=written, fields=pcd_fields, origin=resolved_origin
+            ) as writer:
                 with progress:
-                    for chunk in reader.chunks(origin=resolved_origin):
-                        writer.write_chunk(chunk)
+                    for chunk in reader.chunks(columns, origin=resolved_origin):
+                        writer.write_chunk(pack_columns(chunk, columns))
                         progress.update(len(chunk))
 
     sidecar_path: Path | None = None
@@ -136,6 +150,7 @@ def laz_to_pcd(
                     "source_point_count": source_count,
                     "point_count": written,
                     "voxel_size": voxel_size,
+                    "fields": list(pcd_fields),
                     "origin_xyz": list(resolved_origin),
                     "note": "global_xyz = local_xyz + origin_xyz",
                 },
@@ -150,4 +165,5 @@ def laz_to_pcd(
         sidecar_path=sidecar_path,
         source_count=source_count,
         voxel_size=voxel_size,
+        fields=pcd_fields,
     )
