@@ -238,3 +238,43 @@ def test_writer_count_rewrite_when_fewer(tmp_path: Path) -> None:
     assert int(header["WIDTH"]) == 3
     assert data.shape == (3, 4)
     np.testing.assert_array_equal(data, pts)
+
+
+def test_reproject_to_utm(tmp_path: Path) -> None:
+    """Lon/lat (EPSG:4326) input reprojects to metric UTM with recoverable origin."""
+    import pyproj
+
+    # A few points near Iceland (lon ~ -21.4, lat ~ 63.9), Z in metres.
+    lon = np.array([-21.40, -21.39, -21.38])
+    lat = np.array([63.930, 63.931, 63.932])
+    z = np.array([214.0, 250.0, 300.0])
+    xyz = np.column_stack([lon, lat, z])
+    intensity = np.zeros(len(xyz), dtype=np.uint16)
+
+    header = laspy.LasHeader(point_format=0, version="1.4")
+    header.scales = [1e-7, 1e-7, 1e-3]  # fine enough for degrees
+    header.offsets = [-21.0, 63.0, 0.0]
+    header.add_crs(pyproj.CRS.from_epsg(4326))
+    las = laspy.LasData(header)
+    las.x, las.y, las.z = xyz[:, 0], xyz[:, 1], xyz[:, 2]
+    las.intensity = intensity
+    las_path = tmp_path / "geo.las"
+    las.write(las_path)
+
+    pcd_path = tmp_path / "utm.pcd"
+    result = laz_to_pcd(
+        las_path, pcd_path, fields="xyz", reproject="EPSG:32627", show_progress=False
+    )
+    assert result.reproject == "EPSG:32627"
+
+    _, data = _read_pcd(pcd_path)
+    # Reconstruct global UTM coords and compare to a direct pyproj transform.
+    t = pyproj.Transformer.from_crs("EPSG:4326", "EPSG:32627", always_xy=True)
+    ex, ny = t.transform(lon, lat)
+    recovered = data[:, :3].astype(np.float64) + np.array(result.origin)
+    np.testing.assert_allclose(recovered[:, 0], ex, atol=0.05)
+    np.testing.assert_allclose(recovered[:, 1], ny, atol=0.05)
+    np.testing.assert_allclose(recovered[:, 2], z, atol=0.05)
+    # Origin should be near the data (UTM 27N easting ~480k, northing ~7.09M).
+    assert 470_000 < result.origin[0] < 490_000
+    assert 7_080_000 < result.origin[1] < 7_100_000

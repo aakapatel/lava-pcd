@@ -49,6 +49,10 @@ def convert(
         "auto", "--fields", "-f",
         help="Attributes to export: auto, xyz, intensity, rgb, all.",
     ),
+    reproject: str = typer.Option(
+        None, "--reproject", "-r", metavar="CRS",
+        help="Reproject X/Y to this CRS, e.g. EPSG:32627 (UTM 27N).",
+    ),
     origin: str = typer.Option(
         "header", "--origin", "-o",
         help="Local-origin shift: 'header' (LAS offset), 'none', or 'x,y,z'.",
@@ -81,8 +85,9 @@ def convert(
     try:
         result = laz_to_pcd(
             input, output, chunk_size=chunk_size, origin=origin_arg,
-            voxel_size=voxel, fields=fields, parallel=parallel,
-            filter_bounds=not keep_invalid, show_progress=not quiet,
+            voxel_size=voxel, fields=fields, reproject=reproject,
+            parallel=parallel, filter_bounds=not keep_invalid,
+            show_progress=not quiet,
         )
     except (FileNotFoundError, ValueError) as err:
         typer.secho(f"error: {err}", fg=typer.colors.RED, err=True)
@@ -94,6 +99,8 @@ def convert(
         fg=typer.colors.GREEN,
     )
     typer.echo(f"fields: {' '.join(result.fields)}")
+    if result.reproject:
+        typer.echo(f"reprojected to: {result.reproject}")
     if result.dropped:
         typer.echo(f"dropped {result.dropped:,} out-of-bounds points")
     if result.voxel_size > 0:

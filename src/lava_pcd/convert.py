@@ -27,6 +27,7 @@ class ConvertResult:
     voxel_size: float = 0.0
     fields: tuple[str, ...] = ()
     dropped: int = 0
+    reproject: str | None = None
 
     def __int__(self) -> int:  # backwards-compatible: len-like usage
         return self.point_count
@@ -34,10 +35,10 @@ class ConvertResult:
 
 def _resolve_origin(
     origin: str | tuple[float, float, float],
-    header_offset: tuple[float, float, float],
+    default_origin: tuple[float, float, float],
 ) -> tuple[float, float, float]:
     if origin == "header":
-        return header_offset
+        return default_origin
     if origin == "none":
         return (0.0, 0.0, 0.0)
     if isinstance(origin, (tuple, list)) and len(origin) == 3:
@@ -54,6 +55,7 @@ def laz_to_pcd(
     origin: str | tuple[float, float, float] = "header",
     voxel_size: float = 0.0,
     fields: str = "auto",
+    reproject: str | None = None,
     parallel: bool = False,
     filter_bounds: bool = True,
     write_sidecar: bool = True,
@@ -78,10 +80,14 @@ def laz_to_pcd(
     float64, before the float32 cast) so large survey coordinates keep their
     precision:
 
-    * ``"header"`` (default) -- use the LAS header offset, a natural origin
-      near the data.
+    * ``"header"`` (default) -- a natural origin near the data (the LAS header
+      offset, or the reprojected header-bbox corner when ``reproject`` is set).
     * ``"none"`` -- no shift (only safe for clouds already near the origin).
-    * ``(x, y, z)`` -- an explicit origin.
+    * ``(x, y, z)`` -- an explicit origin (in the output CRS).
+
+    ``reproject`` is an optional target CRS (e.g. ``"EPSG:32627"``). When given,
+    X/Y are transformed from the file's CRS to it (Z unchanged), per chunk,
+    before the origin shift.
 
     The chosen origin is recorded in the PCD header comment and, when
     ``write_sidecar`` is set, in a ``<output>.origin.json`` file, so points can
@@ -106,10 +112,11 @@ def laz_to_pcd(
         raise ValueError(f"voxel_size must be >= 0, got {voxel_size}")
 
     with LazChunkReader(
-        input_path, chunk_size=chunk_size, parallel=parallel, filter_bounds=filter_bounds
+        input_path, chunk_size=chunk_size, parallel=parallel,
+        filter_bounds=filter_bounds, reproject=reproject,
     ) as reader:
         source_count = reader.point_count
-        resolved_origin = _resolve_origin(origin, reader.header_offset)
+        resolved_origin = _resolve_origin(origin, reader.suggested_origin)
         columns = reader.resolve_fields(fields)
         pcd_fields = pcd_fields_for(columns)
         progress = tqdm(
@@ -167,8 +174,9 @@ def laz_to_pcd(
                     "dropped_out_of_bounds": dropped,
                     "voxel_size": voxel_size,
                     "fields": list(pcd_fields),
+                    "reproject": reproject,
                     "origin_xyz": list(resolved_origin),
-                    "note": "global_xyz = local_xyz + origin_xyz",
+                    "note": "global_xyz = local_xyz + origin_xyz (origin in output CRS)",
                 },
                 indent=2,
             )
@@ -183,4 +191,5 @@ def laz_to_pcd(
         voxel_size=voxel_size,
         fields=pcd_fields,
         dropped=dropped,
+        reproject=reproject,
     )

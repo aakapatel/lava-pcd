@@ -84,6 +84,7 @@ class LazChunkReader:
         chunk_size: int = DEFAULT_CHUNK_SIZE,
         parallel: bool = False,
         filter_bounds: bool = True,
+        reproject: str | None = None,
     ) -> None:
         self.path = Path(path)
         if chunk_size <= 0:
@@ -91,12 +92,26 @@ class LazChunkReader:
         self.chunk_size = chunk_size
         self.parallel = parallel
         self.filter_bounds = filter_bounds
+        self.reproject = reproject  # target CRS string (e.g. "EPSG:32627") or None
         self.dropped = 0  # points discarded as out-of-bounds during reading
         self._reader: laspy.LasReader | None = None
+        self._transformer = None  # pyproj Transformer when reprojecting
 
     def __enter__(self) -> "LazChunkReader":
         self._reader = laspy.open(self.path, laz_backend=_resolve_backend(self.parallel))
+        if self.reproject is not None:
+            self._transformer = self._build_transformer(self.reproject)
         return self
+
+    def _build_transformer(self, target_crs: str):
+        import pyproj  # lazy: only needed when reprojecting
+
+        src = self._require_reader().header.parse_crs()
+        if src is None:
+            raise ValueError(
+                f"cannot reproject: {self.path.name} has no CRS in its header"
+            )
+        return pyproj.Transformer.from_crs(src, target_crs, always_xy=True)
 
     def __exit__(self, *exc: object) -> None:
         self.close()
@@ -119,12 +134,28 @@ class LazChunkReader:
 
     @property
     def header_bounds(self) -> tuple[tuple[float, float, float], tuple[float, float, float]]:
-        """The LAS header (mins, maxs) bounding box of valid coordinates."""
+        """The LAS header (mins, maxs) bounding box, in the source CRS."""
         h = self._require_reader().header
         return (
             (float(h.mins[0]), float(h.mins[1]), float(h.mins[2])),
             (float(h.maxs[0]), float(h.maxs[1]), float(h.maxs[2])),
         )
+
+    @property
+    def suggested_origin(self) -> tuple[float, float, float]:
+        """A natural local origin in the *output* CRS, near the data.
+
+        Without reprojection this is the LAS header offset. With reprojection it
+        is the floored min corner of the header bbox transformed to the target
+        CRS, so output coordinates start near zero (and keep float32 precision).
+        """
+        if self._transformer is None:
+            return self.header_offset
+        (minx, miny, _), (maxx, maxy, _) = self.header_bounds
+        ex, ny = self._transformer.transform(
+            [minx, maxx, minx, maxx], [miny, miny, maxy, maxy]
+        )
+        return (float(np.floor(min(ex))), float(np.floor(min(ny))), 0.0)
 
     @property
     def has_rgb(self) -> bool:
@@ -164,7 +195,9 @@ class LazChunkReader:
         before downcasting to float32, preserving precision for large
         (e.g. UTM) coordinates. RGB channels are scaled from 16-bit to 0..255.
         When ``filter_bounds`` is set, points outside the header bounding box
-        are dropped (counted in ``self.dropped``), so chunk sizes may vary.
+        (in the source CRS) are dropped (counted in ``self.dropped``), so chunk
+        sizes may vary. When a reprojection target was given, X/Y are
+        transformed to the target CRS (Z unchanged) before the origin shift.
         """
         reader = self._require_reader()
         ox, oy, oz = origin
@@ -175,17 +208,20 @@ class LazChunkReader:
             gx = np.asarray(points.x, dtype=np.float64)
             gy = np.asarray(points.y, dtype=np.float64)
             gz = np.asarray(points.z, dtype=np.float64)
+            # Filtering uses the source CRS bounds; do it before reprojection.
             if self.filter_bounds:
                 mask = in_bounds_mask(gx, gy, gz, mins, maxs)
                 self.dropped += int(len(gx) - mask.sum())
             else:
                 mask = slice(None)
-            globals_xyz = {"x": gx, "y": gy, "z": gz}
-            k = int(mask.sum()) if self.filter_bounds else len(gx)
-            out = np.empty((k, len(columns)), dtype=np.float32)
+            mx, my, mz = gx[mask], gy[mask], gz[mask]
+            if self._transformer is not None:
+                mx, my = self._transformer.transform(mx, my)
+            coords = {"x": mx, "y": my, "z": mz}
+            out = np.empty((len(mz), len(columns)), dtype=np.float32)
             for i, name in enumerate(columns):
                 if name in ("x", "y", "z"):
-                    out[:, i] = globals_xyz[name][mask] - shifts[name]
+                    out[:, i] = coords[name] - shifts[name]
                 elif name == "intensity":
                     out[:, i] = np.asarray(points.intensity)[mask]
                 else:  # r, g, b: 16-bit -> 0..255
