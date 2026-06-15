@@ -57,9 +57,13 @@ def convert(
         False, "--parallel/--no-parallel",
         help="Use the multi-threaded LAZ backend (faster; panics on some files).",
     ),
+    keep_invalid: bool = typer.Option(
+        False, "--keep-invalid",
+        help="Keep points outside the LAS header bounding box (off by default).",
+    ),
     quiet: bool = typer.Option(False, "--quiet", "-q", help="Suppress the progress bar."),
 ) -> None:
-    """Convert a .laz/.las file to a binary .pcd (x y z intensity)."""
+    """Convert a .laz/.las file to a binary .pcd (auto-selects RGB or intensity)."""
     origin_arg: str | tuple[float, float, float] = origin
     if origin not in ("header", "none"):
         try:
@@ -78,7 +82,7 @@ def convert(
         result = laz_to_pcd(
             input, output, chunk_size=chunk_size, origin=origin_arg,
             voxel_size=voxel, fields=fields, parallel=parallel,
-            show_progress=not quiet,
+            filter_bounds=not keep_invalid, show_progress=not quiet,
         )
     except (FileNotFoundError, ValueError) as err:
         typer.secho(f"error: {err}", fg=typer.colors.RED, err=True)
@@ -90,6 +94,8 @@ def convert(
         fg=typer.colors.GREEN,
     )
     typer.echo(f"fields: {' '.join(result.fields)}")
+    if result.dropped:
+        typer.echo(f"dropped {result.dropped:,} out-of-bounds points")
     if result.voxel_size > 0:
         ratio = result.source_count / result.point_count if result.point_count else 0.0
         typer.echo(

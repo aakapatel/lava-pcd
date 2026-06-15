@@ -55,8 +55,14 @@ def pack_columns(data: np.ndarray, columns: tuple[str, ...]) -> np.ndarray:
 
 
 def _header(
-    num_points: int, fields: tuple[str, ...], origin: tuple[float, float, float]
-) -> str:
+    count_field: str, fields: tuple[str, ...], origin: tuple[float, float, float]
+) -> tuple[str, int, int]:
+    """Build the PCD header. Returns (header, width_offset, points_offset).
+
+    ``count_field`` is the point count rendered to a fixed width; the two byte
+    offsets locate it inside WIDTH/POINTS so the value can be rewritten on close
+    without changing the header length (the binary data offset stays valid).
+    """
     field_str = " ".join(fields)
     sizes = " ".join("4" for _ in fields)
     types = " ".join("F" for _ in fields)
@@ -65,7 +71,7 @@ def _header(
     # cloud can be georeferenced back. Kept out of VIEWPOINT so viewers render the
     # small local coordinates without float jitter.
     origin_comment = f"# LAVA_PCD_ORIGIN {origin[0]!r} {origin[1]!r} {origin[2]!r}\n"
-    return (
+    header = (
         "# .PCD v0.7 - Point Cloud Data file format\n"
         + origin_comment
         + "VERSION 0.7\n"
@@ -73,12 +79,15 @@ def _header(
         f"SIZE {sizes}\n"
         f"TYPE {types}\n"
         f"COUNT {counts}\n"
-        f"WIDTH {num_points}\n"
+        f"WIDTH {count_field}\n"
         "HEIGHT 1\n"
         "VIEWPOINT 0 0 0 1 0 0 0\n"
-        f"POINTS {num_points}\n"
+        f"POINTS {count_field}\n"
         "DATA binary\n"
     )
+    width_off = header.index("WIDTH ") + len("WIDTH ")
+    points_off = header.index("POINTS ") + len("POINTS ")
+    return header, width_off, points_off
 
 
 class BinaryPcdWriter:
@@ -86,30 +95,41 @@ class BinaryPcdWriter:
 
     ``fields`` are the PCD field names (e.g. ``("x", "y", "z", "rgb")``).
     Each chunk passed to :meth:`write_chunk` must have ``len(fields)`` columns.
-    ``num_points`` must equal the total written, since it is baked into the
-    header.
+
+    ``max_points`` is an upper bound on the number of points (e.g. the LAZ
+    header count). The actual count -- which may be smaller if points were
+    filtered out -- is written into the header on close. The header reserves a
+    fixed-width count field so this rewrite never shifts the binary data.
     """
 
     def __init__(
         self,
         path: str | Path,
-        num_points: int,
+        max_points: int,
         fields: tuple[str, ...] = ("x", "y", "z", "intensity"),
         origin: tuple[float, float, float] = (0.0, 0.0, 0.0),
     ) -> None:
-        if num_points < 0:
-            raise ValueError(f"num_points must be non-negative, got {num_points}")
+        if max_points < 0:
+            raise ValueError(f"max_points must be non-negative, got {max_points}")
         self.path = Path(path)
-        self.num_points = num_points
+        self.max_points = max_points
         self.fields = fields
         self.origin = origin
+        self._width = len(str(max_points))
         self._written = 0
+        self._width_off = 0
+        self._points_off = 0
         self._fh = None
 
     def __enter__(self) -> "BinaryPcdWriter":
         self.path.parent.mkdir(parents=True, exist_ok=True)
         self._fh = open(self.path, "wb")
-        self._fh.write(_header(self.num_points, self.fields, self.origin).encode("ascii"))
+        # Reserve the count field at full width; finalised in __exit__.
+        placeholder = str(self.max_points).rjust(self._width)
+        header, self._width_off, self._points_off = _header(
+            placeholder, self.fields, self.origin
+        )
+        self._fh.write(header.encode("ascii"))
         return self
 
     def write_chunk(self, points: np.ndarray) -> None:
@@ -134,12 +154,21 @@ class BinaryPcdWriter:
         exc: BaseException | None,
         tb: TracebackType | None,
     ) -> None:
-        if self._fh is not None:
-            self._fh.close()
-            self._fh = None
-        # Only validate the count on a clean exit; don't mask an in-flight error.
-        if exc_type is None and self._written != self.num_points:
-            raise ValueError(
-                f"wrote {self._written} points but header declared "
-                f"{self.num_points}; PCD file is inconsistent."
-            )
+        if self._fh is None:
+            return
+        # On a clean exit, write the true count back into WIDTH/POINTS.
+        if exc_type is None:
+            if self._written > self.max_points:
+                self._fh.close()
+                self._fh = None
+                raise ValueError(
+                    f"wrote {self._written} points but reserved only "
+                    f"{self.max_points}; header count field too narrow."
+                )
+            value = str(self._written).rjust(self._width).encode("ascii")
+            self._fh.seek(self._width_off)
+            self._fh.write(value)
+            self._fh.seek(self._points_off)
+            self._fh.write(value)
+        self._fh.close()
+        self._fh = None

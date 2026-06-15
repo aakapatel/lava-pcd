@@ -31,6 +31,27 @@ _SCHEMAS: dict[str, tuple[str, ...]] = {
 }
 
 
+def in_bounds_mask(
+    gx: np.ndarray,
+    gy: np.ndarray,
+    gz: np.ndarray,
+    mins: tuple[float, float, float],
+    maxs: tuple[float, float, float],
+    eps: float = 1e-3,
+) -> np.ndarray:
+    """Boolean mask of points within the (mins, maxs) box (inclusive, +/-eps).
+
+    LAZ files can contain invalid/sentinel points (e.g. raw coords at INT32
+    limits) that fall outside the header's declared bounding box; these would
+    otherwise wreck the cloud's scale in a viewer.
+    """
+    return (
+        (gx >= mins[0] - eps) & (gx <= maxs[0] + eps)
+        & (gy >= mins[1] - eps) & (gy <= maxs[1] + eps)
+        & (gz >= mins[2] - eps) & (gz <= maxs[2] + eps)
+    )
+
+
 def _resolve_backend(parallel: bool) -> "laspy.LazBackend | None":
     """Pick a LAZ backend. Default to single-threaded lazrs.
 
@@ -62,12 +83,15 @@ class LazChunkReader:
         path: str | Path,
         chunk_size: int = DEFAULT_CHUNK_SIZE,
         parallel: bool = False,
+        filter_bounds: bool = True,
     ) -> None:
         self.path = Path(path)
         if chunk_size <= 0:
             raise ValueError(f"chunk_size must be positive, got {chunk_size}")
         self.chunk_size = chunk_size
         self.parallel = parallel
+        self.filter_bounds = filter_bounds
+        self.dropped = 0  # points discarded as out-of-bounds during reading
         self._reader: laspy.LasReader | None = None
 
     def __enter__(self) -> "LazChunkReader":
@@ -92,6 +116,15 @@ class LazChunkReader:
         """The LAS header XYZ offset -- a natural local origin near the data."""
         off = self._require_reader().header.offsets
         return (float(off[0]), float(off[1]), float(off[2]))
+
+    @property
+    def header_bounds(self) -> tuple[tuple[float, float, float], tuple[float, float, float]]:
+        """The LAS header (mins, maxs) bounding box of valid coordinates."""
+        h = self._require_reader().header
+        return (
+            (float(h.mins[0]), float(h.mins[1]), float(h.mins[2])),
+            (float(h.maxs[0]), float(h.maxs[1]), float(h.maxs[2])),
+        )
 
     @property
     def has_rgb(self) -> bool:
@@ -130,21 +163,34 @@ class LazChunkReader:
         ``origin`` is subtracted from the scaled coordinates **in float64**
         before downcasting to float32, preserving precision for large
         (e.g. UTM) coordinates. RGB channels are scaled from 16-bit to 0..255.
+        When ``filter_bounds`` is set, points outside the header bounding box
+        are dropped (counted in ``self.dropped``), so chunk sizes may vary.
         """
         reader = self._require_reader()
         ox, oy, oz = origin
         shifts = {"x": ox, "y": oy, "z": oz}
+        mins, maxs = self.header_bounds
+        self.dropped = 0
         for points in reader.chunk_iterator(self.chunk_size):
-            out = np.empty((len(points), len(columns)), dtype=np.float32)
+            gx = np.asarray(points.x, dtype=np.float64)
+            gy = np.asarray(points.y, dtype=np.float64)
+            gz = np.asarray(points.z, dtype=np.float64)
+            if self.filter_bounds:
+                mask = in_bounds_mask(gx, gy, gz, mins, maxs)
+                self.dropped += int(len(gx) - mask.sum())
+            else:
+                mask = slice(None)
+            globals_xyz = {"x": gx, "y": gy, "z": gz}
+            k = int(mask.sum()) if self.filter_bounds else len(gx)
+            out = np.empty((k, len(columns)), dtype=np.float32)
             for i, name in enumerate(columns):
                 if name in ("x", "y", "z"):
-                    coord = np.asarray(getattr(points, name), dtype=np.float64)
-                    out[:, i] = coord - shifts[name]
+                    out[:, i] = globals_xyz[name][mask] - shifts[name]
                 elif name == "intensity":
-                    out[:, i] = points.intensity
+                    out[:, i] = np.asarray(points.intensity)[mask]
                 else:  # r, g, b: 16-bit -> 0..255
                     channel = {"r": "red", "g": "green", "b": "blue"}[name]
-                    out[:, i] = np.asarray(getattr(points, channel)) / 257.0
+                    out[:, i] = np.asarray(getattr(points, channel))[mask] / 257.0
             yield out
 
     def _require_reader(self) -> laspy.LasReader:

@@ -9,6 +9,7 @@ import numpy as np
 import pytest
 
 from lava_pcd.convert import laz_to_pcd
+from lava_pcd.io.laz_reader import LazChunkReader, in_bounds_mask
 
 
 def _make_las(
@@ -194,3 +195,46 @@ def test_bad_suffix(tmp_path: Path) -> None:
     bogus.write_text("not a point cloud")
     with pytest.raises(ValueError):
         laz_to_pcd(bogus, tmp_path / "out.pcd")
+
+
+def test_in_bounds_mask() -> None:
+    gx = np.array([0.0, 5.0, 1e6, -1e6])
+    gy = np.array([0.0, 5.0, 0.0, 0.0])
+    gz = np.array([0.0, 5.0, 0.0, 0.0])
+    mask = in_bounds_mask(gx, gy, gz, (0, 0, 0), (10, 10, 10))
+    np.testing.assert_array_equal(mask, [True, True, False, False])
+
+
+def test_reader_drops_out_of_bounds(tmp_path: Path) -> None:
+    # 100 good points in [0,10] plus 5 sentinel points far outside.
+    good = np.random.default_rng(8).uniform(0, 10, size=(100, 3))
+    bad = np.full((5, 3), 2_147_483.0)  # INT32-limit-style sentinels
+    xyz = np.vstack([good, bad])
+    intensity = np.zeros(len(xyz), dtype=np.uint16)
+    las_path = tmp_path / "withbad.las"
+    _make_las(las_path, xyz, intensity)
+
+    with LazChunkReader(las_path, filter_bounds=True) as r:
+        # laspy recomputes header bounds to include the sentinels on write, so
+        # tighten them to the real data range for the test.
+        r._reader.header.maxs = [10.0, 10.0, 10.0]
+        r._reader.header.mins = [0.0, 0.0, 0.0]
+        kept = sum(len(c) for c in r.chunks(("x", "y", "z")))
+    assert kept == 100
+    assert r.dropped == 5
+
+
+def test_writer_count_rewrite_when_fewer(tmp_path: Path) -> None:
+    """Header POINTS must reflect actual count even if < reserved max_points."""
+    from lava_pcd.io.pcd_writer import BinaryPcdWriter
+
+    pcd = tmp_path / "few.pcd"
+    pts = np.arange(12, dtype=np.float32).reshape(3, 4)  # 3 points, x y z intensity
+    with BinaryPcdWriter(pcd, max_points=1_000_000, fields=("x", "y", "z", "intensity")) as w:
+        w.write_chunk(pts)
+
+    header, data = _read_pcd(pcd)
+    assert int(header["POINTS"]) == 3  # may be space-padded to reserved width
+    assert int(header["WIDTH"]) == 3
+    assert data.shape == (3, 4)
+    np.testing.assert_array_equal(data, pts)

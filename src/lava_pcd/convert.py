@@ -26,6 +26,7 @@ class ConvertResult:
     source_count: int = 0
     voxel_size: float = 0.0
     fields: tuple[str, ...] = ()
+    dropped: int = 0
 
     def __int__(self) -> int:  # backwards-compatible: len-like usage
         return self.point_count
@@ -54,6 +55,7 @@ def laz_to_pcd(
     voxel_size: float = 0.0,
     fields: str = "auto",
     parallel: bool = False,
+    filter_bounds: bool = True,
     write_sidecar: bool = True,
     show_progress: bool = True,
 ) -> ConvertResult:
@@ -103,7 +105,9 @@ def laz_to_pcd(
     if voxel_size < 0:
         raise ValueError(f"voxel_size must be >= 0, got {voxel_size}")
 
-    with LazChunkReader(input_path, chunk_size=chunk_size, parallel=parallel) as reader:
+    with LazChunkReader(
+        input_path, chunk_size=chunk_size, parallel=parallel, filter_bounds=filter_bounds
+    ) as reader:
         source_count = reader.point_count
         resolved_origin = _resolve_origin(origin, reader.header_offset)
         columns = reader.resolve_fields(fields)
@@ -116,29 +120,40 @@ def laz_to_pcd(
             disable=not show_progress,
         )
 
+        def consume(chunk: "object", prev_dropped: int) -> int:
+            # Advance the bar by input points consumed (kept + newly dropped).
+            advance = len(chunk) + (reader.dropped - prev_dropped)
+            progress.update(advance)
+            return reader.dropped
+
         if voxel_size > 0:
             # Aggregate voxels across all chunks; the final count is only known
             # once everything has been read, so we write after accumulating.
             downsampler = VoxelDownsampler(voxel_size)
+            prev_dropped = 0
             with progress:
                 for chunk in reader.chunks(columns, origin=resolved_origin):
                     downsampler.add(chunk)
-                    progress.update(len(chunk))
+                    prev_dropped = consume(chunk, prev_dropped)
             points = downsampler.result()
             written = len(points)
             with BinaryPcdWriter(
-                output_path, num_points=written, fields=pcd_fields, origin=resolved_origin
+                output_path, max_points=written, fields=pcd_fields, origin=resolved_origin
             ) as writer:
                 writer.write_chunk(pack_columns(points, columns))
         else:
-            written = source_count
+            prev_dropped = 0
             with BinaryPcdWriter(
-                output_path, num_points=written, fields=pcd_fields, origin=resolved_origin
+                output_path, max_points=source_count, fields=pcd_fields,
+                origin=resolved_origin,
             ) as writer:
                 with progress:
                     for chunk in reader.chunks(columns, origin=resolved_origin):
                         writer.write_chunk(pack_columns(chunk, columns))
-                        progress.update(len(chunk))
+                        prev_dropped = consume(chunk, prev_dropped)
+                written = writer._written
+
+        dropped = reader.dropped
 
     sidecar_path: Path | None = None
     if write_sidecar:
@@ -149,6 +164,7 @@ def laz_to_pcd(
                     "source": str(input_path),
                     "source_point_count": source_count,
                     "point_count": written,
+                    "dropped_out_of_bounds": dropped,
                     "voxel_size": voxel_size,
                     "fields": list(pcd_fields),
                     "origin_xyz": list(resolved_origin),
@@ -166,4 +182,5 @@ def laz_to_pcd(
         source_count=source_count,
         voxel_size=voxel_size,
         fields=pcd_fields,
+        dropped=dropped,
     )
