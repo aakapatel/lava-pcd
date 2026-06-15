@@ -17,14 +17,21 @@ import numpy as np
 FIELDS = ("x", "y", "z", "intensity")
 
 
-def _header(num_points: int) -> str:
+def _header(num_points: int, origin: tuple[float, float, float]) -> str:
     fields = " ".join(FIELDS)
     sizes = " ".join("4" for _ in FIELDS)
     types = " ".join("F" for _ in FIELDS)
     counts = " ".join("1" for _ in FIELDS)
+    # Record the local-origin shift (global = local + origin) as a comment so the
+    # cloud can be georeferenced back. Kept out of VIEWPOINT so viewers render the
+    # small local coordinates without float jitter.
+    origin_comment = (
+        f"# LAVA_PCD_ORIGIN {origin[0]!r} {origin[1]!r} {origin[2]!r}\n"
+    )
     return (
         "# .PCD v0.7 - Point Cloud Data file format\n"
-        "VERSION 0.7\n"
+        + origin_comment
+        + "VERSION 0.7\n"
         f"FIELDS {fields}\n"
         f"SIZE {sizes}\n"
         f"TYPE {types}\n"
@@ -50,18 +57,24 @@ class BinaryPcdWriter:
     baked into the header.
     """
 
-    def __init__(self, path: str | Path, num_points: int) -> None:
+    def __init__(
+        self,
+        path: str | Path,
+        num_points: int,
+        origin: tuple[float, float, float] = (0.0, 0.0, 0.0),
+    ) -> None:
         if num_points < 0:
             raise ValueError(f"num_points must be non-negative, got {num_points}")
         self.path = Path(path)
         self.num_points = num_points
+        self.origin = origin
         self._written = 0
         self._fh = None
 
     def __enter__(self) -> "BinaryPcdWriter":
         self.path.parent.mkdir(parents=True, exist_ok=True)
         self._fh = open(self.path, "wb")
-        self._fh.write(_header(self.num_points).encode("ascii"))
+        self._fh.write(_header(self.num_points, self.origin).encode("ascii"))
         return self
 
     def write_chunk(self, points: np.ndarray) -> None:

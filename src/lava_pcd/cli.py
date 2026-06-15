@@ -41,20 +41,48 @@ def convert(
         DEFAULT_CHUNK_SIZE, "--chunk-size", "-c", min=1,
         help="Points read per chunk (lower = less memory).",
     ),
+    origin: str = typer.Option(
+        "header", "--origin", "-o",
+        help="Local-origin shift: 'header' (LAS offset), 'none', or 'x,y,z'.",
+    ),
+    parallel: bool = typer.Option(
+        False, "--parallel/--no-parallel",
+        help="Use the multi-threaded LAZ backend (faster; panics on some files).",
+    ),
     quiet: bool = typer.Option(False, "--quiet", "-q", help="Suppress the progress bar."),
 ) -> None:
     """Convert a .laz/.las file to a binary .pcd (x y z intensity)."""
+    origin_arg: str | tuple[float, float, float] = origin
+    if origin not in ("header", "none"):
+        try:
+            parts = [float(p) for p in origin.replace(" ", "").split(",")]
+        except ValueError:
+            parts = []
+        if len(parts) != 3:
+            typer.secho(
+                f"error: --origin must be 'header', 'none', or 'x,y,z', got {origin!r}",
+                fg=typer.colors.RED, err=True,
+            )
+            raise typer.Exit(code=1)
+        origin_arg = (parts[0], parts[1], parts[2])
+
     try:
-        count = laz_to_pcd(
-            input, output, chunk_size=chunk_size, show_progress=not quiet
+        result = laz_to_pcd(
+            input, output, chunk_size=chunk_size, origin=origin_arg,
+            parallel=parallel, show_progress=not quiet,
         )
     except (FileNotFoundError, ValueError) as err:
         typer.secho(f"error: {err}", fg=typer.colors.RED, err=True)
         raise typer.Exit(code=1)
 
+    ox, oy, oz = result.origin
     typer.secho(
-        f"wrote {count:,} points -> {output}", fg=typer.colors.GREEN
+        f"wrote {result.point_count:,} points -> {result.output_path}",
+        fg=typer.colors.GREEN,
     )
+    typer.echo(f"local origin (global = local + origin): {ox} {oy} {oz}")
+    if result.sidecar_path is not None:
+        typer.echo(f"origin metadata: {result.sidecar_path}")
 
 
 if __name__ == "__main__":
