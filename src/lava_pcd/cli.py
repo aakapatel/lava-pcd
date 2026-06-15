@@ -9,6 +9,7 @@ import typer
 
 from lava_pcd import __version__
 from lava_pcd.convert import downsample_pcd, laz_to_pcd
+from lava_pcd.crop import DEFAULT_MAX_DISPLAY, crop_pcd, select_rectangle
 from lava_pcd.io.laz_reader import DEFAULT_CHUNK_SIZE
 
 app = typer.Typer(
@@ -149,6 +150,82 @@ def downsample(
         f"voxel downsample @ {result.voxel_size}: "
         f"{result.source_count:,} -> {result.point_count:,} points "
         f"({ratio:.1f}x reduction)"
+    )
+    ox, oy, oz = result.origin
+    typer.echo(f"local origin (global = local + origin): {ox} {oy} {oz}")
+
+
+@app.command()
+def crop(
+    input: Path = typer.Argument(..., help="Input .pcd file."),
+    output: Path = typer.Argument(..., help="Output (cropped) .pcd file."),
+    bounds: str = typer.Option(
+        None, "--bounds", "-b", metavar="MIN_A,MAX_A,MIN_B,MAX_B",
+        help="Explicit rectangle over --axes (skips the interactive selector).",
+    ),
+    axes: str = typer.Option(
+        "xy", "--axes", "-a",
+        help="Axis pair the rectangle spans: xy (top-down), xz, or yz.",
+    ),
+    use_global: bool = typer.Option(
+        False, "--global",
+        help="Interpret --bounds in global coords (origin is subtracted).",
+    ),
+    max_display: int = typer.Option(
+        DEFAULT_MAX_DISPLAY, "--max-display", min=1,
+        help="Max points shown in the interactive selector (subsampled).",
+    ),
+    chunk_size: int = typer.Option(
+        DEFAULT_CHUNK_SIZE, "--chunk-size", "-c", min=1,
+        help="Points read per chunk (lower = less memory).",
+    ),
+    quiet: bool = typer.Option(False, "--quiet", "-q", help="Suppress the progress bar."),
+) -> None:
+    """Crop a .pcd to a rectangle (interactive top-down selection by default)."""
+    try:
+        from lava_pcd.io.pcd_reader import BinaryPcdReader
+
+        if bounds is not None:
+            try:
+                parts = [float(p) for p in bounds.replace(" ", "").split(",")]
+            except ValueError:
+                parts = []
+            if len(parts) != 4:
+                raise ValueError(
+                    f"--bounds must be 'min_a,max_a,min_b,max_b', got {bounds!r}"
+                )
+            rect = (parts[0], parts[1], parts[2], parts[3])
+            if use_global:
+                with BinaryPcdReader(input) as r:
+                    ox, oy, oz = r.origin
+                o = {"x": ox, "y": oy, "z": oz}
+                sa, sb = o[axes[0].lower()], o[axes[1].lower()]
+                rect = (rect[0] - sa, rect[1] - sa, rect[2] - sb, rect[3] - sb)
+        else:
+            typer.echo("Opening interactive selector — drag a rectangle, then close the window.")
+            rect = select_rectangle(input, axes=axes, max_display_points=max_display)
+
+        result = crop_pcd(
+            input, output, bounds=rect, axes=axes,
+            chunk_size=chunk_size, show_progress=not quiet,
+        )
+    except (FileNotFoundError, ValueError, RuntimeError) as err:
+        typer.secho(f"error: {err}", fg=typer.colors.RED, err=True)
+        raise typer.Exit(code=1)
+
+    lo_a, hi_a, lo_b, hi_b = result.bounds
+    pct = 100.0 * result.point_count / result.source_count if result.source_count else 0.0
+    typer.secho(
+        f"wrote {result.point_count:,} points -> {result.output_path}",
+        fg=typer.colors.GREEN,
+    )
+    typer.echo(f"fields: {' '.join(result.fields)}")
+    typer.echo(
+        f"crop {result.axes}: {result.axes[0]} [{lo_a:.3f}, {hi_a:.3f}]  "
+        f"{result.axes[1]} [{lo_b:.3f}, {hi_b:.3f}]  (local coords)"
+    )
+    typer.echo(
+        f"kept {result.point_count:,} of {result.source_count:,} points ({pct:.1f}%)"
     )
     ox, oy, oz = result.origin
     typer.echo(f"local origin (global = local + origin): {ox} {oy} {oz}")

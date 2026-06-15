@@ -9,6 +9,7 @@ import numpy as np
 import pytest
 
 from lava_pcd.convert import downsample_pcd, laz_to_pcd
+from lava_pcd.crop import crop_pcd
 from lava_pcd.io.laz_reader import LazChunkReader, in_bounds_mask
 
 
@@ -247,6 +248,56 @@ def test_downsample_pcd_rejects_same_file(tmp_path: Path) -> None:
     laz_to_pcd(las_path, pcd_path, show_progress=False)
     with pytest.raises(ValueError):
         downsample_pcd(pcd_path, pcd_path, voxel_size=1.0, show_progress=False)
+
+
+def test_crop_pcd_xy_rectangle(tmp_path: Path) -> None:
+    """An xy crop keeps exactly the points inside the rectangle (full z column)."""
+    # A 10x10x10 grid at integer coords, 0..9 on each axis.
+    g = np.arange(10)
+    xx, yy, zz = np.meshgrid(g, g, g, indexing="ij")
+    xyz = np.column_stack([xx.ravel(), yy.ravel(), zz.ravel()]).astype(float)
+    intensity = np.zeros(len(xyz), dtype=np.uint16)
+
+    las_path = tmp_path / "grid.las"
+    pcd_path = tmp_path / "grid.pcd"
+    out_path = tmp_path / "grid_crop.pcd"
+    _make_las(las_path, xyz, intensity)
+    conv = laz_to_pcd(las_path, pcd_path, show_progress=False)
+
+    # Keep x in [2,4], y in [5,7]; z unconstrained -> 3 * 3 * 10 = 90 points.
+    res = crop_pcd(pcd_path, out_path, bounds=(2, 4, 5, 7), axes="xy",
+                   chunk_size=256, show_progress=False)
+    assert res.source_count == conv.point_count == 1000
+    assert res.point_count == 90
+
+    _, data = _read_pcd(out_path)
+    assert ((data[:, 0] >= 2) & (data[:, 0] <= 4)).all()
+    assert ((data[:, 1] >= 5) & (data[:, 1] <= 7)).all()
+    assert set(np.unique(data[:, 2])) == set(range(10))  # all z kept
+
+
+def test_crop_pcd_swapped_bounds_normalised(tmp_path: Path) -> None:
+    g = np.arange(6)
+    xx, yy = np.meshgrid(g, g, indexing="ij")
+    xyz = np.column_stack([xx.ravel(), yy.ravel(), np.zeros(xx.size)]).astype(float)
+    las_path, pcd_path, out_path = (
+        tmp_path / "g.las", tmp_path / "g.pcd", tmp_path / "g_c.pcd"
+    )
+    _make_las(las_path, xyz, np.zeros(len(xyz), dtype=np.uint16))
+    laz_to_pcd(las_path, pcd_path, show_progress=False)
+    # max,min given in reverse order -> normalised internally.
+    res = crop_pcd(pcd_path, out_path, bounds=(3, 1, 4, 2), show_progress=False)
+    assert res.bounds == (1.0, 3.0, 2.0, 4.0)
+    assert res.point_count == 3 * 3  # x in {1,2,3}, y in {2,3,4}
+
+
+def test_crop_pcd_rejects_same_file(tmp_path: Path) -> None:
+    xyz = np.zeros((10, 3))
+    las_path, pcd_path = tmp_path / "s.las", tmp_path / "s.pcd"
+    _make_las(las_path, xyz, np.zeros(10, dtype=np.uint16))
+    laz_to_pcd(las_path, pcd_path, show_progress=False)
+    with pytest.raises(ValueError):
+        crop_pcd(pcd_path, pcd_path, bounds=(0, 1, 0, 1), show_progress=False)
 
 
 def test_missing_input(tmp_path: Path) -> None:

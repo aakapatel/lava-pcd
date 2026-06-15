@@ -81,6 +81,45 @@ res = downsample_pcd("input.pcd", "output.pcd", voxel_size=0.5)
 print(f"{res.source_count} -> {res.point_count} points")
 ```
 
+## Crop a .pcd to a rectangle
+
+Cut out a rectangular region of a `.pcd`. By default it opens an interactive
+top-down view — drag a rectangle with the mouse, adjust the handles, then close
+the window and the crop is applied to the full cloud:
+
+```bash
+lava-pcd crop input.pcd output.pcd
+# options:
+#   -a / --axes        axis pair the rectangle spans: xy (top-down), xz, yz (default xy)
+#   -b / --bounds      MIN_A,MAX_A,MIN_B,MAX_B — skip the GUI, crop headless
+#       --global       interpret --bounds in global coords (origin is subtracted)
+#       --max-display  max points drawn in the selector (subsampled; default 500,000)
+#   -c / --chunk-size  points read per chunk (lower = less memory)
+#   -q / --quiet       suppress the progress bar
+```
+
+The rectangle spans two axes (top-down `xy` by default); the third axis is kept
+in full, so an `xy` crop is a vertical "cookie-cutter" column. The selector
+subsamples the cloud for display only — every point is tested against the
+rectangle when writing. For scripted/headless use, give `--bounds` directly:
+
+```bash
+# local coords (as shown in the selector / PCD header):
+lava-pcd crop input.pcd out.pcd -b 120,260,80,210
+# or global coords (e.g. UTM), with the origin subtracted automatically:
+lava-pcd crop input.pcd out.pcd -b 500120,500260,7000080,7000210 --global
+```
+
+From Python:
+
+```python
+from lava_pcd import crop_pcd, select_rectangle
+
+rect = select_rectangle("input.pcd", axes="xy")     # interactive; returns bounds
+res = crop_pcd("input.pcd", "out.pcd", bounds=rect)  # or pass explicit bounds
+print(f"kept {res.point_count} of {res.source_count} points")
+```
+
 ## Viewing
 
 ```bash
