@@ -9,6 +9,7 @@ from pathlib import Path
 from tqdm import tqdm
 
 from lava_pcd.io.laz_reader import DEFAULT_CHUNK_SIZE, LazChunkReader
+from lava_pcd.io.pcd_reader import BinaryPcdReader, pcd_fields_to_columns, unpack_columns
 from lava_pcd.io.pcd_writer import BinaryPcdWriter, pack_columns, pcd_fields_for
 from lava_pcd.voxel import VoxelDownsampler
 
@@ -30,6 +31,21 @@ class ConvertResult:
     reproject: str | None = None
 
     def __int__(self) -> int:  # backwards-compatible: len-like usage
+        return self.point_count
+
+
+@dataclass
+class DownsampleResult:
+    """Outcome of a :func:`downsample_pcd` call."""
+
+    point_count: int
+    source_count: int
+    voxel_size: float
+    origin: tuple[float, float, float]
+    output_path: Path
+    fields: tuple[str, ...] = ()
+
+    def __int__(self) -> int:
         return self.point_count
 
 
@@ -192,4 +208,66 @@ def laz_to_pcd(
         fields=pcd_fields,
         dropped=dropped,
         reproject=reproject,
+    )
+
+
+def downsample_pcd(
+    input_path: str | Path,
+    output_path: str | Path,
+    voxel_size: float,
+    chunk_size: int = DEFAULT_CHUNK_SIZE,
+    show_progress: bool = True,
+) -> DownsampleResult:
+    """Voxel-downsample an existing binary ``.pcd`` into a new ``.pcd``.
+
+    Reads the input in chunks (memory stays bounded by the *downsampled* size),
+    aggregates points into cubic voxels of edge length ``voxel_size`` -- each
+    output point is the centroid of its voxel, with any ``intensity`` and colour
+    averaged the same way -- and writes the result. The input's fields and its
+    local-origin shift (the ``# LAVA_PCD_ORIGIN`` header comment) are preserved.
+
+    Returns a :class:`DownsampleResult`.
+    """
+    input_path = Path(input_path)
+    output_path = Path(output_path)
+
+    if input_path.suffix.lower() != ".pcd":
+        raise ValueError(
+            f"expected a .pcd input, got '{input_path.suffix}' ({input_path})"
+        )
+    if voxel_size <= 0:
+        raise ValueError(f"voxel_size must be > 0, got {voxel_size}")
+
+    with BinaryPcdReader(input_path) as reader:
+        if input_path.resolve() == output_path.resolve():
+            raise ValueError("input and output must be different files")
+        pcd_fields = reader.fields
+        columns = pcd_fields_to_columns(pcd_fields)
+        source_count = reader.point_count
+        origin = reader.origin
+
+        downsampler = VoxelDownsampler(voxel_size)
+        progress = tqdm(
+            total=source_count, unit="pts", unit_scale=True,
+            desc=input_path.name, disable=not show_progress,
+        )
+        with progress:
+            for chunk in reader.chunks(chunk_size):
+                downsampler.add(unpack_columns(chunk, pcd_fields))
+                progress.update(len(chunk))
+
+    points = downsampler.result()
+    written = len(points)
+    with BinaryPcdWriter(
+        output_path, max_points=written, fields=pcd_fields, origin=origin
+    ) as writer:
+        writer.write_chunk(pack_columns(points, columns))
+
+    return DownsampleResult(
+        point_count=written,
+        source_count=source_count,
+        voxel_size=voxel_size,
+        origin=origin,
+        output_path=output_path,
+        fields=pcd_fields,
     )

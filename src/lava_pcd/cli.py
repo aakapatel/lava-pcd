@@ -8,7 +8,7 @@ from typing import Optional
 import typer
 
 from lava_pcd import __version__
-from lava_pcd.convert import laz_to_pcd
+from lava_pcd.convert import downsample_pcd, laz_to_pcd
 from lava_pcd.io.laz_reader import DEFAULT_CHUNK_SIZE
 
 app = typer.Typer(
@@ -113,6 +113,45 @@ def convert(
     typer.echo(f"local origin (global = local + origin): {ox} {oy} {oz}")
     if result.sidecar_path is not None:
         typer.echo(f"origin metadata: {result.sidecar_path}")
+
+
+@app.command()
+def downsample(
+    input: Path = typer.Argument(..., help="Input .pcd file."),
+    output: Path = typer.Argument(..., help="Output (downsampled) .pcd file."),
+    voxel: float = typer.Option(
+        ..., "--voxel", "-v", min=0.0, prompt="Voxel size (coordinate units)",
+        help="Voxel-downsample resolution in coordinate units (must be > 0).",
+    ),
+    chunk_size: int = typer.Option(
+        DEFAULT_CHUNK_SIZE, "--chunk-size", "-c", min=1,
+        help="Points read per chunk (lower = less memory).",
+    ),
+    quiet: bool = typer.Option(False, "--quiet", "-q", help="Suppress the progress bar."),
+) -> None:
+    """Voxel-downsample an existing binary .pcd into a new .pcd."""
+    try:
+        result = downsample_pcd(
+            input, output, voxel_size=voxel, chunk_size=chunk_size,
+            show_progress=not quiet,
+        )
+    except (FileNotFoundError, ValueError) as err:
+        typer.secho(f"error: {err}", fg=typer.colors.RED, err=True)
+        raise typer.Exit(code=1)
+
+    ratio = result.source_count / result.point_count if result.point_count else 0.0
+    typer.secho(
+        f"wrote {result.point_count:,} points -> {result.output_path}",
+        fg=typer.colors.GREEN,
+    )
+    typer.echo(f"fields: {' '.join(result.fields)}")
+    typer.echo(
+        f"voxel downsample @ {result.voxel_size}: "
+        f"{result.source_count:,} -> {result.point_count:,} points "
+        f"({ratio:.1f}x reduction)"
+    )
+    ox, oy, oz = result.origin
+    typer.echo(f"local origin (global = local + origin): {ox} {oy} {oz}")
 
 
 if __name__ == "__main__":

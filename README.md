@@ -55,6 +55,32 @@ res = laz_to_pcd(
 print(f"{res.source_count} -> {res.point_count} points, origin {res.origin}")
 ```
 
+## Downsample an existing .pcd
+
+Voxel-downsample a `.pcd` that was already written (e.g. to make a lighter copy
+for viewing) without re-reading the source LAZ:
+
+```bash
+lava-pcd downsample input.pcd output.pcd -v 0.5
+# options:
+#   -v / --voxel       voxel resolution in coord units (prompted if not given)
+#   -c / --chunk-size  points read per chunk (lower = less memory; default 5,000,000)
+#   -q / --quiet       suppress the progress bar
+```
+
+Each output point is the centroid of its cubic voxel; `intensity` and RGB are
+averaged the same way. Reading is chunked, so memory stays bounded by the
+*downsampled* size. The input's fields and its local origin (the
+`# LAVA_PCD_ORIGIN` header comment) are preserved. Only the binary float32 PCD
+this package writes is accepted as input.
+
+```python
+from lava_pcd import downsample_pcd
+
+res = downsample_pcd("input.pcd", "output.pcd", voxel_size=0.5)
+print(f"{res.source_count} -> {res.point_count} points")
+```
+
 ## Viewing
 
 ```bash

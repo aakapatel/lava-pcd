@@ -8,7 +8,7 @@ import laspy
 import numpy as np
 import pytest
 
-from lava_pcd.convert import laz_to_pcd
+from lava_pcd.convert import downsample_pcd, laz_to_pcd
 from lava_pcd.io.laz_reader import LazChunkReader, in_bounds_mask
 
 
@@ -183,6 +183,70 @@ def test_rgb_with_voxel_downsample(tmp_path: Path) -> None:
     assert result.point_count == 1
     _, data = _read_pcd(pcd_path)
     np.testing.assert_array_equal(_unpack_rgb(data[:, 3])[0], [100, 150, 200])
+
+
+def test_downsample_pcd_reduces_and_preserves_origin(tmp_path: Path) -> None:
+    """Downsampling an existing .pcd reduces points and keeps the origin/fields."""
+    rng = np.random.default_rng(7)
+    n = 5000
+    # Large UTM-like coords to exercise the origin shift round-trip.
+    offsets = (500000.0, 7000000.0, 0.0)
+    xyz = np.array(offsets) + rng.uniform(0, 20, size=(n, 3))
+    intensity = rng.integers(0, 65535, size=n, dtype=np.uint16)
+
+    las_path = tmp_path / "in.las"
+    pcd_path = tmp_path / "full.pcd"
+    out_path = tmp_path / "ds.pcd"
+    _make_las(las_path, xyz, intensity, offsets=offsets)
+
+    conv = laz_to_pcd(las_path, pcd_path, show_progress=False)
+    res = downsample_pcd(pcd_path, out_path, voxel_size=2.0,
+                         chunk_size=512, show_progress=False)
+
+    assert res.source_count == conv.point_count == n
+    assert res.point_count < n
+    assert res.fields == ("x", "y", "z", "intensity")
+    assert res.origin == conv.origin  # carried through the # LAVA_PCD_ORIGIN comment
+
+    header, data = _read_pcd(out_path)
+    assert header["FIELDS"] == "x y z intensity"
+    assert int(header["POINTS"]) == res.point_count
+    # Centroids stay inside the (local) data bounds.
+    local_max = (np.array(offsets) + 20) - np.array(conv.origin)
+    assert (data[:, :3] >= -1e-3).all() and (data[:, :3] <= local_max + 1e-3).all()
+
+
+def test_downsample_pcd_rgb_roundtrip(tmp_path: Path) -> None:
+    """A packed-rgb .pcd downsamples with colour unpacked, averaged, re-packed."""
+    rng = np.random.default_rng(8)
+    xyz = np.array([5.0, 5.0, 5.0]) + rng.uniform(0, 0.05, size=(300, 3))
+    intensity = np.zeros(len(xyz), dtype=np.uint16)
+    rgb16 = np.full((len(xyz), 3), [40 * 257, 80 * 257, 120 * 257], dtype=np.uint16)
+
+    las_path = tmp_path / "c.las"
+    pcd_path = tmp_path / "c.pcd"
+    out_path = tmp_path / "c_ds.pcd"
+    _make_las(las_path, xyz, intensity, rgb=rgb16)
+
+    laz_to_pcd(las_path, pcd_path, show_progress=False)
+    res = downsample_pcd(pcd_path, out_path, voxel_size=1.0, show_progress=False)
+
+    assert res.point_count == 1
+    assert res.fields == ("x", "y", "z", "rgb")
+    _, data = _read_pcd(out_path)
+    np.testing.assert_array_equal(_unpack_rgb(data[:, 3])[0], [40, 80, 120])
+
+
+def test_downsample_pcd_rejects_same_file(tmp_path: Path) -> None:
+    rng = np.random.default_rng(9)
+    xyz = rng.uniform(-5, 5, size=(50, 3))
+    intensity = np.zeros(50, dtype=np.uint16)
+    las_path = tmp_path / "x.las"
+    pcd_path = tmp_path / "x.pcd"
+    _make_las(las_path, xyz, intensity)
+    laz_to_pcd(las_path, pcd_path, show_progress=False)
+    with pytest.raises(ValueError):
+        downsample_pcd(pcd_path, pcd_path, voxel_size=1.0, show_progress=False)
 
 
 def test_missing_input(tmp_path: Path) -> None:
