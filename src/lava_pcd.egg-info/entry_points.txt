@@ -1,0 +1,2 @@
+[console_scripts]
+lava-pcd = lava_pcd.cli:app
