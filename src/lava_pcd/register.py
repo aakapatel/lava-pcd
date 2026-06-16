@@ -419,3 +419,82 @@ def match_constellations(
         anchors=[list(map(float, A[a])) for a in ai],
         warnings=warnings,
     )
+
+
+# --------------------------------------------------------------------------- #
+# visualization
+# --------------------------------------------------------------------------- #
+def _major_axis_3d(hole, R_to_z: np.ndarray) -> np.ndarray:
+    """Hole major-axis unit vector in the cloud's local frame."""
+    v = np.array([np.cos(hole.orientation), np.sin(hole.orientation), 0.0])
+    return R_to_z.T @ v
+
+
+def visualize_match(
+    aerial: HoleSet, tube: HoleSet, transform: Transform, title: str | None = None
+) -> None:
+    """Plot the two skylight constellations after alignment, in the aerial up-plane.
+
+    The tube holes are transformed into the aerial frame, then both sets are drawn
+    as ellipses looking down the aerial up-axis: **aerial** holes in blue, **tube**
+    holes in orange, **matched** (inlier) holes solid and joined by a green line,
+    outliers faded/dashed. Matched ellipses should sit on top of each other; the
+    leftover singletons are the rejected outliers.
+    """
+    import matplotlib.pyplot as plt
+    from matplotlib.lines import Line2D
+    from matplotlib.patches import Ellipse
+
+    z = np.array([0.0, 0.0, 1.0])
+    e1, e2 = _plane_basis(normalize(np.asarray(aerial.up)))
+    Ra = rotation_align(np.asarray(aerial.up), z)
+    Rb = rotation_align(np.asarray(tube.up), z)
+    M = transform.array
+    Rm = M[:3, :3]
+
+    A3 = aerial.centroids()
+    B3 = transform_points(tube.centroids(), M)  # tube into aerial frame
+    Ax, Ay = A3 @ e1, A3 @ e2
+    Bx, By = B3 @ e1, B3 @ e2
+    in_aer = {a for _, a in transform.inliers}
+    in_tube = {t for t, _ in transform.inliers}
+
+    fig, ax = plt.subplots(figsize=(10, 8))
+
+    def draw(holes, xs, ys, axis_dirs, matched, color):
+        for i, h in enumerate(holes):
+            ang = np.degrees(np.arctan2(axis_dirs[i] @ e2, axis_dirs[i] @ e1))
+            a = h.semi_major if h.semi_major > 0 else h.radius
+            b = h.semi_minor if h.semi_minor > 0 else h.radius
+            m = i in matched
+            ax.add_patch(Ellipse(
+                (xs[i], ys[i]), 2 * max(a, 0.5), 2 * max(b, 0.5), angle=ang,
+                fill=False, color=color, lw=2.0 if m else 1.0,
+                ls="-" if m else "--", alpha=1.0 if m else 0.4,
+            ))
+            ax.text(xs[i], ys[i], str(h.id), color=color, fontsize=7,
+                    ha="center", va="center")
+
+    draw(aerial.holes, Ax, Ay, [_major_axis_3d(h, Ra) for h in aerial.holes],
+         in_aer, "tab:blue")
+    draw(tube.holes, Bx, By, [Rm @ _major_axis_3d(h, Rb) for h in tube.holes],
+         in_tube, "tab:orange")
+    for t, a in transform.inliers:
+        ax.plot([Ax[a], Bx[t]], [Ay[a], By[t]], "-", color="green", lw=1.2, zorder=1)
+
+    allx = np.concatenate([Ax, Bx]); ally = np.concatenate([Ay, By])
+    pad = 10.0
+    ax.set_xlim(allx.min() - pad, allx.max() + pad)
+    ax.set_ylim(ally.min() - pad, ally.max() + pad)
+    ax.set_aspect("equal")
+    ax.set_xlabel("aerial up-plane a"); ax.set_ylabel("aerial up-plane b")
+    ax.set_title(title or (
+        f"register: {transform.n_inliers} matches   RMS {transform.rms:.2f}   "
+        f"margin {transform.margin}   mode {transform.mode}"
+    ))
+    ax.legend(handles=[
+        Line2D([0], [0], color="tab:blue", lw=2, label="aerial holes"),
+        Line2D([0], [0], color="tab:orange", lw=2, label="tube holes (aligned)"),
+        Line2D([0], [0], color="green", lw=1.2, label="matches"),
+    ], loc="best")
+    plt.show()

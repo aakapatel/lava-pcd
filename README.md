@@ -259,6 +259,7 @@ combine with `--min-area` to drop the smallest specks.
 #   -m / --mode        auto (default) | 4dof (up-assisted) | 6dof (Kabsch)
 #   -t / --tolerance   max landmark mismatch (coord units) to count as an inlier
 #   -n / --min-inliers min mutually-consistent skylights required (default 3)
+#        --show        plot the aligned constellations (matches + rejected outliers)
 ```
 This is designed to handle **lots of outlier holes** — small noisy detections or holes
 that exist in only one map. It finds correspondences by gating hole pairs/triplets on the
@@ -275,6 +276,12 @@ unreliable. The command prints the matched count, RMS, the **uniqueness margin**
 more holes the best solution explains than the next distinct one — `0` means ambiguous),
 the ellipse **shape score**, and warnings. Lower `--min-inliers` to 2 only if you trust a
 2-hole match.
+
+`--show` plots the result looking down the aerial up-axis: the tube holes are transformed
+into the aerial frame and both sets are drawn as ellipses — **aerial** holes blue, **tube**
+holes orange, **matched** holes solid and joined by a green line, rejected outliers
+faded/dashed. Matched ellipses should sit right on top of each other; the leftover
+singletons are the outliers the consensus threw out.
 
 ### `merge` — apply and combine
 ```

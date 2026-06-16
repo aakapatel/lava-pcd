@@ -26,7 +26,7 @@ from lava_pcd.holes import (
 )
 from lava_pcd.io.pcd_writer import BinaryPcdWriter
 from lava_pcd.merge import merge_clouds
-from lava_pcd.register import match_constellations
+from lava_pcd.register import match_constellations, visualize_match
 
 
 # --------------------------------------------------------------------------- #
@@ -213,6 +213,19 @@ def test_match_ambiguous_constellation_warns() -> None:
     assert tf.n_inliers == 3
     assert tf.margin <= 0
     assert any("ambiguous" in w for w in tf.warnings)
+
+
+def test_register_visualize_headless() -> None:
+    A_true = np.array([[10.0, 10.0, 0.0], [40.0, 15.0, 1.0], [25.0, 45.0, -1.0]])
+    R_g = rotation_about_axis(np.array([0.0, 0.0, 1.0]), 0.6) @ \
+        rotation_about_axis(np.array([1.0, 0.0, 0.0]), 0.1)
+    t_g = np.array([5.0, -5.0, 2.0])
+    up_tube = tuple(R_g.T @ np.array([0.0, 0.0, 1.0]))
+    B_true = (A_true - t_g) @ R_g
+    aerial = _holeset(np.vstack([A_true, [[100.0, 100.0, 0.0]]]))   # + 1 outlier
+    tube = _holeset(np.vstack([B_true, [[-80.0, 50.0, 0.0]]]), up=up_tube)
+    tf = match_constellations(aerial, tube, tolerance=1.0)
+    visualize_match(aerial, tube, tf)  # must not raise under the Agg backend
 
 
 def test_match_shape_breaks_geometric_tie() -> None:

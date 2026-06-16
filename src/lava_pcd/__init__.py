@@ -16,7 +16,7 @@ from lava_pcd.holes import (
     show_occupancy,
 )
 from lava_pcd.merge import MergeResult, apply_transform, icp_refine, merge_clouds
-from lava_pcd.register import Transform, match_constellations
+from lava_pcd.register import Transform, match_constellations, visualize_match
 
 __version__ = "0.1.0"
 
@@ -37,6 +37,7 @@ __all__ = [
     "HoleSet",
     "Occupancy",
     "match_constellations",
+    "visualize_match",
     "Transform",
     "merge_clouds",
     "apply_transform",

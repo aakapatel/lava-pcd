@@ -35,7 +35,12 @@ from lava_pcd.holes import (
 )
 from lava_pcd.io.laz_reader import DEFAULT_CHUNK_SIZE
 from lava_pcd.merge import DEFAULT_RIM_RADIUS, apply_transform, merge_clouds
-from lava_pcd.register import DEFAULT_TOLERANCE, Transform, match_constellations
+from lava_pcd.register import (
+    DEFAULT_TOLERANCE,
+    Transform,
+    match_constellations,
+    visualize_match,
+)
 
 app = typer.Typer(
     help="Process large point cloud files (convert, downsample, voxelize, crop, merge).",
@@ -520,6 +525,9 @@ def register(
         3, "--min-inliers", "-n", min=2,
         help="Min mutually-consistent skylights required (the outlier-rejection lever).",
     ),
+    show: bool = typer.Option(
+        False, "--show", help="Plot the aligned constellations (matches + outliers)."
+    ),
 ) -> None:
     """Match two skylight constellations into a rigid transform (tube -> aerial)."""
     try:
@@ -547,6 +555,8 @@ def register(
         typer.echo("  " + "  ".join(f"{v: .4f}" for v in row))
     for w in transform.warnings:
         typer.secho(f"warning: {w}", fg=typer.colors.YELLOW)
+    if show:
+        visualize_match(aerial, tube, transform)
 
 
 @app.command()
