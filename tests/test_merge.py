@@ -146,6 +146,85 @@ def test_match_too_few_holes_raises() -> None:
         match_constellations(aerial, tube)
 
 
+def _holeset_shaped(centroids, areas, up=(0.0, 0.0, 1.0)):
+    holes = []
+    for i, (c, ar) in enumerate(zip(centroids, areas)):
+        r = float(np.sqrt(ar / np.pi))
+        holes.append(Hole(i, tuple(c), r, float(ar), int(ar),
+                          semi_major=r, semi_minor=r, orientation=0.0))
+    return HoleSet(holes, (0.0, 0.0, 0.0), tuple(up), "test", 1.0, "")
+
+
+def test_match_robust_to_many_outliers() -> None:
+    rng = np.random.default_rng(11)
+    # 3 true holes (non-collinear); the rest are outliers in each set
+    A_true = np.array([[10.0, 10.0, 0.0], [40.0, 15.0, 1.0], [25.0, 45.0, -1.0]])
+    R_g = rotation_about_axis(np.array([0.0, 0.0, 1.0]), 0.8) @ \
+        rotation_about_axis(np.array([1.0, 0.0, 0.0]), 0.1)
+    t_g = np.array([12.0, -8.0, 4.0])
+    up_tube = tuple(R_g.T @ np.array([0.0, 0.0, 1.0]))
+    B_true = (A_true - t_g) @ R_g
+
+    A_out = rng.uniform(-60.0, 120.0, size=(8, 3))
+    B_out = rng.uniform(-120.0, 120.0, size=(9, 3))
+    A = np.vstack([A_true, A_out])            # true holes at indices 0,1,2
+    B = np.vstack([B_true, B_out])
+    aerial = _holeset(A, up=(0, 0, 1))
+    tube = _holeset(B, up=up_tube)
+
+    tf = match_constellations(aerial, tube, mode="4dof", tolerance=1.0, min_inliers=3)
+    assert {(0, 0), (1, 1), (2, 2)} <= set(tf.inliers)   # true correspondences found
+    assert tf.n_inliers == 3 and tf.margin >= 1          # outliers excluded, unique
+    pred = transform_points(tube.centroids()[[0, 1, 2]], tf.array)
+    np.testing.assert_allclose(pred, A_true, atol=0.5)
+
+
+def test_match_6dof_robust_to_outliers() -> None:
+    rng = np.random.default_rng(5)
+    A_true = np.array([[0.0, 0.0, 0.0], [30.0, 5.0, 10.0], [12.0, 28.0, -6.0]])
+    R_g = rotation_about_axis(np.array([0.3, 0.6, 0.5]), 1.0)
+    t_g = np.array([-15.0, 20.0, 7.0])
+    B_true = (A_true - t_g) @ R_g
+    A = np.vstack([A_true, rng.uniform(-80, 120, size=(7, 3))])
+    B = np.vstack([B_true, rng.uniform(-120, 120, size=(8, 3))])
+    tf = match_constellations(_holeset(A), _holeset(B), mode="6dof",
+                              tolerance=1.0, min_inliers=3)
+    assert {(0, 0), (1, 1), (2, 2)} <= set(tf.inliers)
+    np.testing.assert_allclose(
+        transform_points(_holeset(B).centroids()[[0, 1, 2]], tf.array), A_true, atol=0.5)
+
+
+def test_match_too_few_inliers_raises() -> None:
+    # only 2 holes truly correspond; with min_inliers=3 this must fail
+    A_true = np.array([[0.0, 0.0, 0.0], [20.0, 0.0, 0.0]])
+    R_g = rotation_about_axis(np.array([0.0, 0.0, 1.0]), 0.5)
+    B_true = A_true @ R_g
+    A = np.vstack([A_true, [[100.0, 100.0, 0.0]]])
+    B = np.vstack([B_true, [[-90.0, 60.0, 0.0]]])
+    with pytest.raises(ValueError):
+        match_constellations(_holeset(A), _holeset(B), mode="6dof", min_inliers=3)
+
+
+def test_match_ambiguous_constellation_warns() -> None:
+    # equilateral triangle in both -> several correspondences explain all 3 equally
+    tri = np.array([[0.0, 0.0, 0.0], [10.0, 0.0, 0.0], [5.0, 8.66, 0.0]])
+    tf = match_constellations(_holeset(tri), _holeset(tri), mode="6dof",
+                              tolerance=0.5, min_inliers=3)
+    assert tf.n_inliers == 3
+    assert tf.margin <= 0
+    assert any("ambiguous" in w for w in tf.warnings)
+
+
+def test_match_shape_breaks_geometric_tie() -> None:
+    # same equilateral geometry (ambiguous), but distinct hole sizes pick identity
+    tri = np.array([[0.0, 0.0, 0.0], [10.0, 0.0, 0.0], [5.0, 8.66, 0.0]])
+    areas = [10.0, 50.0, 200.0]
+    tf = match_constellations(_holeset_shaped(tri, areas), _holeset_shaped(tri, areas),
+                              mode="6dof", tolerance=0.5, min_inliers=3)
+    # size agreement makes the identity correspondence the best of the ties
+    assert set(tf.inliers) == {(0, 0), (1, 1), (2, 2)}
+
+
 # --------------------------------------------------------------------------- #
 # detection
 # --------------------------------------------------------------------------- #
@@ -278,6 +357,28 @@ def test_ellipse_fit_recovers_shape_and_orientation(tmp_path: Path) -> None:
     # orientation ~30 deg, modulo 180
     deg = np.degrees(h.orientation) % 180.0
     assert min(abs(deg - 30.0), abs(deg - 210.0), abs(deg + 150.0)) < 12.0
+
+
+def test_merge_overlapping_ellipses(tmp_path: Path) -> None:
+    # two separate voids (a band of occupied ground between them), centres 8 apart
+    pcd = tmp_path / "pair.pcd"
+    _write_pcd(pcd, _slab_with_voids([((18.0, 20.0), 3.0), ((26.0, 20.0), 3.0)]))
+
+    # distinct connected components, so without merging there are two holes
+    split = detect_holes(pcd, mode="aerial", resolution=1.0, min_area=10.0,
+                        merge_overlap=False)
+    assert len(split.holes) == 2
+
+    # ellipse radii ~3 each, 8 apart: factor 1 doesn't reach, a larger factor fuses
+    near = detect_holes(pcd, mode="aerial", resolution=1.0, min_area=10.0,
+                       merge_overlap=True, merge_factor=1.0)
+    assert len(near.holes) == 2
+    fused = detect_holes(pcd, mode="aerial", resolution=1.0, min_area=10.0,
+                        merge_overlap=True, merge_factor=1.6)
+    assert len(fused.holes) == 1
+    cx, cy, _ = fused.holes[0].centroid
+    assert abs(cx - 22.0) < 2.0 and abs(cy - 20.0) < 2.0       # midway between the two
+    assert fused.holes[0].semi_major > split.holes[0].semi_major  # elongated union
 
 
 def test_occupancy_viewer_runs_headless(tmp_path: Path) -> None:

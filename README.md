@@ -220,6 +220,8 @@ overrides `--min-density`. Preview it the same way: `lava-pcd occupancy ... --re
 #        --min-area       ignore voids smaller than this (coord units squared)
 #        --max-area       ignore voids larger than this (optional)
 #        --edge-margin    reject holes within this distance of the cloud boundary
+#        --merge-overlap / --no-merge-overlap  fuse holes whose ellipses overlap (on by default)
+#        --merge-factor   scale on the ellipse radii for the overlap test (>1 merges near holes)
 #        --ceiling-jump   [ceiling] roof-height deviation flagged as an opening
 #        --show           show the occupancy image + detections; click to toggle holes
 #        --manual         place skylights by hand (click each centre) — the fallback
@@ -237,6 +239,13 @@ moments — `semi_major`, `semi_minor` and `orientation` (major-axis bearing in 
 up-plane) — so you get its rough shape and direction, not just a radius. `--show` draws
 those ellipses; the JSON stores them for later use in matching.
 
+When a skylight gets split into pieces (a thin bridge of returns across it, a rim nick
+touching a real hole), the detector returns several overlapping ellipses. By default
+(**`--merge-overlap`**) any holes whose fitted ellipses overlap are fused into one — their
+cells are pooled and the ellipse re-fitted to the union. `--merge-factor` scales the
+overlap test (`>1` also fuses holes that are merely close); `--no-merge-overlap` turns it
+off.
+
 The tube ceiling is a thin ribbon with a **ragged rim**, which spawns lots of tiny false
 holes along its sides. Use **`--edge-margin D`** to keep only holes whose centre is at
 least `D` (coord units) inside the ceiling boundary — it erodes the ribbon footprint
@@ -244,17 +253,28 @@ inward by `D` and rejects anything in that border band. Raise it until the rim n
 disappear, but keep it below the ribbon's half-width or you'll erode real skylights too;
 combine with `--min-area` to drop the smallest specks.
 
-### `register` — match constellations
+### `register` — match constellations (outlier-robust)
 ```
-#   -o / --output     output transform .json (required)
-#   -m / --mode       4dof (up-assisted, robust; default) | 6dof (Kabsch RANSAC)
-#   -t / --tolerance  max landmark mismatch (coord units) to count as an inlier
+#   -o / --output      output transform .json (required)
+#   -m / --mode        auto (default) | 4dof (up-assisted) | 6dof (Kabsch)
+#   -t / --tolerance   max landmark mismatch (coord units) to count as an inlier
+#   -n / --min-inliers min mutually-consistent skylights required (default 3)
 ```
-`4dof` uses the up-axis from each hole set to reduce the match to yaw + translation —
-solvable from **2 holes** and not degenerate for a straight (collinear) tube. `6dof`
-is the fallback when no up-axis is trustworthy; it needs **≥3 non-collinear** matches.
-The command prints the transform, the residual RMS, and warnings (too few / collinear
-landmarks).
+This is designed to handle **lots of outlier holes** — small noisy detections or holes
+that exist in only one map. It finds correspondences by gating hole pairs/triplets on the
+**3-D inter-hole distance** (a rigid invariant, independent of the estimated up-axis), then
+keeps the transform that makes the most *other* holes line up (**max consensus**). The key
+lever is **`--min-inliers`** (default 3): a stray pairing can't recruit a third hole to
+agree, so the outliers are voted out. The ellipse shape (size/axis-ratio/orientation) is
+used only to break ties between geometrically equivalent solutions — never to reject a
+match.
+
+`auto` tries `4dof` (up-assisted: only 2 inliers needed, handles a straight/collinear
+tube) and falls back to `6dof` (full Kabsch, ≥3 non-collinear) if the up-axis proves
+unreliable. The command prints the matched count, RMS, the **uniqueness margin** (how many
+more holes the best solution explains than the next distinct one — `0` means ambiguous),
+the ellipse **shape score**, and warnings. Lower `--min-inliers` to 2 only if you trust a
+2-hole match.
 
 ### `merge` — apply and combine
 ```

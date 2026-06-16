@@ -42,6 +42,7 @@ DEFAULT_MIN_DENSITY = 1.0         # cells with fewer points than this count as e
 DEFAULT_SMOOTH = 0.0             # Gaussian sigma (cells) applied to counts before threshold
 DEFAULT_RELATIVE_WINDOW = 21      # window (cells) for the local reference density
 DEFAULT_EDGE_MARGIN = 0.0         # reject holes within this distance of the boundary
+DEFAULT_MERGE_FACTOR = 1.0        # scale on ellipse radii for the overlap-merge test
 DEFAULT_CEILING_JUMP = 1.0        # ceiling-height deviation flagged as "open" (m)
 _MAX_GRID_CELLS = 50_000_000      # guard against an absurdly fine grid
 _UP_SAMPLE = 200_000             # points sampled for up-axis estimation
@@ -348,9 +349,87 @@ def _fit_ellipse(
     return float(semi_major), float(semi_minor), orientation
 
 
+def _ellipse_radius(a: float, b: float, dphi: float) -> float:
+    """Radius of an ellipse (semi-axes ``a``, ``b``) in direction ``dphi`` from its
+    major axis."""
+    denom = np.hypot(b * np.cos(dphi), a * np.sin(dphi))
+    return float(a * b / denom) if denom > 1e-9 else float(max(a, b))
+
+
+def _ellipses_overlap(p1: dict, p2: dict, factor: float) -> bool:
+    """Approximate ellipse-ellipse overlap test.
+
+    Each ``p`` is ``{cx, cy, a, b, th}``. The ellipses are deemed to overlap when
+    the centre distance is within ``factor`` times the sum of each ellipse's radius
+    measured along the line joining the centres (exact for circles; a good, cheap
+    approximation for ellipses).
+    """
+    dx, dy = p2["cx"] - p1["cx"], p2["cy"] - p1["cy"]
+    d = float(np.hypot(dx, dy))
+    if d < 1e-9:
+        return True
+    phi = np.arctan2(dy, dx)
+    r1 = _ellipse_radius(p1["a"], p1["b"], phi - p1["th"])
+    r2 = _ellipse_radius(p2["a"], p2["b"], phi - p2["th"])
+    return d <= factor * (r1 + r2)
+
+
+def _merge_components(comps: list[dict], grid: _Grid, factor: float) -> list[dict]:
+    """Union-find merge of components whose fitted ellipses overlap.
+
+    Overlap is transitive, so a chain of overlapping ellipses collapses to one.
+    Merged components pool their cells and the ellipse/centroid/level are recomputed
+    from the union.
+    """
+    m = len(comps)
+    parent = list(range(m))
+
+    def find(x: int) -> int:
+        while parent[x] != x:
+            parent[x] = parent[parent[x]]
+            x = parent[x]
+        return x
+
+    for i in range(m):
+        for j in range(i + 1, m):
+            if find(i) != find(j) and _ellipses_overlap(comps[i], comps[j], factor):
+                parent[find(i)] = find(j)
+
+    groups: dict[int, list[int]] = {}
+    for i in range(m):
+        groups.setdefault(find(i), []).append(i)
+
+    merged: list[dict] = []
+    for members in groups.values():
+        if len(members) == 1:
+            merged.append(comps[members[0]])
+            continue
+        coords = np.vstack([comps[k]["coords"] for k in members])
+        n_cells = int(sum(comps[k]["n_cells"] for k in members))
+        wz = sum(comps[k]["wz"] * comps[k]["n_cells"] for k in members) / n_cells
+        merged.append(_component(coords, n_cells, float(wz), grid))
+    return merged
+
+
+def _component(coords: np.ndarray, n_cells: int, wz: float, grid: _Grid) -> dict:
+    """Bundle a hole component's geometry (working frame) for filtering/merging."""
+    cix, ciy = coords[:, 0].mean(), coords[:, 1].mean()
+    a, b, th = _fit_ellipse(coords, grid)
+    radius = float(np.sqrt(n_cells * grid.res * grid.res / np.pi))
+    if a == 0.0:  # too few cells to fit -> circle
+        a = b = radius
+    return {
+        "coords": coords, "n_cells": n_cells, "wz": wz, "radius": radius,
+        "cx": grid.xmin + (cix + 0.5) * grid.res,
+        "cy": grid.ymin + (ciy + 0.5) * grid.res,
+        "a": a, "b": b, "th": th,
+    }
+
+
 def _components_to_holes(
     hole_cells: np.ndarray, grid: _Grid, R: np.ndarray, min_area: float,
     max_area: float | None, interior: np.ndarray | None = None,
+    merge_overlap: bool = True, merge_factor: float = 1.0,
 ) -> tuple[list[Hole], np.ndarray]:
     """Label connected hole cells and turn each into a :class:`Hole` (local frame).
 
@@ -358,14 +437,17 @@ def _components_to_holes(
     components that pass the filters -- i.e. the mask that corresponds to the
     returned holes (handy to overlay as a faithful preview). When ``interior`` is
     given, a component is kept only if its centroid lies inside it (used to reject
-    holes hugging the cloud boundary).
+    holes hugging the cloud boundary). When ``merge_overlap`` is set, kept
+    components whose fitted ellipses overlap (scaled by ``merge_factor``) are fused
+    into one hole.
     """
     labels, n = ndi.label(hole_cells)
     occ = grid.counts > 0
     meanz = grid.meanz
     cell_area = grid.res * grid.res
-    holes: list[Hole] = []
-    kept_mask = np.zeros_like(hole_cells, dtype=bool)
+
+    # Pass 1: collect components that pass the area + interior filters.
+    comps: list[dict] = []
     for lab in range(1, n + 1):
         cells = labels == lab
         n_cells = int(cells.sum())
@@ -380,28 +462,32 @@ def _components_to_holes(
             if not (0 <= ci < interior.shape[0] and 0 <= cj < interior.shape[1]
                     and interior[ci, cj]):
                 continue
-        kept_mask |= cells
-        wx = grid.xmin + (cix + 0.5) * grid.res
-        wy = grid.ymin + (ciy + 0.5) * grid.res
         # Surrounding surface level: median z of occupied cells bordering the hole.
         border = ndi.binary_dilation(cells) & occ
         zvals = meanz[border]
         zvals = zvals[np.isfinite(zvals)]
         wz = float(np.median(zvals)) if zvals.size else float(np.nanmedian(meanz))
-        local = R.T @ np.array([wx, wy, wz])  # un-rotate back to the cloud frame
-        radius = float(np.sqrt(area / np.pi))
-        semi_major, semi_minor, orientation = _fit_ellipse(coords, grid)
-        if semi_major == 0.0:  # too few cells to fit -> fall back to a circle
-            semi_major = semi_minor = radius
+        comps.append(_component(coords, n_cells, wz, grid))
+
+    if merge_overlap and len(comps) > 1:
+        comps = _merge_components(comps, grid, merge_factor)
+
+    # Pass 2: emit holes.
+    holes: list[Hole] = []
+    kept_mask = np.zeros_like(hole_cells, dtype=bool)
+    for c in comps:
+        coords = c["coords"]
+        kept_mask[coords[:, 0], coords[:, 1]] = True
+        local = R.T @ np.array([c["cx"], c["cy"], c["wz"]])  # un-rotate to cloud frame
         holes.append(Hole(
             id=len(holes),
             centroid=(float(local[0]), float(local[1]), float(local[2])),
-            radius=radius,
-            area=float(area),
-            n_cells=n_cells,
-            semi_major=semi_major,
-            semi_minor=semi_minor,
-            orientation=orientation,
+            radius=c["radius"],
+            area=float(c["n_cells"] * cell_area),
+            n_cells=c["n_cells"],
+            semi_major=c["a"],
+            semi_minor=c["b"],
+            orientation=c["th"],
         ))
     return holes, kept_mask
 
@@ -455,6 +541,8 @@ def detect_skylights(
     relative: float | None = None,
     relative_window: int = DEFAULT_RELATIVE_WINDOW,
     edge_margin: float = DEFAULT_EDGE_MARGIN,
+    merge_overlap: bool = True,
+    merge_factor: float = DEFAULT_MERGE_FACTOR,
     ceiling_jump: float = DEFAULT_CEILING_JUMP,
 ) -> tuple[list[Hole], np.ndarray]:
     """Find skylights in a prebuilt :class:`Occupancy`. Returns ``(holes, mask)``.
@@ -476,7 +564,8 @@ def detect_skylights(
         iters = max(1, int(round(edge_margin / grid.res)))
         interior = ndi.binary_erosion(ndi.binary_fill_holes(occ), iterations=iters)
     holes, kept_mask = _components_to_holes(
-        hole_cells, grid, grid.R, min_area, max_area, interior)
+        hole_cells, grid, grid.R, min_area, max_area, interior,
+        merge_overlap=merge_overlap, merge_factor=merge_factor)
     for i, h in enumerate(holes):  # renumber after area filtering
         h.id = i
     return holes, kept_mask
@@ -494,6 +583,8 @@ def detect_holes(
     relative: float | None = None,
     relative_window: int = DEFAULT_RELATIVE_WINDOW,
     edge_margin: float = DEFAULT_EDGE_MARGIN,
+    merge_overlap: bool = True,
+    merge_factor: float = DEFAULT_MERGE_FACTOR,
     ceiling_jump: float = DEFAULT_CEILING_JUMP,
 ) -> HoleSet:
     """Detect skylight holes in ``input_path`` and return a :class:`HoleSet`.
@@ -506,14 +597,17 @@ def detect_holes(
     ground density that varies across the map. The count image may first be
     Gaussian-smoothed by ``smooth`` cells. ``min_area`` / ``max_area`` filter
     candidates by footprint, and ``edge_margin`` rejects holes within that distance
-    of the cloud boundary (e.g. the ragged tube-ceiling rim). Centroids are
-    returned in the cloud's **local** frame, alongside ``up`` and ``origin``.
+    of the cloud boundary (e.g. the ragged tube-ceiling rim). When ``merge_overlap``
+    is set (default), holes whose fitted ellipses overlap (scaled by ``merge_factor``)
+    are fused. Centroids are returned in the cloud's **local** frame, alongside
+    ``up`` and ``origin``.
     """
     grid = build_occupancy(input_path, mode=mode, up=up, resolution=resolution)
     holes, _ = detect_skylights(
         grid, min_area=min_area, max_area=max_area, min_density=min_density,
         smooth=smooth, relative=relative, relative_window=relative_window,
-        edge_margin=edge_margin, ceiling_jump=ceiling_jump,
+        edge_margin=edge_margin, merge_overlap=merge_overlap,
+        merge_factor=merge_factor, ceiling_jump=ceiling_jump,
     )
     return HoleSet(
         holes=holes,

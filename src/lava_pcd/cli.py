@@ -20,6 +20,7 @@ from lava_pcd.filtering import (
 from lava_pcd.holes import (
     DEFAULT_CEILING_JUMP,
     DEFAULT_EDGE_MARGIN,
+    DEFAULT_MERGE_FACTOR,
     DEFAULT_MIN_AREA,
     DEFAULT_MIN_DENSITY,
     DEFAULT_RELATIVE_WINDOW,
@@ -366,6 +367,14 @@ def holes(
         help="Reject holes within this distance (coord units) of the cloud boundary "
              "-- drops ragged-rim false positives on the tube ceiling.",
     ),
+    merge_overlap: bool = typer.Option(
+        True, "--merge-overlap/--no-merge-overlap",
+        help="Fuse holes whose fitted ellipses overlap into one.",
+    ),
+    merge_factor: float = typer.Option(
+        DEFAULT_MERGE_FACTOR, "--merge-factor", min=0.0,
+        help="Scale on the ellipse radii for the overlap test (>1 merges near holes).",
+    ),
     ceiling_jump: float = typer.Option(
         DEFAULT_CEILING_JUMP, "--ceiling-jump", min=0.0,
         help="[ceiling] ceiling-height deviation flagged as an opening.",
@@ -389,6 +398,7 @@ def holes(
                 grid, min_area=min_area, max_area=max_area,
                 min_density=min_density, smooth=smooth, relative=relative,
                 relative_window=relative_window, edge_margin=edge_margin,
+                merge_overlap=merge_overlap, merge_factor=merge_factor,
                 ceiling_jump=ceiling_jump,
             )
             holeset = HoleSet(holes, grid.origin, grid.up, mode, res, str(input))
@@ -453,6 +463,14 @@ def occupancy(
         DEFAULT_EDGE_MARGIN, "--edge-margin", min=0.0,
         help="[preview] reject holes within this distance of the cloud boundary.",
     ),
+    merge_overlap: bool = typer.Option(
+        True, "--merge-overlap/--no-merge-overlap",
+        help="[preview] fuse holes whose fitted ellipses overlap.",
+    ),
+    merge_factor: float = typer.Option(
+        DEFAULT_MERGE_FACTOR, "--merge-factor", min=0.0,
+        help="[preview] scale on the ellipse radii for the overlap test.",
+    ),
     linear: bool = typer.Option(
         False, "--linear", help="Use a linear colour scale (default is log)."
     ),
@@ -468,7 +486,8 @@ def occupancy(
                 grid, min_area=min_area, max_area=max_area,
                 min_density=min_density if min_density is not None else DEFAULT_MIN_DENSITY,
                 smooth=smooth, relative=relative, relative_window=relative_window,
-                edge_margin=edge_margin,
+                edge_margin=edge_margin, merge_overlap=merge_overlap,
+                merge_factor=merge_factor,
             )
     except (FileNotFoundError, ValueError) as err:
         typer.secho(f"error: {err}", fg=typer.colors.RED, err=True)
@@ -490,29 +509,39 @@ def register(
         ..., "--output", "-o", help="Output transform .json (tube -> aerial)."
     ),
     mode: str = typer.Option(
-        "4dof", "--mode", "-m",
-        help="'4dof' (up-assisted, robust) or '6dof' (Kabsch RANSAC fallback).",
+        "auto", "--mode", "-m",
+        help="'auto' (4dof then 6dof; default), '4dof' (up-assisted) or '6dof' (Kabsch).",
     ),
     tolerance: float = typer.Option(
         DEFAULT_TOLERANCE, "--tolerance", "-t", min=0.0,
         help="Max landmark mismatch (coord units) to count as an inlier.",
+    ),
+    min_inliers: int = typer.Option(
+        3, "--min-inliers", "-n", min=2,
+        help="Min mutually-consistent skylights required (the outlier-rejection lever).",
     ),
 ) -> None:
     """Match two skylight constellations into a rigid transform (tube -> aerial)."""
     try:
         aerial = HoleSet.from_json(aerial_holes)
         tube = HoleSet.from_json(tube_holes)
-        transform = match_constellations(aerial, tube, mode=mode, tolerance=tolerance)
+        transform = match_constellations(
+            aerial, tube, mode=mode, tolerance=tolerance, min_inliers=min_inliers
+        )
         transform.to_json(output)
     except (FileNotFoundError, ValueError) as err:
         typer.secho(f"error: {err}", fg=typer.colors.RED, err=True)
         raise typer.Exit(code=1)
 
     typer.secho(
-        f"matched {len(transform.inliers)} skylight(s), RMS {transform.rms:.3f} "
+        f"matched {transform.n_inliers} skylight(s), RMS {transform.rms:.3f} "
         f"-> {output}", fg=typer.colors.GREEN,
     )
-    typer.echo(f"mode: {transform.mode}")
+    typer.echo(
+        f"mode: {transform.mode}   uniqueness margin: {transform.margin}   "
+        f"shape score: {transform.shape_score:.3f}"
+    )
+    typer.echo(f"matches (tube -> aerial hole id): {transform.inliers}")
     typer.echo("transform (tube-local -> aerial-local):")
     for row in transform.array:
         typer.echo("  " + "  ".join(f"{v: .4f}" for v in row))
