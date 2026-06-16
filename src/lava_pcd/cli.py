@@ -34,7 +34,12 @@ from lava_pcd.holes import (
     show_occupancy,
 )
 from lava_pcd.io.laz_reader import DEFAULT_CHUNK_SIZE
-from lava_pcd.merge import DEFAULT_RIM_RADIUS, apply_transform, merge_clouds
+from lava_pcd.merge import (
+    DEFAULT_CMAP,
+    DEFAULT_RIM_RADIUS,
+    apply_transform,
+    merge_clouds,
+)
 from lava_pcd.register import (
     DEFAULT_TOLERANCE,
     Transform,
@@ -570,9 +575,17 @@ def merge(
     refine: bool = typer.Option(
         False, "--refine", help="ICP-refine on the matched rims before merging."
     ),
+    color: bool = typer.Option(
+        True, "--color/--no-color",
+        help="Keep aerial RGB and elevation-colour the tube (rgb field).",
+    ),
+    cmap: str = typer.Option(
+        DEFAULT_CMAP, "--cmap",
+        help="Matplotlib colormap for the tube's elevation colour.",
+    ),
     source_field: bool = typer.Option(
         False, "--source-field", "-s",
-        help="Add a 'source' channel (0=aerial, 1=tube) to colour by origin.",
+        help="Also add a 'source' channel (0=aerial, 1=tube).",
     ),
     rim_radius: float = typer.Option(
         DEFAULT_RIM_RADIUS, "--rim-radius", min=0.0,
@@ -588,7 +601,8 @@ def merge(
     try:
         tf = Transform.from_json(transform)
         result = merge_clouds(
-            aerial, tube, output, tf, refine=refine, source_field=source_field,
+            aerial, tube, output, tf, refine=refine, color=color,
+            elevation_cmap=cmap, source_field=source_field,
             rim_radius=rim_radius, chunk_size=chunk_size, show_progress=not quiet,
         )
     except (FileNotFoundError, ValueError) as err:

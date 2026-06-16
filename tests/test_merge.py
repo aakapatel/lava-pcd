@@ -40,6 +40,13 @@ def _write_pcd(path: Path, xyz: np.ndarray, origin=(0.0, 0.0, 0.0)) -> None:
             w.write_chunk(xyz)
 
 
+def _write_pcd_rgb(path: Path, xyz: np.ndarray, rgb_packed: np.ndarray) -> None:
+    arr = np.column_stack([xyz.astype(np.float32), rgb_packed.astype(np.float32)])
+    with BinaryPcdWriter(path, max_points=len(arr), fields=("x", "y", "z", "rgb")) as w:
+        if len(arr):
+            w.write_chunk(np.ascontiguousarray(arr, dtype=np.float32))
+
+
 def _read_pcd_xyz(path: Path) -> tuple[dict, np.ndarray]:
     with open(path, "rb") as fh:
         header = {}
@@ -446,10 +453,44 @@ def test_pipeline_holes_register_merge(tmp_path: Path) -> None:
                        show_progress=False)
     assert res.point_count == res.aerial_count + res.tube_count
     header, data = _read_pcd_xyz(out)
-    assert header["FIELDS"] == "x y z source"
+    # colour by default: aerial keeps rgb (grey here, no source rgb), tube by elevation
+    assert header["FIELDS"] == "x y z rgb source"
     assert data.shape[0] == res.point_count
-    # the source channel splits the two clouds
-    assert set(np.unique(data[:, 3])) == {0.0, 1.0}
+    # the source channel (now col 4) splits the two clouds
+    assert set(np.unique(data[:, 4])) == {0.0, 1.0}
+    # tube points (source 1) carry a spread of elevation colours, not one constant
+    tube_rgb = data[data[:, 4] == 1.0][:, 3]
+    assert len(np.unique(tube_rgb)) > 1
+
+
+def test_merge_preserves_aerial_rgb_and_colors_tube(tmp_path: Path) -> None:
+    from lava_pcd.register import Transform
+
+    rng = np.random.default_rng(0)
+    A = rng.uniform(0.0, 20.0, size=(200, 3)); A[:, 2] = 0.0
+    red = np.array([(255 << 16)], dtype=np.uint32).view(np.float32)[0]   # packed (255,0,0)
+    aerial_pcd = tmp_path / "aerial.pcd"
+    _write_pcd_rgb(aerial_pcd, A, np.full(len(A), red, dtype=np.float32))
+
+    B = rng.uniform(0.0, 20.0, size=(200, 3)); B[:, 2] = rng.uniform(-10.0, -2.0, 200)
+    tube_pcd = tmp_path / "tube.pcd"
+    _write_pcd(tube_pcd, B)
+
+    tf = Transform(np.eye(4).tolist(), [], 0.0, "4dof", (0, 0, 0), (0, 0, 0))
+    out = tmp_path / "merged.pcd"
+    res = merge_clouds(aerial_pcd, tube_pcd, out, tf, color=True, show_progress=False)
+
+    header, data = _read_pcd_xyz(out)
+    assert header["FIELDS"] == "x y z rgb"
+    a_n = res.aerial_count
+    aerial_bits = np.ascontiguousarray(data[:a_n, 3]).view(np.uint32)
+    # aerial RGB preserved exactly: pure red
+    assert np.all((aerial_bits >> 16) & 0xFF == 255)
+    assert np.all((aerial_bits >> 8) & 0xFF == 0)
+    assert np.all(aerial_bits & 0xFF == 0)
+    # tube coloured by elevation -> a spread of colours, not constant
+    tube_bits = np.ascontiguousarray(data[a_n:, 3]).view(np.uint32)
+    assert len(np.unique(tube_bits)) > 5
 
 
 def test_merge_rejects_output_equal_input(tmp_path: Path) -> None:

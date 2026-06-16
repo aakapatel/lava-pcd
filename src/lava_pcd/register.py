@@ -430,20 +430,37 @@ def _major_axis_3d(hole, R_to_z: np.ndarray) -> np.ndarray:
     return R_to_z.T @ v
 
 
+def _draw_ellipses(ax, holes, xs, ys, axis_dirs, matched, color, e1, e2) -> None:
+    from matplotlib.patches import Ellipse
+    for i, h in enumerate(holes):
+        ang = np.degrees(np.arctan2(axis_dirs[i] @ e2, axis_dirs[i] @ e1))
+        a = h.semi_major if h.semi_major > 0 else h.radius
+        b = h.semi_minor if h.semi_minor > 0 else h.radius
+        m = i in matched
+        ax.add_patch(Ellipse(
+            (xs[i], ys[i]), 2 * max(a, 0.5), 2 * max(b, 0.5), angle=ang,
+            fill=False, color=color, lw=2.0 if m else 1.0,
+            ls="-" if m else "--", alpha=1.0 if m else 0.4,
+        ))
+        ax.text(xs[i], ys[i], str(h.id), color=color, fontsize=7,
+                ha="center", va="center")
+
+
 def visualize_match(
     aerial: HoleSet, tube: HoleSet, transform: Transform, title: str | None = None
 ) -> None:
-    """Plot the two skylight constellations after alignment, in the aerial up-plane.
+    """Plot the constellations **before and after** registration, side by side.
 
-    The tube holes are transformed into the aerial frame, then both sets are drawn
-    as ellipses looking down the aerial up-axis: **aerial** holes in blue, **tube**
-    holes in orange, **matched** (inlier) holes solid and joined by a green line,
-    outliers faded/dashed. Matched ellipses should sit on top of each other; the
-    leftover singletons are the rejected outliers.
+    Both panels look down the aerial up-axis (same projection, so they're directly
+    comparable). **Left = before**: the tube holes in their raw frame, generally
+    offset/rotated from the aerial ones (long green correspondence lines). **Right
+    = after**: the tube holes transformed into the aerial frame — matched ellipses
+    snap on top of each other (green lines collapse to ~0). In both: **aerial**
+    holes blue, **tube** holes orange, **matched** (inlier) holes solid and joined
+    by green lines, rejected outliers faded/dashed.
     """
     import matplotlib.pyplot as plt
     from matplotlib.lines import Line2D
-    from matplotlib.patches import Ellipse
 
     z = np.array([0.0, 0.0, 1.0])
     e1, e2 = _plane_basis(normalize(np.asarray(aerial.up)))
@@ -453,48 +470,42 @@ def visualize_match(
     Rm = M[:3, :3]
 
     A3 = aerial.centroids()
-    B3 = transform_points(tube.centroids(), M)  # tube into aerial frame
     Ax, Ay = A3 @ e1, A3 @ e2
-    Bx, By = B3 @ e1, B3 @ e2
+    A_axis = [_major_axis_3d(h, Ra) for h in aerial.holes]
     in_aer = {a for _, a in transform.inliers}
     in_tube = {t for t, _ in transform.inliers}
 
-    fig, ax = plt.subplots(figsize=(10, 8))
+    # tube before (raw, tube-local) and after (mapped into the aerial frame)
+    B_before = tube.centroids()
+    B_after = transform_points(B_before, M)
+    axis_before = [_major_axis_3d(h, Rb) for h in tube.holes]
+    axis_after = [Rm @ v for v in axis_before]
 
-    def draw(holes, xs, ys, axis_dirs, matched, color):
-        for i, h in enumerate(holes):
-            ang = np.degrees(np.arctan2(axis_dirs[i] @ e2, axis_dirs[i] @ e1))
-            a = h.semi_major if h.semi_major > 0 else h.radius
-            b = h.semi_minor if h.semi_minor > 0 else h.radius
-            m = i in matched
-            ax.add_patch(Ellipse(
-                (xs[i], ys[i]), 2 * max(a, 0.5), 2 * max(b, 0.5), angle=ang,
-                fill=False, color=color, lw=2.0 if m else 1.0,
-                ls="-" if m else "--", alpha=1.0 if m else 0.4,
-            ))
-            ax.text(xs[i], ys[i], str(h.id), color=color, fontsize=7,
-                    ha="center", va="center")
+    fig, axes = plt.subplots(1, 2, figsize=(16, 8))
 
-    draw(aerial.holes, Ax, Ay, [_major_axis_3d(h, Ra) for h in aerial.holes],
-         in_aer, "tab:blue")
-    draw(tube.holes, Bx, By, [Rm @ _major_axis_3d(h, Rb) for h in tube.holes],
-         in_tube, "tab:orange")
-    for t, a in transform.inliers:
-        ax.plot([Ax[a], Bx[t]], [Ay[a], By[t]], "-", color="green", lw=1.2, zorder=1)
+    def panel(ax, B3, B_axis, subtitle):
+        Bx, By = B3 @ e1, B3 @ e2
+        _draw_ellipses(ax, aerial.holes, Ax, Ay, A_axis, in_aer, "tab:blue", e1, e2)
+        _draw_ellipses(ax, tube.holes, Bx, By, B_axis, in_tube, "tab:orange", e1, e2)
+        for t, a in transform.inliers:
+            ax.plot([Ax[a], Bx[t]], [Ay[a], By[t]], "-", color="green", lw=1.0, zorder=1)
+        allx = np.concatenate([Ax, Bx]); ally = np.concatenate([Ay, By])
+        pad = 10.0
+        ax.set_xlim(allx.min() - pad, allx.max() + pad)
+        ax.set_ylim(ally.min() - pad, ally.max() + pad)
+        ax.set_aspect("equal")
+        ax.set_title(subtitle)
+        ax.set_xlabel("aerial up-plane a"); ax.set_ylabel("aerial up-plane b")
 
-    allx = np.concatenate([Ax, Bx]); ally = np.concatenate([Ay, By])
-    pad = 10.0
-    ax.set_xlim(allx.min() - pad, allx.max() + pad)
-    ax.set_ylim(ally.min() - pad, ally.max() + pad)
-    ax.set_aspect("equal")
-    ax.set_xlabel("aerial up-plane a"); ax.set_ylabel("aerial up-plane b")
-    ax.set_title(title or (
-        f"register: {transform.n_inliers} matches   RMS {transform.rms:.2f}   "
-        f"margin {transform.margin}   mode {transform.mode}"
+    panel(axes[0], B_before, axis_before, "before registration")
+    panel(axes[1], B_after, axis_after, f"after registration  (RMS {transform.rms:.2f})")
+    fig.suptitle(title or (
+        f"register: {transform.n_inliers} matches   margin {transform.margin}   "
+        f"mode {transform.mode}"
     ))
-    ax.legend(handles=[
+    fig.legend(handles=[
         Line2D([0], [0], color="tab:blue", lw=2, label="aerial holes"),
-        Line2D([0], [0], color="tab:orange", lw=2, label="tube holes (aligned)"),
+        Line2D([0], [0], color="tab:orange", lw=2, label="tube holes"),
         Line2D([0], [0], color="green", lw=1.2, label="matches"),
-    ], loc="best")
+    ], loc="lower center", ncol=3)
     plt.show()

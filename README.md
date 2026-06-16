@@ -277,26 +277,33 @@ more holes the best solution explains than the next distinct one — `0` means a
 the ellipse **shape score**, and warnings. Lower `--min-inliers` to 2 only if you trust a
 2-hole match.
 
-`--show` plots the result looking down the aerial up-axis: the tube holes are transformed
-into the aerial frame and both sets are drawn as ellipses — **aerial** holes blue, **tube**
-holes orange, **matched** holes solid and joined by a green line, rejected outliers
-faded/dashed. Matched ellipses should sit right on top of each other; the leftover
-singletons are the outliers the consensus threw out.
+`--show` plots the constellations **before and after** registration, side by side, looking
+down the aerial up-axis: *left* is the raw, unaligned state (tube holes offset/rotated from
+the aerial, long green correspondence lines); *right* is after the transform (tube mapped
+into the aerial frame, matched ellipses snapping on top of each other). In both, **aerial**
+holes are blue, **tube** holes orange, **matched** holes solid and joined by green lines,
+rejected outliers faded/dashed — so the leftover singletons are the outliers the consensus
+threw out.
 
 ### `merge` — apply and combine
 ```
 #   -t / --transform   transform .json from `register` (required)
 #        --refine       ICP-refine on the matched rims before merging
 #        --rim-radius   [--refine] radius around each skylight used for ICP
-#   -s / --source-field add a 'source' channel (0=aerial, 1=tube) to colour by origin
+#        --color / --no-color  keep aerial RGB + elevation-colour the tube (default on)
+#        --cmap         matplotlib colormap for the tube's elevation colour (default viridis)
+#   -s / --source-field  also add a 'source' channel (0=aerial, 1=tube)
 #   -c / --chunk-size / -q / --quiet  as elsewhere
 ```
 The tube is transformed into the **aerial** frame and the two clouds are written as a
-single `.pcd`. They usually carry different fields (aerial RGB vs tube intensity), so
-the merged cloud keeps `x y z` plus, with `--source-field`, a `source` channel to
-colour by origin. `--refine` runs a small point-to-point ICP **only on the matched
-skylight rims** (global overlap is too small for global ICP). There is also a thin
-`lava-pcd transform IN OUT transform.json` to apply a transform to one cloud.
+single `.pcd`. By default (`--color`) the merged cloud has a packed `rgb` field: the
+**aerial** points keep their own RGB (grey if the aerial cloud has none), and the **tube**
+points are shaded by **elevation** (output-frame Z) with `--cmap` — so the photographic
+surface and the depth-coloured tube read distinctly in `pcl_viewer`. `--no-color` writes a
+plain `x y z` cloud; `--source-field` adds a `0/1` origin channel either way. `--refine`
+runs a small point-to-point ICP **only on the matched skylight rims** (global overlap is
+too small for global ICP). There is also a thin `lava-pcd transform IN OUT transform.json`
+to apply a transform to one cloud.
 
 From Python:
 
@@ -320,7 +327,7 @@ leave rotation about that line weakly constrained (mitigated by the up-axis and
 
 ```bash
 pcl_viewer output.pcd      # colours by the rgb/intensity field automatically
-pcl_viewer merged.pcd      # press 2 to colour merged clouds by the 'source' field
+pcl_viewer merged.pcd      # aerial keeps its RGB, the tube is elevation-coloured (rgb field)
 ```
 
 ## Notes

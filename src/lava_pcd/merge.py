@@ -31,6 +31,7 @@ from lava_pcd.register import Transform
 
 DEFAULT_RIM_RADIUS = 15.0   # gather points within this of each skylight for ICP
 DEFAULT_ICP_ITERS = 30
+DEFAULT_CMAP = "viridis"    # elevation colormap for the tube in a merged cloud
 
 
 @dataclass
@@ -161,6 +162,8 @@ def merge_clouds(
     output_path: str | Path,
     transform: Transform,
     refine: bool = False,
+    color: bool = True,
+    elevation_cmap: str = DEFAULT_CMAP,
     source_field: bool = False,
     rim_radius: float = DEFAULT_RIM_RADIUS,
     chunk_size: int = 5_000_000,
@@ -169,10 +172,13 @@ def merge_clouds(
     """Transform the tube into the aerial frame and write a single merged ``.pcd``.
 
     The output is in **aerial-local** coordinates (the aerial origin), since the
-    transform maps tube-local -> aerial-local. The two clouds usually carry
-    different fields (aerial RGB vs tube intensity), so the merged cloud keeps
-    only ``x y z`` plus, when ``source_field`` is set, a ``source`` channel
-    (0 = aerial, 1 = tube) to colour by origin in a viewer.
+    transform maps tube-local -> aerial-local. With ``color`` (default) the merged
+    cloud carries a packed ``rgb`` field: the **aerial** points keep their own RGB
+    (a grey fallback if the aerial cloud has none), while the **tube** points are
+    coloured by **elevation** (output-frame Z) with the ``elevation_cmap`` colormap
+    -- so the photographic aerial surface and the depth-shaded tube read distinctly
+    in a viewer. Set ``color=False`` for a plain ``x y z`` cloud. ``source_field``
+    adds a ``source`` channel (0 = aerial, 1 = tube) either way.
     """
     aerial_path, tube_path, output_path = (
         Path(aerial_path), Path(tube_path), Path(output_path)
@@ -189,27 +195,53 @@ def merge_clouds(
         transform = icp_refine(aerial_path, tube_path, transform, radius=rim_radius)
     M = transform.array
 
-    fields = ("x", "y", "z", "source") if source_field else ("x", "y", "z")
+    fields = ("x", "y", "z")
+    if color:
+        fields += ("rgb",)
+    if source_field:
+        fields += ("source",)
 
     with BinaryPcdReader(aerial_path) as ra, BinaryPcdReader(tube_path) as rb:
         origin = ra.origin
+        a_fields = ra.fields
         a_total, b_total = ra.point_count, rb.point_count
     max_points = a_total + b_total
+    a_rgb_idx = a_fields.index("rgb") if "rgb" in a_fields else None
+
+    # Elevation colour needs the tube's output-frame Z range up front (one pass).
+    cmap = _load_cmap(elevation_cmap) if color else None
+    zlo, zhi = 0.0, 1.0
+    if color:
+        zmin, zmax = np.inf, -np.inf
+        with BinaryPcdReader(tube_path) as rb:
+            for chunk in rb.chunks(chunk_size):
+                zt = transform_points(chunk[:, :3].astype(np.float64), M)[:, 2]
+                if len(zt):
+                    zmin = min(zmin, float(zt.min()))
+                    zmax = max(zmax, float(zt.max()))
+        if np.isfinite(zmin):
+            zlo, zhi = zmin, zmax
 
     bar = tqdm(total=max_points, unit="pts", unit_scale=True, desc="merge",
                disable=not show_progress)
     with BinaryPcdWriter(output_path, max_points=max_points, fields=fields,
                          origin=origin) as writer, bar:
-        # Aerial cloud: identity (already in the target frame), source 0.
+        # Aerial cloud: identity (already in the target frame), keep its RGB.
         with BinaryPcdReader(aerial_path) as ra:
             for chunk in ra.chunks(chunk_size):
-                writer.write_chunk(_emit(chunk[:, :3].astype(np.float64), 0, source_field))
+                xyz = chunk[:, :3].astype(np.float64)
+                rgb = None
+                if color:
+                    rgb = (chunk[:, a_rgb_idx] if a_rgb_idx is not None
+                           else _const_rgb(len(chunk)))
+                writer.write_chunk(_assemble(xyz, rgb, 0 if source_field else None))
                 bar.update(len(chunk))
-        # Tube cloud: transform into the aerial frame, source 1.
+        # Tube cloud: transform into the aerial frame, colour by elevation.
         with BinaryPcdReader(tube_path) as rb:
             for chunk in rb.chunks(chunk_size):
                 xyz = transform_points(chunk[:, :3].astype(np.float64), M)
-                writer.write_chunk(_emit(xyz, 1, source_field))
+                rgb = _elevation_rgb(xyz[:, 2], zlo, zhi, cmap) if color else None
+                writer.write_chunk(_assemble(xyz, rgb, 1 if source_field else None))
                 bar.update(len(chunk))
         written = writer._written
 
@@ -225,9 +257,43 @@ def merge_clouds(
     )
 
 
-def _emit(xyz: np.ndarray, source: int, source_field: bool) -> np.ndarray:
-    """Build the PCD-layout chunk: xyz (+ a constant source column)."""
-    if source_field:
-        col = np.full((len(xyz), 1), float(source), dtype=np.float64)
-        xyz = np.hstack([xyz, col])
-    return np.ascontiguousarray(xyz, dtype=np.float32)
+def _assemble(xyz: np.ndarray, rgb: np.ndarray | None, source: int | None) -> np.ndarray:
+    """Build the PCD-layout chunk: xyz (+ packed rgb) (+ a constant source column)."""
+    cols = [np.ascontiguousarray(xyz, dtype=np.float32)]
+    if rgb is not None:
+        cols.append(np.ascontiguousarray(rgb, dtype=np.float32).reshape(-1, 1))
+    if source is not None:
+        cols.append(np.full((len(xyz), 1), float(source), dtype=np.float32))
+    return np.ascontiguousarray(np.hstack(cols), dtype=np.float32)
+
+
+def _pack_rgb(r: np.ndarray, g: np.ndarray, b: np.ndarray) -> np.ndarray:
+    """Pack 0..255 r/g/b arrays into the PCL packed-``rgb`` float32 (0x00RRGGBB)."""
+    r = np.clip(r, 0, 255).astype(np.uint32)
+    g = np.clip(g, 0, 255).astype(np.uint32)
+    b = np.clip(b, 0, 255).astype(np.uint32)
+    packed = (r << 16) | (g << 8) | b
+    return np.ascontiguousarray(packed).view(np.float32)
+
+
+def _const_rgb(n: int, rgb: tuple[int, int, int] = (200, 200, 200)) -> np.ndarray:
+    """A constant packed-rgb column of length ``n`` (grey by default)."""
+    val = (rgb[0] << 16) | (rgb[1] << 8) | rgb[2]
+    return np.full(n, val, dtype=np.uint32).view(np.float32)
+
+
+def _elevation_rgb(z: np.ndarray, zlo: float, zhi: float, cmap) -> np.ndarray:
+    """Packed-rgb column colouring ``z`` from ``zlo``..``zhi`` through ``cmap``."""
+    rng = zhi - zlo
+    t = np.clip((z - zlo) / rng, 0.0, 1.0) if rng > 1e-9 else np.zeros_like(z)
+    cols = np.asarray(cmap(t))[:, :3] * 255.0
+    return _pack_rgb(cols[:, 0], cols[:, 1], cols[:, 2])
+
+
+def _load_cmap(name: str):
+    """Look up a matplotlib colormap by name (lazy import)."""
+    import matplotlib
+    try:
+        return matplotlib.colormaps[name]
+    except KeyError as err:
+        raise ValueError(f"unknown colormap {name!r}") from err
