@@ -156,10 +156,99 @@ res = filter_pcd("input.pcd", "out.pcd", method="statistical", k=20, std_ratio=2
 print(f"removed {res.removed} of {res.source_count} points")
 ```
 
+## Merge an aerial map with a lava-tube map (via skylights)
+
+The headline feature: merge two clouds that barely overlap — an **aerial** surface
+map and an underground **lava-tube** map. Their only shared geometry is the set of
+**skylights** (collapse holes), which appear as voids in the aerial ground and as
+holes in the tube ceiling. The skylight openings coincide in the world, so they form
+a sparse landmark *constellation* common to both clouds; matching the two
+constellations recovers the rigid transform even with almost no other overlap.
+
+It is a **staged, inspectable** pipeline — detection is the fragile part, so you
+confirm the landmarks before registering:
+
+```bash
+# 1. detect skylights in each cloud (saved as JSON landmark sets)
+lava-pcd holes aerial.pcd aerial_holes.json --mode aerial --show
+lava-pcd holes tube.pcd   tube_holes.json   --mode ceiling --up 0,0.2,0.98 --show
+
+# 2. match the two constellations -> rigid transform (tube -> aerial)
+lava-pcd register aerial_holes.json tube_holes.json -o transform.json
+
+# 3. apply + write the merged cloud (optionally ICP-refined on the rims)
+lava-pcd merge aerial.pcd tube.pcd merged.pcd -t transform.json --refine --source-field
+```
+
+### `holes` — detect (or place) skylights
+```
+#   -m / --mode          aerial (top-down voids) | ceiling (tube roof, along --up)
+#        --up X,Y,Z       up-axis for ceiling/manual mode (estimated if omitted)
+#   -r / --res            grid cell size in coordinate units (default 1.0)
+#        --min-area       ignore voids smaller than this (coord units squared)
+#        --max-area       ignore voids larger than this (optional)
+#        --ceiling-jump   [ceiling] roof-height deviation flagged as an opening
+#        --show           review/toggle detections interactively before saving
+#        --manual         place skylights by hand (click each centre) — the fallback
+```
+`aerial` finds **enclosed empty regions** of a top-down occupancy grid (the laser
+passes through a hole and gives no return). `ceiling` first rotates the tube so the
+`--up` axis points up, then flags enclosed cells where the ceiling is missing or
+jumps away from its neighbours. The tube is in an arbitrary SLAM frame, so give a
+known `--up` when you have one; otherwise it is estimated (approximate). `--show`
+lets you drop false positives; `--manual` lets you click skylights directly when
+automatic detection struggles.
+
+### `register` — match constellations
+```
+#   -o / --output     output transform .json (required)
+#   -m / --mode       4dof (up-assisted, robust; default) | 6dof (Kabsch RANSAC)
+#   -t / --tolerance  max landmark mismatch (coord units) to count as an inlier
+```
+`4dof` uses the up-axis from each hole set to reduce the match to yaw + translation —
+solvable from **2 holes** and not degenerate for a straight (collinear) tube. `6dof`
+is the fallback when no up-axis is trustworthy; it needs **≥3 non-collinear** matches.
+The command prints the transform, the residual RMS, and warnings (too few / collinear
+landmarks).
+
+### `merge` — apply and combine
+```
+#   -t / --transform   transform .json from `register` (required)
+#        --refine       ICP-refine on the matched rims before merging
+#        --rim-radius   [--refine] radius around each skylight used for ICP
+#   -s / --source-field add a 'source' channel (0=aerial, 1=tube) to colour by origin
+#   -c / --chunk-size / -q / --quiet  as elsewhere
+```
+The tube is transformed into the **aerial** frame and the two clouds are written as a
+single `.pcd`. They usually carry different fields (aerial RGB vs tube intensity), so
+the merged cloud keeps `x y z` plus, with `--source-field`, a `source` channel to
+colour by origin. `--refine` runs a small point-to-point ICP **only on the matched
+skylight rims** (global overlap is too small for global ICP). There is also a thin
+`lava-pcd transform IN OUT transform.json` to apply a transform to one cloud.
+
+From Python:
+
+```python
+from lava_pcd import detect_holes, match_constellations, merge_clouds
+
+aerial = detect_holes("aerial.pcd", mode="aerial")
+tube = detect_holes("tube.pcd", mode="ceiling", up=(0, 0.2, 0.98))
+tf = match_constellations(aerial, tube, mode="4dof")   # tube-local -> aerial-local
+print(f"matched {len(tf.inliers)} skylights, RMS {tf.rms:.3f}")
+merge_clouds("aerial.pcd", "tube.pcd", "merged.pcd", tf, refine=True, source_field=True)
+```
+
+**Caveats** (registration is hard when overlap is tiny): you need **≥2** matched
+skylights for `4dof` (**≥3 non-collinear** for `6dof`); nearly collinear skylights
+leave rotation about that line weakly constrained (mitigated by the up-axis and
+`--refine`); and the tube up-axis is only estimated in an arbitrary frame, so prefer
+`--up` or the `--manual` picker when results look off.
+
 ## Viewing
 
 ```bash
 pcl_viewer output.pcd      # colours by the rgb/intensity field automatically
+pcl_viewer merged.pcd      # press 2 to colour merged clouds by the 'source' field
 ```
 
 ## Notes

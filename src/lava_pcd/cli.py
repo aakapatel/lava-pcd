@@ -17,7 +17,18 @@ from lava_pcd.filtering import (
     DEFAULT_STD_RATIO,
     filter_pcd,
 )
+from lava_pcd.holes import (
+    DEFAULT_CEILING_JUMP,
+    DEFAULT_MIN_AREA,
+    DEFAULT_RESOLUTION,
+    HoleSet,
+    detect_holes,
+    pick_holes,
+    review_holes,
+)
 from lava_pcd.io.laz_reader import DEFAULT_CHUNK_SIZE
+from lava_pcd.merge import DEFAULT_RIM_RADIUS, apply_transform, merge_clouds
+from lava_pcd.register import DEFAULT_TOLERANCE, Transform, match_constellations
 
 app = typer.Typer(
     help="Process large point cloud files (convert, downsample, voxelize, crop, merge).",
@@ -289,6 +300,191 @@ def filter_outliers(
     )
     ox, oy, oz = result.origin
     typer.echo(f"local origin (global = local + origin): {ox} {oy} {oz}")
+
+
+def _parse_up(up: str | None) -> tuple[float, float, float] | None:
+    if up is None:
+        return None
+    try:
+        parts = [float(p) for p in up.replace(" ", "").split(",")]
+    except ValueError:
+        parts = []
+    if len(parts) != 3:
+        raise typer.BadParameter(f"--up must be 'x,y,z', got {up!r}")
+    return (parts[0], parts[1], parts[2])
+
+
+@app.command()
+def holes(
+    input: Path = typer.Argument(..., help="Input .pcd file."),
+    output: Path = typer.Argument(..., help="Output skylight .json file."),
+    mode: str = typer.Option(
+        "aerial", "--mode", "-m",
+        help="'aerial' (top-down voids) or 'ceiling' (tube ceiling along --up).",
+    ),
+    up: str = typer.Option(
+        None, "--up", metavar="X,Y,Z",
+        help="Up-axis for 'ceiling'/'manual' (estimated if omitted).",
+    ),
+    res: float = typer.Option(
+        DEFAULT_RESOLUTION, "--res", "-r", min=1e-6,
+        help="Grid cell size in coordinate units.",
+    ),
+    min_area: float = typer.Option(
+        DEFAULT_MIN_AREA, "--min-area", min=0.0,
+        help="Ignore voids smaller than this area (coord units squared).",
+    ),
+    max_area: float = typer.Option(
+        None, "--max-area", help="Ignore voids larger than this area (optional)."
+    ),
+    ceiling_jump: float = typer.Option(
+        DEFAULT_CEILING_JUMP, "--ceiling-jump", min=0.0,
+        help="[ceiling] ceiling-height deviation flagged as an opening.",
+    ),
+    show: bool = typer.Option(
+        False, "--show/--no-show", help="Review/edit detections interactively."
+    ),
+    manual: bool = typer.Option(
+        False, "--manual", help="Place skylights by hand instead of detecting."
+    ),
+) -> None:
+    """Detect (or place) skylight holes in a .pcd and save them as JSON."""
+    try:
+        up_vec = _parse_up(up)
+        if manual:
+            holeset = pick_holes(input, up=up_vec, resolution=res)
+        else:
+            holeset = detect_holes(
+                input, mode=mode, up=up_vec, resolution=res,
+                min_area=min_area, max_area=max_area, ceiling_jump=ceiling_jump,
+            )
+            if show:
+                holeset = review_holes(holeset, input)
+        holeset.to_json(output)
+    except (FileNotFoundError, ValueError, RuntimeError) as err:
+        typer.secho(f"error: {err}", fg=typer.colors.RED, err=True)
+        raise typer.Exit(code=1)
+
+    ux, uy, uz = holeset.up
+    typer.secho(
+        f"found {len(holeset.holes)} skylight(s) -> {output}", fg=typer.colors.GREEN
+    )
+    typer.echo(f"mode: {holeset.mode}   up: {ux:.3f} {uy:.3f} {uz:.3f}")
+    for h in holeset.holes:
+        cx, cy, cz = h.centroid
+        typer.echo(
+            f"  #{h.id}: centre ({cx:.2f}, {cy:.2f}, {cz:.2f})  "
+            f"r~{h.radius:.2f}  area {h.area:.1f}"
+        )
+
+
+@app.command()
+def register(
+    aerial_holes: Path = typer.Argument(..., help="Aerial skylight .json."),
+    tube_holes: Path = typer.Argument(..., help="Lava-tube skylight .json."),
+    output: Path = typer.Option(
+        ..., "--output", "-o", help="Output transform .json (tube -> aerial)."
+    ),
+    mode: str = typer.Option(
+        "4dof", "--mode", "-m",
+        help="'4dof' (up-assisted, robust) or '6dof' (Kabsch RANSAC fallback).",
+    ),
+    tolerance: float = typer.Option(
+        DEFAULT_TOLERANCE, "--tolerance", "-t", min=0.0,
+        help="Max landmark mismatch (coord units) to count as an inlier.",
+    ),
+) -> None:
+    """Match two skylight constellations into a rigid transform (tube -> aerial)."""
+    try:
+        aerial = HoleSet.from_json(aerial_holes)
+        tube = HoleSet.from_json(tube_holes)
+        transform = match_constellations(aerial, tube, mode=mode, tolerance=tolerance)
+        transform.to_json(output)
+    except (FileNotFoundError, ValueError) as err:
+        typer.secho(f"error: {err}", fg=typer.colors.RED, err=True)
+        raise typer.Exit(code=1)
+
+    typer.secho(
+        f"matched {len(transform.inliers)} skylight(s), RMS {transform.rms:.3f} "
+        f"-> {output}", fg=typer.colors.GREEN,
+    )
+    typer.echo(f"mode: {transform.mode}")
+    typer.echo("transform (tube-local -> aerial-local):")
+    for row in transform.array:
+        typer.echo("  " + "  ".join(f"{v: .4f}" for v in row))
+    for w in transform.warnings:
+        typer.secho(f"warning: {w}", fg=typer.colors.YELLOW)
+
+
+@app.command()
+def merge(
+    aerial: Path = typer.Argument(..., help="Aerial .pcd (target frame)."),
+    tube: Path = typer.Argument(..., help="Lava-tube .pcd (to be transformed)."),
+    output: Path = typer.Argument(..., help="Output merged .pcd."),
+    transform: Path = typer.Option(
+        ..., "--transform", "-t", help="Transform .json from `register`."
+    ),
+    refine: bool = typer.Option(
+        False, "--refine", help="ICP-refine on the matched rims before merging."
+    ),
+    source_field: bool = typer.Option(
+        False, "--source-field", "-s",
+        help="Add a 'source' channel (0=aerial, 1=tube) to colour by origin.",
+    ),
+    rim_radius: float = typer.Option(
+        DEFAULT_RIM_RADIUS, "--rim-radius", min=0.0,
+        help="[--refine] radius around each skylight used for ICP.",
+    ),
+    chunk_size: int = typer.Option(
+        DEFAULT_CHUNK_SIZE, "--chunk-size", "-c", min=1,
+        help="Points read per chunk (lower = less memory).",
+    ),
+    quiet: bool = typer.Option(False, "--quiet", "-q", help="Suppress the progress bar."),
+) -> None:
+    """Apply a transform to the tube cloud and write a merged .pcd."""
+    try:
+        tf = Transform.from_json(transform)
+        result = merge_clouds(
+            aerial, tube, output, tf, refine=refine, source_field=source_field,
+            rim_radius=rim_radius, chunk_size=chunk_size, show_progress=not quiet,
+        )
+    except (FileNotFoundError, ValueError) as err:
+        typer.secho(f"error: {err}", fg=typer.colors.RED, err=True)
+        raise typer.Exit(code=1)
+
+    typer.secho(
+        f"wrote {result.point_count:,} points -> {result.output_path}",
+        fg=typer.colors.GREEN,
+    )
+    typer.echo(f"fields: {' '.join(result.fields)}")
+    typer.echo(
+        f"aerial {result.aerial_count:,} + tube {result.tube_count:,} points"
+        + (f"   (ICP-refined, rim RMS {result.rms:.3f})" if result.refined else "")
+    )
+    ox, oy, oz = result.origin
+    typer.echo(f"local origin (global = local + origin): {ox} {oy} {oz}")
+
+
+@app.command(name="transform")
+def transform_cmd(
+    input: Path = typer.Argument(..., help="Input .pcd file."),
+    output: Path = typer.Argument(..., help="Output (transformed) .pcd file."),
+    transform_json: Path = typer.Argument(..., help="Transform .json from `register`."),
+    chunk_size: int = typer.Option(
+        DEFAULT_CHUNK_SIZE, "--chunk-size", "-c", min=1,
+        help="Points read per chunk (lower = less memory).",
+    ),
+    quiet: bool = typer.Option(False, "--quiet", "-q", help="Suppress the progress bar."),
+) -> None:
+    """Apply a registration transform to a single .pcd (preserves fields)."""
+    try:
+        tf = Transform.from_json(transform_json)
+        apply_transform(input, output, tf.array, chunk_size=chunk_size,
+                        show_progress=not quiet)
+    except (FileNotFoundError, ValueError) as err:
+        typer.secho(f"error: {err}", fg=typer.colors.RED, err=True)
+        raise typer.Exit(code=1)
+    typer.secho(f"wrote -> {output}", fg=typer.colors.GREEN)
 
 
 if __name__ == "__main__":
