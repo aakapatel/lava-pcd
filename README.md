@@ -120,6 +120,42 @@ res = crop_pcd("input.pcd", "out.pcd", bounds=rect)  # or pass explicit bounds
 print(f"kept {res.point_count} of {res.source_count} points")
 ```
 
+## Filter outliers
+
+Remove stray/noise points from a `.pcd` with one of two methods:
+
+```bash
+# statistical: drop points whose mean distance to their k nearest neighbours
+# is an outlier (mean + std_ratio*std over the cloud). Defaults k=20, std=2.0.
+lava-pcd filter input.pcd output.pcd -m statistical -k 20 -s 2.0
+
+# radius: drop points with fewer than --min-neighbors points (incl. self)
+# within --radius (coordinate units).
+lava-pcd filter input.pcd output.pcd -m radius -r 0.5 -n 5
+```
+
+```
+# options:
+#   -m / --method         radius | statistical (default statistical)
+#   -r / --radius         [radius] neighbourhood radius in coord units
+#   -n / --min-neighbors  [radius] min points (incl. self) within radius to keep
+#   -k / --neighbors      [statistical] number of nearest neighbours
+#   -s / --std-ratio      [statistical] keep within mean + std_ratio*std
+#   -q / --quiet          suppress the progress bar
+```
+
+These match the usual PCL / Open3D semantics. Both build a KD-tree over the XYZ
+of the **whole** cloud, so the cloud is loaded into memory (neighbour queries
+can't be streamed) — filter large clouds *after* cropping/downsampling. All
+fields and the local origin are preserved on the survivors.
+
+```python
+from lava_pcd import filter_pcd
+
+res = filter_pcd("input.pcd", "out.pcd", method="statistical", k=20, std_ratio=2.0)
+print(f"removed {res.removed} of {res.source_count} points")
+```
+
 ## Viewing
 
 ```bash

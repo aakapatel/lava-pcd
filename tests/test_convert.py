@@ -10,6 +10,7 @@ import pytest
 
 from lava_pcd.convert import downsample_pcd, laz_to_pcd
 from lava_pcd.crop import crop_pcd
+from lava_pcd.filtering import filter_pcd
 from lava_pcd.io.laz_reader import LazChunkReader, in_bounds_mask
 
 
@@ -298,6 +299,73 @@ def test_crop_pcd_rejects_same_file(tmp_path: Path) -> None:
     laz_to_pcd(las_path, pcd_path, show_progress=False)
     with pytest.raises(ValueError):
         crop_pcd(pcd_path, pcd_path, bounds=(0, 1, 0, 1), show_progress=False)
+
+
+def _grid_with_outlier(tmp_path: Path) -> tuple[Path, int]:
+    """A dense 8x8x8 unit grid plus one far-away outlier point."""
+    g = np.arange(8, dtype=float)
+    xx, yy, zz = np.meshgrid(g, g, g, indexing="ij")
+    grid = np.column_stack([xx.ravel(), yy.ravel(), zz.ravel()])
+    outlier = np.array([[100.0, 100.0, 100.0]])
+    xyz = np.vstack([grid, outlier])
+    las_path = tmp_path / "g.las"
+    pcd_path = tmp_path / "g.pcd"
+    _make_las(las_path, xyz, np.zeros(len(xyz), dtype=np.uint16))
+    laz_to_pcd(las_path, pcd_path, show_progress=False)
+    return pcd_path, len(xyz)
+
+
+def test_radius_filter_removes_outlier(tmp_path: Path) -> None:
+    pcd_path, n = _grid_with_outlier(tmp_path)
+    out = tmp_path / "g_radius.pcd"
+    # Grid spacing is 1.0; the lone outlier has no neighbours within 1.5.
+    res = filter_pcd(pcd_path, out, method="radius", radius=1.5,
+                     min_neighbors=2, show_progress=False)
+    assert res.source_count == n
+    assert res.removed == 1
+    assert res.point_count == n - 1
+    _, data = _read_pcd(out)
+    assert not (data[:, 0] > 50).any()  # the (100,100,100) point is gone
+
+
+def test_statistical_filter_removes_outlier(tmp_path: Path) -> None:
+    pcd_path, n = _grid_with_outlier(tmp_path)
+    out = tmp_path / "g_stat.pcd"
+    res = filter_pcd(pcd_path, out, method="statistical", k=8,
+                     std_ratio=2.0, show_progress=False)
+    assert res.source_count == n
+    assert res.removed >= 1
+    assert res.params == {"k": 8, "std_ratio": 2.0}
+    _, data = _read_pcd(out)
+    assert not (data[:, 0] > 50).any()
+
+
+def test_filter_preserves_rgb_and_origin(tmp_path: Path) -> None:
+    rng = np.random.default_rng(11)
+    offsets = (500000.0, 7000000.0, 0.0)
+    g = np.arange(6, dtype=float)
+    xx, yy, zz = np.meshgrid(g, g, g, indexing="ij")
+    xyz = np.array(offsets) + np.column_stack([xx.ravel(), yy.ravel(), zz.ravel()])
+    rgb16 = rng.integers(0, 256, size=(len(xyz), 3), dtype=np.uint16) * 257
+    las_path = tmp_path / "c.las"
+    pcd_path = tmp_path / "c.pcd"
+    out = tmp_path / "c_f.pcd"
+    _make_las(las_path, xyz, np.zeros(len(xyz), dtype=np.uint16),
+              rgb=rgb16, offsets=offsets)
+    conv = laz_to_pcd(las_path, pcd_path, show_progress=False)
+    res = filter_pcd(pcd_path, out, method="statistical", show_progress=False)
+    assert res.fields == ("x", "y", "z", "rgb")
+    assert res.origin == conv.origin
+    header, _ = _read_pcd(out)
+    assert header["FIELDS"] == "x y z rgb"
+
+
+def test_filter_bad_method_and_same_file(tmp_path: Path) -> None:
+    pcd_path, _ = _grid_with_outlier(tmp_path)
+    with pytest.raises(ValueError):
+        filter_pcd(pcd_path, tmp_path / "o.pcd", method="nope", show_progress=False)
+    with pytest.raises(ValueError):
+        filter_pcd(pcd_path, pcd_path, method="radius", show_progress=False)
 
 
 def test_missing_input(tmp_path: Path) -> None:

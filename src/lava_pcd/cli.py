@@ -10,6 +10,13 @@ import typer
 from lava_pcd import __version__
 from lava_pcd.convert import downsample_pcd, laz_to_pcd
 from lava_pcd.crop import DEFAULT_MAX_DISPLAY, crop_pcd, select_rectangle
+from lava_pcd.filtering import (
+    DEFAULT_K,
+    DEFAULT_MIN_NEIGHBORS,
+    DEFAULT_RADIUS,
+    DEFAULT_STD_RATIO,
+    filter_pcd,
+)
 from lava_pcd.io.laz_reader import DEFAULT_CHUNK_SIZE
 
 app = typer.Typer(
@@ -226,6 +233,59 @@ def crop(
     )
     typer.echo(
         f"kept {result.point_count:,} of {result.source_count:,} points ({pct:.1f}%)"
+    )
+    ox, oy, oz = result.origin
+    typer.echo(f"local origin (global = local + origin): {ox} {oy} {oz}")
+
+
+@app.command(name="filter")
+def filter_outliers(
+    input: Path = typer.Argument(..., help="Input .pcd file."),
+    output: Path = typer.Argument(..., help="Output (filtered) .pcd file."),
+    method: str = typer.Option(
+        "statistical", "--method", "-m",
+        help="Outlier method: 'radius' or 'statistical'.",
+    ),
+    radius: float = typer.Option(
+        DEFAULT_RADIUS, "--radius", "-r", min=0.0,
+        help="[radius] neighbourhood radius in coordinate units.",
+    ),
+    min_neighbors: int = typer.Option(
+        DEFAULT_MIN_NEIGHBORS, "--min-neighbors", "-n", min=1,
+        help="[radius] min points (incl. self) within --radius to keep a point.",
+    ),
+    neighbors: int = typer.Option(
+        DEFAULT_K, "--neighbors", "-k", min=1,
+        help="[statistical] number of nearest neighbours for the mean distance.",
+    ),
+    std_ratio: float = typer.Option(
+        DEFAULT_STD_RATIO, "--std-ratio", "-s", min=0.0,
+        help="[statistical] keep points within mean + std_ratio*std of the mean distance.",
+    ),
+    quiet: bool = typer.Option(False, "--quiet", "-q", help="Suppress the progress bar."),
+) -> None:
+    """Remove outliers from a .pcd (radius or statistical)."""
+    try:
+        result = filter_pcd(
+            input, output, method=method, radius=radius,
+            min_neighbors=min_neighbors, k=neighbors, std_ratio=std_ratio,
+            show_progress=not quiet,
+        )
+    except (FileNotFoundError, ValueError) as err:
+        typer.secho(f"error: {err}", fg=typer.colors.RED, err=True)
+        raise typer.Exit(code=1)
+
+    pct = 100.0 * result.removed / result.source_count if result.source_count else 0.0
+    typer.secho(
+        f"wrote {result.point_count:,} points -> {result.output_path}",
+        fg=typer.colors.GREEN,
+    )
+    typer.echo(f"fields: {' '.join(result.fields)}")
+    params = "  ".join(f"{k}={v}" for k, v in result.params.items())
+    typer.echo(f"method: {result.method} ({params})")
+    typer.echo(
+        f"removed {result.removed:,} of {result.source_count:,} points "
+        f"({pct:.1f}%) as outliers"
     )
     ox, oy, oz = result.origin
     typer.echo(f"local origin (global = local + origin): {ox} {oy} {oz}")
