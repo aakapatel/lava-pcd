@@ -19,8 +19,10 @@ from lava_pcd.filtering import (
 )
 from lava_pcd.holes import (
     DEFAULT_CEILING_JUMP,
+    DEFAULT_EDGE_MARGIN,
     DEFAULT_MIN_AREA,
     DEFAULT_MIN_DENSITY,
+    DEFAULT_RELATIVE_WINDOW,
     DEFAULT_RESOLUTION,
     DEFAULT_SMOOTH,
     HoleSet,
@@ -337,7 +339,16 @@ def holes(
     min_density: float = typer.Option(
         DEFAULT_MIN_DENSITY, "--min-density", min=0.0,
         help="Cells with fewer points than this count as empty (raise to catch "
-             "less-occupied holes).",
+             "less-occupied holes). Ignored when --relative is set.",
+    ),
+    relative: float = typer.Option(
+        None, "--relative", min=0.0,
+        help="Adaptive threshold: a cell is empty below this fraction of its local "
+             "median density (e.g. 0.3). Use when ground density varies across the map.",
+    ),
+    relative_window: int = typer.Option(
+        DEFAULT_RELATIVE_WINDOW, "--relative-window", min=3,
+        help="[--relative] window in cells for the local reference density.",
     ),
     smooth: float = typer.Option(
         DEFAULT_SMOOTH, "--smooth", min=0.0,
@@ -349,6 +360,11 @@ def holes(
     ),
     max_area: float = typer.Option(
         None, "--max-area", help="Ignore voids larger than this area (optional)."
+    ),
+    edge_margin: float = typer.Option(
+        DEFAULT_EDGE_MARGIN, "--edge-margin", min=0.0,
+        help="Reject holes within this distance (coord units) of the cloud boundary "
+             "-- drops ragged-rim false positives on the tube ceiling.",
     ),
     ceiling_jump: float = typer.Option(
         DEFAULT_CEILING_JUMP, "--ceiling-jump", min=0.0,
@@ -371,7 +387,9 @@ def holes(
             grid = build_occupancy(input, mode=mode, up=up_vec, resolution=res)
             holes, hole_cells = detect_skylights(
                 grid, min_area=min_area, max_area=max_area,
-                min_density=min_density, smooth=smooth, ceiling_jump=ceiling_jump,
+                min_density=min_density, smooth=smooth, relative=relative,
+                relative_window=relative_window, edge_margin=edge_margin,
+                ceiling_jump=ceiling_jump,
             )
             holeset = HoleSet(holes, grid.origin, grid.up, mode, res, str(input))
             if show:
@@ -388,9 +406,11 @@ def holes(
     typer.echo(f"mode: {holeset.mode}   up: {ux:.3f} {uy:.3f} {uz:.3f}")
     for h in holeset.holes:
         cx, cy, cz = h.centroid
+        deg = h.orientation * 180.0 / 3.141592653589793
         typer.echo(
             f"  #{h.id}: centre ({cx:.2f}, {cy:.2f}, {cz:.2f})  "
-            f"r~{h.radius:.2f}  area {h.area:.1f}"
+            f"ellipse a~{h.semi_major:.2f} b~{h.semi_minor:.2f} θ~{deg:.0f}°  "
+            f"area {h.area:.1f}"
         )
 
 
@@ -408,11 +428,30 @@ def occupancy(
     ),
     min_density: float = typer.Option(
         None, "--min-density", min=0.0,
-        help="If set, also preview the void mask at this points-per-cell threshold.",
+        help="If set, also preview the detected holes at this points-per-cell threshold.",
+    ),
+    relative: float = typer.Option(
+        None, "--relative", min=0.0,
+        help="Preview with the adaptive threshold (fraction of local median density).",
+    ),
+    relative_window: int = typer.Option(
+        DEFAULT_RELATIVE_WINDOW, "--relative-window", min=3,
+        help="[--relative] window in cells for the local reference density.",
     ),
     smooth: float = typer.Option(
         DEFAULT_SMOOTH, "--smooth", min=0.0,
         help="Gaussian sigma (cells) to smooth the count image before thresholding.",
+    ),
+    min_area: float = typer.Option(
+        DEFAULT_MIN_AREA, "--min-area", min=0.0,
+        help="[preview] ignore voids smaller than this area (coord units squared).",
+    ),
+    max_area: float = typer.Option(
+        None, "--max-area", help="[preview] ignore voids larger than this area (optional)."
+    ),
+    edge_margin: float = typer.Option(
+        DEFAULT_EDGE_MARGIN, "--edge-margin", min=0.0,
+        help="[preview] reject holes within this distance of the cloud boundary.",
     ),
     linear: bool = typer.Option(
         False, "--linear", help="Use a linear colour scale (default is log)."
@@ -423,8 +462,14 @@ def occupancy(
         up_vec = _parse_up(up)
         grid = build_occupancy(input, mode=mode, up=up_vec, resolution=res)
         hole_cells = None
-        if min_density is not None:
-            _, hole_cells = detect_skylights(grid, min_density=min_density, smooth=smooth)
+        if min_density is not None or relative is not None:
+            # Preview matches `holes`: the overlay is the area-filtered hole mask.
+            _, hole_cells = detect_skylights(
+                grid, min_area=min_area, max_area=max_area,
+                min_density=min_density if min_density is not None else DEFAULT_MIN_DENSITY,
+                smooth=smooth, relative=relative, relative_window=relative_window,
+                edge_margin=edge_margin,
+            )
     except (FileNotFoundError, ValueError) as err:
         typer.secho(f"error: {err}", fg=typer.colors.RED, err=True)
         raise typer.Exit(code=1)

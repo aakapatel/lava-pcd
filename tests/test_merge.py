@@ -191,6 +191,95 @@ def test_density_threshold_catches_less_occupied_hole(tmp_path: Path) -> None:
     assert abs(cx - 30.0) < 2.0 and abs(cy - 30.0) < 2.0
 
 
+def _ground_density_gradient(hole_center=(60.0, 40.0), hole_r=5.0,
+                             extent=80.0, spacing=0.5):
+    """Dense ground for x<40 (4 pts/cell), sparse for x>=40 (1 pt/cell), with a
+    hole in the *sparse* half. No single absolute threshold separates the hole
+    from the sparse ground; a relative one does."""
+    g = np.arange(0.0, extent, spacing)
+    gx, gy = np.meshgrid(g, g)
+    pts = np.column_stack([gx.ravel(), gy.ravel(), np.zeros(gx.size)])
+    dense = pts[:, 0] < 40.0
+    coarse = np.isclose(pts[:, 0] % 1.0, 0.0) & np.isclose(pts[:, 1] % 1.0, 0.0)
+    keep = dense | coarse
+    inside = ((pts[:, 0] - hole_center[0]) ** 2
+              + (pts[:, 1] - hole_center[1]) ** 2 < hole_r ** 2)
+    keep &= ~inside
+    return pts[keep]
+
+
+def test_relative_threshold_handles_varying_density(tmp_path: Path) -> None:
+    pcd = tmp_path / "gradient.pcd"
+    _write_pcd(pcd, _ground_density_gradient())
+
+    # Absolute threshold tuned for the dense half marks the whole sparse half
+    # "empty" (border-connected), so the real hole isn't isolated -> missed.
+    absolute = detect_holes(pcd, mode="aerial", resolution=1.0, min_area=10.0,
+                            min_density=2)
+    assert all(abs(h.centroid[0] - 60.0) > 5 or abs(h.centroid[1] - 40.0) > 5
+               for h in absolute.holes)
+
+    # Relative threshold adapts to the local density and finds the hole.
+    rel = detect_holes(pcd, mode="aerial", resolution=1.0, min_area=10.0,
+                       relative=0.4, relative_window=21)
+    near = [h for h in rel.holes
+            if abs(h.centroid[0] - 60.0) < 2 and abs(h.centroid[1] - 40.0) < 2]
+    assert len(near) == 1
+
+
+def _slab_with_voids(centers_r, extent=40.0, spacing=0.5):
+    """A solid square slab with circular voids removed at ``centers_r``."""
+    g = np.arange(0.0, extent, spacing)
+    gx, gy = np.meshgrid(g, g)
+    pts = np.column_stack([gx.ravel(), gy.ravel(), np.zeros(gx.size)])
+    keep = np.ones(len(pts), dtype=bool)
+    for (cx, cy), r in centers_r:
+        keep &= (pts[:, 0] - cx) ** 2 + (pts[:, 1] - cy) ** 2 > r ** 2
+    return pts[keep]
+
+
+def test_edge_margin_drops_boundary_holes(tmp_path: Path) -> None:
+    # one genuine interior hole + one nick near the bottom edge (both enclosed)
+    pcd = tmp_path / "slab.pcd"
+    _write_pcd(pcd, _slab_with_voids([((20.0, 20.0), 3.0), ((20.0, 2.5), 1.6)]))
+
+    both = detect_holes(pcd, mode="aerial", resolution=1.0, min_area=5.0, edge_margin=0)
+    assert len(both.holes) == 2
+
+    inner = detect_holes(pcd, mode="aerial", resolution=1.0, min_area=5.0, edge_margin=6)
+    assert len(inner.holes) == 1
+    cx, cy, _ = inner.holes[0].centroid
+    assert abs(cx - 20.0) < 2 and abs(cy - 20.0) < 2
+
+
+def _slab_with_ellipse_void(center, a, b, angle_deg, extent=60.0, spacing=0.5):
+    """Solid slab with one rotated elliptical void (semi-axes a>b at angle_deg)."""
+    g = np.arange(0.0, extent, spacing)
+    gx, gy = np.meshgrid(g, g)
+    pts = np.column_stack([gx.ravel(), gy.ravel(), np.zeros(gx.size)])
+    th = np.radians(angle_deg)
+    dx, dy = pts[:, 0] - center[0], pts[:, 1] - center[1]
+    xr = dx * np.cos(th) + dy * np.sin(th)     # major axis
+    yr = -dx * np.sin(th) + dy * np.cos(th)    # minor axis
+    inside = (xr / a) ** 2 + (yr / b) ** 2 < 1.0
+    return pts[~inside]
+
+
+def test_ellipse_fit_recovers_shape_and_orientation(tmp_path: Path) -> None:
+    pcd = tmp_path / "ellipse.pcd"
+    _write_pcd(pcd, _slab_with_ellipse_void((30.0, 30.0), a=10.0, b=4.0, angle_deg=30.0))
+    hs = detect_holes(pcd, mode="aerial", resolution=0.5, min_area=20.0)
+    assert len(hs.holes) == 1
+    h = hs.holes[0]
+    # equivalent ellipse of a uniform fill: semi-axis ~ the true semi-axis
+    assert 8.0 < h.semi_major < 12.0
+    assert 2.5 < h.semi_minor < 5.5
+    assert h.semi_major > h.semi_minor
+    # orientation ~30 deg, modulo 180
+    deg = np.degrees(h.orientation) % 180.0
+    assert min(abs(deg - 30.0), abs(deg - 210.0), abs(deg + 150.0)) < 12.0
+
+
 def test_occupancy_viewer_runs_headless(tmp_path: Path) -> None:
     pcd = tmp_path / "aerial.pcd"
     _write_pcd(pcd, _ground_with_voids(_CENTERS))

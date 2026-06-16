@@ -40,6 +40,8 @@ DEFAULT_RESOLUTION = 1.0          # grid cell size in coordinate units (metres)
 DEFAULT_MIN_AREA = 4.0            # ignore voids smaller than this (m^2)
 DEFAULT_MIN_DENSITY = 1.0         # cells with fewer points than this count as empty
 DEFAULT_SMOOTH = 0.0             # Gaussian sigma (cells) applied to counts before threshold
+DEFAULT_RELATIVE_WINDOW = 21      # window (cells) for the local reference density
+DEFAULT_EDGE_MARGIN = 0.0         # reject holes within this distance of the boundary
 DEFAULT_CEILING_JUMP = 1.0        # ceiling-height deviation flagged as "open" (m)
 _MAX_GRID_CELLS = 50_000_000      # guard against an absurdly fine grid
 _UP_SAMPLE = 200_000             # points sampled for up-axis estimation
@@ -47,13 +49,23 @@ _UP_SAMPLE = 200_000             # points sampled for up-axis estimation
 
 @dataclass
 class Hole:
-    """A single detected skylight, in the cloud's local frame."""
+    """A single detected skylight, in the cloud's local frame.
+
+    Shape is described both as an equivalent-circle ``radius`` and as an
+    equivalent **ellipse** (same second moments): ``semi_major``/``semi_minor``
+    axes and ``orientation`` -- the major-axis angle in the up-plane, in radians
+    in ``[0, pi)`` (0 = the up-plane's first axis). The ellipse captures the
+    skylight's rough elongation and bearing.
+    """
 
     id: int
     centroid: tuple[float, float, float]
     radius: float
     area: float
     n_cells: int
+    semi_major: float = 0.0
+    semi_minor: float = 0.0
+    orientation: float = 0.0
 
 
 @dataclass
@@ -101,6 +113,9 @@ class HoleSet:
                 radius=float(h["radius"]),
                 area=float(h["area"]),
                 n_cells=int(h["n_cells"]),
+                semi_major=float(h.get("semi_major", h["radius"])),
+                semi_minor=float(h.get("semi_minor", h["radius"])),
+                orientation=float(h.get("orientation", 0.0)),
             )
             for h in data["holes"]
         ]
@@ -250,39 +265,56 @@ def _accumulate_grid(input_path: Path, R: np.ndarray, res: float) -> _Grid:
 # detection
 # --------------------------------------------------------------------------- #
 def _occupied_mask(
-    grid: Occupancy, min_density: float, smooth: float
+    grid: Occupancy,
+    min_density: float,
+    smooth: float,
+    relative: float | None = None,
+    relative_window: int = DEFAULT_RELATIVE_WINDOW,
 ) -> np.ndarray:
     """Boolean "occupied ground" mask from the density image.
 
-    A cell counts as occupied when it holds at least ``min_density`` points
-    (optionally after Gaussian-smoothing the count image by ``smooth`` cells, so
-    a few stray returns inside a hole don't keep it "occupied"). Raising
-    ``min_density`` turns *less-occupied* skylights into voids, not just empty
-    ones.
+    Two thresholding modes:
+
+    * **absolute** (default) -- a cell is occupied when it holds at least
+      ``min_density`` points. Simple, but assumes roughly uniform ground density.
+    * **relative** (``relative`` set) -- a cell is occupied when its count is at
+      least ``relative`` times the *local* reference density (a median over a
+      ``relative_window``-cell window). This adapts to ground density that varies
+      across the map, so a hole in a sparse area is still caught and dense areas
+      aren't over-flagged. ``min_density`` is ignored in this mode.
+
+    In both modes the count image may first be Gaussian-smoothed by ``smooth``
+    cells so a few stray returns inside a hole don't keep it "occupied".
     """
     counts = grid.counts.astype(np.float64)
     if smooth > 0:
         counts = ndi.gaussian_filter(counts, smooth)
+    if relative is not None:
+        ref = ndi.median_filter(counts, size=int(relative_window), mode="nearest")
+        return counts >= relative * ref
     return counts >= min_density
 
 
 def _hole_cells_aerial(
-    grid: Occupancy, min_density: float, smooth: float
+    grid: Occupancy, min_density: float, smooth: float,
+    relative: float | None = None, relative_window: int = DEFAULT_RELATIVE_WINDOW,
 ) -> tuple[np.ndarray, np.ndarray]:
     """Enclosed low-density cells of the occupancy grid (the void skylights).
 
     Returns ``(hole_cells, occ)`` so callers can visualise the occupied mask too.
     """
-    occ = _occupied_mask(grid, min_density, smooth)
+    occ = _occupied_mask(grid, min_density, smooth, relative, relative_window)
     filled = ndi.binary_fill_holes(occ)
     return filled & ~occ, occ
 
 
 def _hole_cells_ceiling(
-    grid: Occupancy, jump: float, min_density: float, smooth: float, win: int = 7
+    grid: Occupancy, jump: float, min_density: float, smooth: float,
+    relative: float | None = None, relative_window: int = DEFAULT_RELATIVE_WINDOW,
+    win: int = 7,
 ) -> tuple[np.ndarray, np.ndarray]:
     """Enclosed cells where the ceiling is missing or deviates from its neighbours."""
-    occ = _occupied_mask(grid, min_density, smooth)
+    occ = _occupied_mask(grid, min_density, smooth, relative, relative_window)
     H = grid.zmax.copy()
     # Fill empty cells with the global ceiling median so the local filter is stable.
     H_filled = np.where(occ, H, np.median(H[occ]) if occ.any() else 0.0)
@@ -292,15 +324,48 @@ def _hole_cells_ceiling(
     return (anomaly | empty_enclosed), occ
 
 
+def _fit_ellipse(
+    coords: np.ndarray, grid: _Grid
+) -> tuple[float, float, float]:
+    """Equivalent ellipse (same 2nd moments) of a set of cell indices.
+
+    ``coords`` is ``(k, 2)`` of ``(ix, iy)``. Returns ``(semi_major, semi_minor,
+    orientation)`` in coordinate units / radians, computed in the up-plane
+    (working) frame. For a uniform filled ellipse with semi-axes ``a, b`` the
+    coordinate variance along each axis is ``a^2/4``, so ``semi = 2*sqrt(eig)``.
+    Returns zeros for a degenerate (too few cells) region.
+    """
+    if len(coords) < 3:
+        return 0.0, 0.0, 0.0
+    wx = grid.xmin + (coords[:, 0] + 0.5) * grid.res
+    wy = grid.ymin + (coords[:, 1] + 0.5) * grid.res
+    cov = np.cov(np.vstack([wx, wy]))
+    w, v = np.linalg.eigh(cov)  # ascending eigenvalues
+    semi_minor = 2.0 * np.sqrt(max(w[0], 0.0))
+    semi_major = 2.0 * np.sqrt(max(w[1], 0.0))
+    major_vec = v[:, 1]
+    orientation = float(np.arctan2(major_vec[1], major_vec[0]) % np.pi)
+    return float(semi_major), float(semi_minor), orientation
+
+
 def _components_to_holes(
-    hole_cells: np.ndarray, grid: _Grid, R: np.ndarray, min_area: float, max_area: float | None
-) -> list[Hole]:
-    """Label connected hole cells and turn each into a :class:`Hole` (local frame)."""
+    hole_cells: np.ndarray, grid: _Grid, R: np.ndarray, min_area: float,
+    max_area: float | None, interior: np.ndarray | None = None,
+) -> tuple[list[Hole], np.ndarray]:
+    """Label connected hole cells and turn each into a :class:`Hole` (local frame).
+
+    Returns ``(holes, kept_mask)`` where ``kept_mask`` marks only the cells of the
+    components that pass the filters -- i.e. the mask that corresponds to the
+    returned holes (handy to overlay as a faithful preview). When ``interior`` is
+    given, a component is kept only if its centroid lies inside it (used to reject
+    holes hugging the cloud boundary).
+    """
     labels, n = ndi.label(hole_cells)
     occ = grid.counts > 0
     meanz = grid.meanz
     cell_area = grid.res * grid.res
     holes: list[Hole] = []
+    kept_mask = np.zeros_like(hole_cells, dtype=bool)
     for lab in range(1, n + 1):
         cells = labels == lab
         n_cells = int(cells.sum())
@@ -309,6 +374,13 @@ def _components_to_holes(
             continue
         coords = np.argwhere(cells)  # (k, 2) of (ix, iy)
         cix, ciy = coords[:, 0].mean(), coords[:, 1].mean()
+        # Drop holes whose centre sits within the boundary margin (edge nicks).
+        if interior is not None:
+            ci, cj = int(round(cix)), int(round(ciy))
+            if not (0 <= ci < interior.shape[0] and 0 <= cj < interior.shape[1]
+                    and interior[ci, cj]):
+                continue
+        kept_mask |= cells
         wx = grid.xmin + (cix + 0.5) * grid.res
         wy = grid.ymin + (ciy + 0.5) * grid.res
         # Surrounding surface level: median z of occupied cells bordering the hole.
@@ -318,14 +390,20 @@ def _components_to_holes(
         wz = float(np.median(zvals)) if zvals.size else float(np.nanmedian(meanz))
         local = R.T @ np.array([wx, wy, wz])  # un-rotate back to the cloud frame
         radius = float(np.sqrt(area / np.pi))
+        semi_major, semi_minor, orientation = _fit_ellipse(coords, grid)
+        if semi_major == 0.0:  # too few cells to fit -> fall back to a circle
+            semi_major = semi_minor = radius
         holes.append(Hole(
             id=len(holes),
             centroid=(float(local[0]), float(local[1]), float(local[2])),
             radius=radius,
             area=float(area),
             n_cells=n_cells,
+            semi_major=semi_major,
+            semi_minor=semi_minor,
+            orientation=orientation,
         ))
-    return holes
+    return holes, kept_mask
 
 
 def _resolve_up(
@@ -374,21 +452,34 @@ def detect_skylights(
     max_area: float | None = None,
     min_density: float = DEFAULT_MIN_DENSITY,
     smooth: float = DEFAULT_SMOOTH,
+    relative: float | None = None,
+    relative_window: int = DEFAULT_RELATIVE_WINDOW,
+    edge_margin: float = DEFAULT_EDGE_MARGIN,
     ceiling_jump: float = DEFAULT_CEILING_JUMP,
 ) -> tuple[list[Hole], np.ndarray]:
     """Find skylights in a prebuilt :class:`Occupancy`. Returns ``(holes, mask)``.
 
-    ``mask`` is the boolean grid of detected hole cells (handy to overlay on the
+    ``mask`` is the boolean grid of the cells that became holes -- already
+    area-filtered, so it matches the returned ``holes`` (handy to overlay on the
     occupancy image). See :func:`detect_holes` for the parameter meanings.
     """
     if grid.mode == "aerial":
-        hole_cells, _ = _hole_cells_aerial(grid, min_density, smooth)
+        hole_cells, occ = _hole_cells_aerial(
+            grid, min_density, smooth, relative, relative_window)
     else:
-        hole_cells, _ = _hole_cells_ceiling(grid, ceiling_jump, min_density, smooth)
-    holes = _components_to_holes(hole_cells, grid, grid.R, min_area, max_area)
+        hole_cells, occ = _hole_cells_ceiling(
+            grid, ceiling_jump, min_density, smooth, relative, relative_window)
+    interior = None
+    if edge_margin > 0:
+        # Keep only holes whose centre is >= edge_margin inside the cloud boundary:
+        # erode the solid (filled) footprint inward by that many cells.
+        iters = max(1, int(round(edge_margin / grid.res)))
+        interior = ndi.binary_erosion(ndi.binary_fill_holes(occ), iterations=iters)
+    holes, kept_mask = _components_to_holes(
+        hole_cells, grid, grid.R, min_area, max_area, interior)
     for i, h in enumerate(holes):  # renumber after area filtering
         h.id = i
-    return holes, hole_cells
+    return holes, kept_mask
 
 
 def detect_holes(
@@ -400,6 +491,9 @@ def detect_holes(
     max_area: float | None = None,
     min_density: float = DEFAULT_MIN_DENSITY,
     smooth: float = DEFAULT_SMOOTH,
+    relative: float | None = None,
+    relative_window: int = DEFAULT_RELATIVE_WINDOW,
+    edge_margin: float = DEFAULT_EDGE_MARGIN,
     ceiling_jump: float = DEFAULT_CEILING_JUMP,
 ) -> HoleSet:
     """Detect skylight holes in ``input_path`` and return a :class:`HoleSet`.
@@ -407,15 +501,19 @@ def detect_holes(
     ``mode`` is ``"aerial"`` (enclosed low-density regions in a top-down
     occupancy grid, up = ``+Z``) or ``"ceiling"`` (the tube ceiling, viewed along
     ``up`` -- given or estimated). A cell counts as ground when it holds at least
-    ``min_density`` points (optionally after Gaussian smoothing the count image by
-    ``smooth`` cells), so *less-occupied* skylights are caught, not only empty
-    ones. ``min_area`` / ``max_area`` filter candidates by footprint. Centroids
-    are returned in the cloud's **local** frame, alongside ``up`` and ``origin``.
+    ``min_density`` points; or, if ``relative`` is set, at least ``relative`` times
+    the local median density (a ``relative_window``-cell window) -- which adapts to
+    ground density that varies across the map. The count image may first be
+    Gaussian-smoothed by ``smooth`` cells. ``min_area`` / ``max_area`` filter
+    candidates by footprint, and ``edge_margin`` rejects holes within that distance
+    of the cloud boundary (e.g. the ragged tube-ceiling rim). Centroids are
+    returned in the cloud's **local** frame, alongside ``up`` and ``origin``.
     """
     grid = build_occupancy(input_path, mode=mode, up=up, resolution=resolution)
     holes, _ = detect_skylights(
         grid, min_area=min_area, max_area=max_area, min_density=min_density,
-        smooth=smooth, ceiling_jump=ceiling_jump,
+        smooth=smooth, relative=relative, relative_window=relative_window,
+        edge_margin=edge_margin, ceiling_jump=ceiling_jump,
     )
     return HoleSet(
         holes=holes,
@@ -448,12 +546,14 @@ def show_occupancy(
 
     The count image is shown with ``imshow`` (log scale by default, so sparse
     returns inside holes stay visible); detected hole cells are tinted red and
-    each :class:`Hole` is drawn as a numbered circle. With ``interactive=True``
-    and a ``holeset``, left-clicking a circle toggles that hole on/off and the
-    kept :class:`HoleSet` is returned when the window is closed. Otherwise this
-    is purely a viewer and returns ``holeset`` unchanged (or ``None``).
+    each :class:`Hole` is drawn as its fitted ellipse, numbered. With
+    ``interactive=True`` and a ``holeset``, left-clicking an ellipse toggles that
+    hole on/off and the kept :class:`HoleSet` is returned when the window is
+    closed. Otherwise this is purely a viewer and returns ``holeset`` unchanged
+    (or ``None``).
     """
     import matplotlib.pyplot as plt
+    from matplotlib.patches import Ellipse
 
     nx, ny = grid.counts.shape
     counts = grid.counts.astype(np.float64)
@@ -482,12 +582,17 @@ def show_occupancy(
         cent_work = (holeset.centroids() @ grid.R.T)[:, :2]
         keep = [True] * len(holeset.holes)
         for i, (cx, cy) in enumerate(cent_work):
-            circ = plt.Circle((cx, cy), max(holeset.holes[i].radius, grid.res),
-                              fill=False, color="red", lw=2)
-            ax.add_patch(circ)
+            h = holeset.holes[i]
+            a = h.semi_major if h.semi_major > 0 else h.radius
+            b = h.semi_minor if h.semi_minor > 0 else h.radius
+            ell = Ellipse(
+                (cx, cy), width=2 * max(a, grid.res), height=2 * max(b, grid.res),
+                angle=np.degrees(h.orientation), fill=False, color="red", lw=2,
+            )
+            ax.add_patch(ell)
             txt = ax.text(cx, cy, str(i), color="white", ha="center", va="center",
                           fontsize=8)
-            artists.append((circ, txt))
+            artists.append((ell, txt))
 
     if interactive and len(cent_work):
         ax.set_title(title or "click a circle to keep/drop it, then close")
@@ -578,5 +683,8 @@ def pick_holes(
             radius=float(radius),
             area=float(np.pi * radius * radius),
             n_cells=0,
+            semi_major=float(radius),
+            semi_minor=float(radius),
+            orientation=0.0,
         ))
     return HoleSet(holes, origin, up_vec, "manual", resolution, str(input_path))

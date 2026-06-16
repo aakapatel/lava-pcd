@@ -188,8 +188,12 @@ where a skylight is. Inspect that image first to pick good parameters:
 
 ```bash
 lava-pcd occupancy aerial.pcd --res 1.0                 # view the count image (log scale)
-lava-pcd occupancy aerial.pcd --res 1.0 --min-density 3 # preview the void mask at a threshold
+lava-pcd occupancy aerial.pcd --res 1.0 --min-density 3 # overlay the holes you'd detect
 ```
+
+With `--min-density`, the red overlay is exactly what `holes` would detect — it honours
+the same `--min-density`, `--smooth`, `--min-area` and `--max-area`, so you can dial all
+of them in here before running `holes`.
 
 A skylight rarely reads as *perfectly empty* — a few stray returns land inside it. So a
 cell counts as "ground" only when it holds at least `--min-density` points (raise it to
@@ -197,15 +201,25 @@ turn *less-occupied* holes into voids), optionally after `--smooth`-ing the coun
 to wash out isolated stray points. Tune `--res`, `--min-density`, `--smooth` against the
 `occupancy` view, then run `holes` with the same values.
 
+`--min-density` is an *absolute* points-per-cell threshold, so it assumes the ground
+density is roughly uniform. If density varies across the map (flight-line overlap, range,
+incidence angle), use **`--relative FRAC`** instead: a cell is empty when its count drops
+below `FRAC` of its *local* median density (over a `--relative-window` cells window, default
+21). This catches a hole in a sparse area without over-flagging dense areas, and it
+overrides `--min-density`. Preview it the same way: `lava-pcd occupancy ... --relative 0.3`.
+
 ### `holes` — detect (or place) skylights
 ```
 #   -m / --mode          aerial (top-down voids) | ceiling (tube roof, along --up)
 #        --up X,Y,Z       up-axis for ceiling/manual mode (estimated if omitted)
 #   -r / --res            grid cell size in coordinate units (default 1.0)
 #        --min-density    points/cell below which a cell is "empty" (default 1)
+#        --relative       FRAC: empty below this fraction of the local median density
+#        --relative-window  window (cells) for the local reference density (default 21)
 #        --smooth         Gaussian sigma (cells) to smooth counts before thresholding
 #        --min-area       ignore voids smaller than this (coord units squared)
 #        --max-area       ignore voids larger than this (optional)
+#        --edge-margin    reject holes within this distance of the cloud boundary
 #        --ceiling-jump   [ceiling] roof-height deviation flagged as an opening
 #        --show           show the occupancy image + detections; click to toggle holes
 #        --manual         place skylights by hand (click each centre) — the fallback
@@ -217,6 +231,18 @@ away from its neighbours. The tube is in an arbitrary SLAM frame, so give a know
 when you have one; otherwise it is estimated (approximate). `--show` overlays the
 detections on the occupancy image so you can drop false positives; `--manual` lets you
 click skylights directly when automatic detection struggles.
+
+Each saved skylight carries an **equivalent ellipse** fitted from its cell second
+moments — `semi_major`, `semi_minor` and `orientation` (major-axis bearing in the
+up-plane) — so you get its rough shape and direction, not just a radius. `--show` draws
+those ellipses; the JSON stores them for later use in matching.
+
+The tube ceiling is a thin ribbon with a **ragged rim**, which spawns lots of tiny false
+holes along its sides. Use **`--edge-margin D`** to keep only holes whose centre is at
+least `D` (coord units) inside the ceiling boundary — it erodes the ribbon footprint
+inward by `D` and rejects anything in that border band. Raise it until the rim nicks
+disappear, but keep it below the ribbon's half-width or you'll erode real skylights too;
+combine with `--min-area` to drop the smallest specks.
 
 ### `register` — match constellations
 ```
