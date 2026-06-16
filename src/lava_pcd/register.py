@@ -63,6 +63,7 @@ class Transform:
     n_inliers: int = 0                        # number of matched skylights
     margin: int = 0                           # best inlier count minus next distinct solution
     shape_score: float = 0.0                  # ellipse-shape penalty over inliers (lower = better)
+    aerial_up: tuple[float, float, float] = (0.0, 0.0, 1.0)  # aerial up-axis (for constrained ICP)
     anchors: list[list[float]] = field(default_factory=list)  # matched rim centres (aerial frame)
     warnings: list[str] = field(default_factory=list)
 
@@ -83,6 +84,7 @@ class Transform:
             "n_inliers": int(self.n_inliers),
             "margin": int(self.margin),
             "shape_score": float(self.shape_score),
+            "aerial_up": list(self.aerial_up),
             "anchors": [list(map(float, a)) for a in self.anchors],
             "warnings": list(self.warnings),
         }
@@ -102,6 +104,7 @@ class Transform:
             n_inliers=int(d.get("n_inliers", 0)),
             margin=int(d.get("margin", 0)),
             shape_score=float(d.get("shape_score", 0.0)),
+            aerial_up=tuple(d.get("aerial_up", (0.0, 0.0, 1.0))),
             anchors=[list(map(float, a)) for a in d.get("anchors", [])],
             warnings=list(d.get("warnings", [])),
         )
@@ -416,6 +419,7 @@ def match_constellations(
         n_inliers=int(best_count),
         margin=margin,
         shape_score=float(shape_score),
+        aerial_up=tuple(map(float, aerial.up)),
         anchors=[list(map(float, A[a])) for a in ai],
         warnings=warnings,
     )

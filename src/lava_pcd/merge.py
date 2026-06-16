@@ -17,19 +17,25 @@ bounded.
 
 from __future__ import annotations
 
-from dataclasses import dataclass
+from dataclasses import dataclass, replace
 from pathlib import Path
 
 import numpy as np
 from scipy.spatial import cKDTree
 from tqdm import tqdm
 
-from lava_pcd.geometry import as_matrix, from_matrix, kabsch, transform_points
+from lava_pcd.geometry import (
+    as_matrix,
+    normalize,
+    rotation_about_axis,
+    transform_points,
+)
 from lava_pcd.io.pcd_reader import BinaryPcdReader
 from lava_pcd.io.pcd_writer import BinaryPcdWriter
 from lava_pcd.register import Transform
 
-DEFAULT_RIM_RADIUS = 15.0   # gather points within this of each skylight for ICP
+DEFAULT_RIM_RADIUS = 15.0   # horizontal radius around each skylight used for ICP
+DEFAULT_RIM_HEIGHT = 6.0    # vertical band around each opening used for ICP (coord units)
 DEFAULT_ICP_ITERS = 30
 DEFAULT_CMAP = "viridis"    # elevation colormap for the tube in a merged cloud
 
@@ -79,23 +85,63 @@ def apply_transform(
     return output_path
 
 
-def _gather_near(
-    input_path: Path, anchors: np.ndarray, radius: float, matrix: np.ndarray | None = None
-) -> np.ndarray:
-    """Stream a cloud and keep XYZ within ``radius`` of any anchor.
+def _plane_basis(up: np.ndarray) -> tuple[np.ndarray, np.ndarray]:
+    """Right-handed in-plane basis ``(e1, e2)`` with ``e1 x e2 = up``."""
+    up = normalize(up)
+    seed = np.array([1.0, 0.0, 0.0]) if abs(up[0]) < 0.9 else np.array([0.0, 1.0, 0.0])
+    e1 = normalize(seed - up * np.dot(seed, up))
+    e2 = np.cross(up, e1)
+    return e1, e2
 
-    If ``matrix`` is given, points are transformed before the distance test, but
-    the **original** (untransformed) coordinates are returned (so ICP can keep
-    re-applying an evolving transform to a fixed source set).
+
+def _fit_4dof(src: np.ndarray, dst: np.ndarray, up: np.ndarray) -> np.ndarray:
+    """Best **yaw-about-up + translation** mapping ``src`` onto ``dst`` (4x4).
+
+    Constrained rigid fit: the rotation is only about ``up`` (so the tube's tilt
+    can't change), solved as a 2-D Procrustes in the up-plane plus a 1-D height
+    offset. This is what stops ICP from laying the tube flat on the ground.
     """
+    up = normalize(up)
+    e1, e2 = _plane_basis(up)
+    s2 = np.column_stack([src @ e1, src @ e2])
+    d2 = np.column_stack([dst @ e1, dst @ e2])
+    cs, cd = s2.mean(axis=0), d2.mean(axis=0)
+    H = (s2 - cs).T @ (d2 - cd)
+    U, _, Vt = np.linalg.svd(H)
+    D = np.diag([1.0, np.sign(np.linalg.det(Vt.T @ U.T))])
+    R2 = Vt.T @ D @ U.T
+    ang = float(np.arctan2(R2[1, 0], R2[0, 0]))
+    t2 = cd - R2 @ cs
+    dz = float(np.mean(dst @ up - src @ up))
+    R = rotation_about_axis(up, ang)
+    t = e1 * t2[0] + e2 * t2[1] + up * dz
+    return as_matrix(R, t)
+
+
+def _gather_rim(
+    input_path: Path, anchors: np.ndarray, up: np.ndarray, radius: float,
+    height: float, matrix: np.ndarray | None = None,
+) -> np.ndarray:
+    """Stream a cloud and keep XYZ inside a **cylinder** around the nearest anchor:
+    horizontal distance ``<= radius`` and vertical (along ``up``) ``<= height``.
+
+    The height band keeps only points near each opening's level, excluding the deep
+    tube body and far ground that point-to-point ICP would otherwise collapse
+    together. If ``matrix`` is given, points are transformed before the test but the
+    **original** coordinates are returned (so ICP can re-apply an evolving matrix).
+    """
+    up = normalize(up)
     tree = cKDTree(anchors)
     kept: list[np.ndarray] = []
     with BinaryPcdReader(input_path) as reader:
         for chunk in reader.chunks():
             xyz = chunk[:, :3].astype(np.float64)
             probe = transform_points(xyz, matrix) if matrix is not None else xyz
-            near = tree.query_ball_point(probe, radius, workers=-1)
-            mask = np.array([len(n) > 0 for n in near], dtype=bool)
+            _, j = tree.query(probe, k=1, workers=-1)
+            dvec = probe - anchors[j]
+            dz = dvec @ up
+            horiz = np.linalg.norm(dvec - np.outer(dz, up), axis=1)
+            mask = (horiz <= radius) & (np.abs(dz) <= height)
             if mask.any():
                 kept.append(xyz[mask])
     return np.concatenate(kept) if kept else np.empty((0, 3), dtype=np.float64)
@@ -106,53 +152,75 @@ def icp_refine(
     tube_path: str | Path,
     transform: Transform,
     radius: float = DEFAULT_RIM_RADIUS,
+    rim_height: float = DEFAULT_RIM_HEIGHT,
     max_iters: int = DEFAULT_ICP_ITERS,
+    max_shift: float | None = None,
     tol: float = 1e-4,
 ) -> Transform:
-    """Refine ``transform`` with point-to-point ICP on the matched skylight rims.
+    """Refine ``transform`` with a **constrained** ICP on the matched skylight rims.
 
-    Only points within ``radius`` of the matched rim centres (``transform.anchors``,
-    in the aerial frame) are used from each cloud. Returns a new :class:`Transform`
-    with the refined matrix and a recomputed rim RMS; the original landmark
-    correspondences/warnings are carried over.
+    Only points within a cylinder (``radius`` horizontally, ``rim_height``
+    vertically) of each matched rim centre (``transform.anchors``, aerial frame) are
+    used, and the fit is **4-DOF** (yaw about the aerial up-axis + translation), so
+    the tube's tilt is fixed and it cannot be flattened onto the ground. Far
+    correspondences are trimmed each iteration. As a safety net the result is
+    **rejected** -- the landmark alignment kept, with a warning -- if it moves the
+    matched skylights by more than ``max_shift`` (default: ``radius``) or makes the
+    rim RMS worse.
     """
     anchors = np.asarray(transform.anchors, dtype=np.float64)
     if len(anchors) == 0:
         return transform
-    M = transform.array
+    up = normalize(np.asarray(transform.aerial_up, dtype=np.float64))
+    M0 = transform.array
+    if max_shift is None:
+        max_shift = radius
 
-    aerial_rim = _gather_near(Path(aerial_path), anchors, radius)
-    tube_rim = _gather_near(Path(tube_path), anchors, radius, matrix=M)
-    if len(aerial_rim) < 3 or len(tube_rim) < 3:
-        return transform  # not enough overlap to refine; keep the landmark fit
+    aerial_rim = _gather_rim(Path(aerial_path), anchors, up, radius, rim_height)
+    tube_rim = _gather_rim(Path(tube_path), anchors, up, radius, rim_height, matrix=M0)
+    if len(aerial_rim) < 4 or len(tube_rim) < 4:
+        return transform  # not enough rim overlap to refine; keep the landmark fit
 
     tree = cKDTree(aerial_rim)
+
+    def rim_rms(M: np.ndarray) -> float:
+        d, _ = tree.query(transform_points(tube_rim, M), k=1, workers=-1)
+        return float(np.sqrt(np.mean(np.minimum(d, radius) ** 2)))
+
+    old_rms = rim_rms(M0)
+    M = M0
     for _ in range(max_iters):
-        pred = transform_points(tube_rim, M)
-        dist, idx = tree.query(pred, k=1, workers=-1)
-        keep = dist <= radius
-        if keep.sum() < 3:
+        dist, idx = tree.query(transform_points(tube_rim, M), k=1, workers=-1)
+        # Trim: keep the closer correspondences, ignore far (non-overlapping) pairs.
+        thr = min(radius, float(np.percentile(dist, 70)))
+        keep = dist <= max(thr, 1e-6)
+        if keep.sum() < 4:
             break
-        R, t = kabsch(tube_rim[keep], aerial_rim[idx[keep]])
-        M_new = as_matrix(R, t)
+        M_new = _fit_4dof(tube_rim[keep], aerial_rim[idx[keep]], up)
         if np.linalg.norm(M_new - M) < tol:
             M = M_new
             break
         M = M_new
 
-    pred = transform_points(tube_rim, M)
-    dist, _ = tree.query(pred, k=1, workers=-1)
-    rms = float(np.sqrt(np.mean(np.minimum(dist, radius) ** 2)))
-    R, t = from_matrix(M)
-    return Transform(
+    # Safety: how far did the refinement move the (already-aligned) skylights?
+    delta = M @ np.linalg.inv(M0)
+    moved = float(np.max(np.linalg.norm(transform_points(anchors, delta) - anchors, axis=1)))
+    new_rms = rim_rms(M)
+
+    warnings = list(transform.warnings)
+    if moved > max_shift or new_rms > old_rms + 1e-9:
+        warnings.append(
+            f"ICP refine rejected (skylights would move {moved:.2f}, rim RMS "
+            f"{old_rms:.2f} -> {new_rms:.2f}); kept the landmark alignment."
+        )
+        return replace(transform, warnings=warnings)
+
+    return replace(
+        transform,
         matrix=[list(map(float, row)) for row in M],
-        inliers=transform.inliers,
-        rms=rms,
+        rms=new_rms,
         mode=transform.mode + "+icp",
-        aerial_origin=transform.aerial_origin,
-        tube_origin=transform.tube_origin,
-        anchors=transform.anchors,
-        warnings=transform.warnings,
+        warnings=warnings,
     )
 
 
@@ -166,6 +234,7 @@ def merge_clouds(
     elevation_cmap: str = DEFAULT_CMAP,
     source_field: bool = False,
     rim_radius: float = DEFAULT_RIM_RADIUS,
+    rim_height: float = DEFAULT_RIM_HEIGHT,
     chunk_size: int = 5_000_000,
     show_progress: bool = True,
 ) -> MergeResult:
@@ -192,7 +261,8 @@ def merge_clouds(
         raise ValueError("output must differ from both inputs")
 
     if refine:
-        transform = icp_refine(aerial_path, tube_path, transform, radius=rim_radius)
+        transform = icp_refine(aerial_path, tube_path, transform,
+                               radius=rim_radius, rim_height=rim_height)
     M = transform.array
 
     fields = ("x", "y", "z")

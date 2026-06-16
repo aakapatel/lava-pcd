@@ -288,8 +288,9 @@ threw out.
 ### `merge` — apply and combine
 ```
 #   -t / --transform   transform .json from `register` (required)
-#        --refine       ICP-refine on the matched rims before merging
-#        --rim-radius   [--refine] radius around each skylight used for ICP
+#        --refine       constrained ICP on the matched rims before merging
+#        --rim-radius   [--refine] horizontal radius around each skylight for ICP
+#        --rim-height   [--refine] vertical band around each opening for ICP
 #        --color / --no-color  keep aerial RGB + elevation-colour the tube (default on)
 #        --cmap         matplotlib colormap for the tube's elevation colour (default viridis)
 #   -s / --source-field  also add a 'source' channel (0=aerial, 1=tube)
@@ -300,10 +301,18 @@ single `.pcd`. By default (`--color`) the merged cloud has a packed `rgb` field:
 **aerial** points keep their own RGB (grey if the aerial cloud has none), and the **tube**
 points are shaded by **elevation** (output-frame Z) with `--cmap` — so the photographic
 surface and the depth-coloured tube read distinctly in `pcl_viewer`. `--no-color` writes a
-plain `x y z` cloud; `--source-field` adds a `0/1` origin channel either way. `--refine`
-runs a small point-to-point ICP **only on the matched skylight rims** (global overlap is
-too small for global ICP). There is also a thin `lava-pcd transform IN OUT transform.json`
-to apply a transform to one cloud.
+plain `x y z` cloud; `--source-field` adds a `0/1` origin channel either way.
+
+`--refine` runs a **constrained** ICP on the matched skylight rims (the two clouds barely
+overlap, so a global ICP would just flatten the tube onto the ground). It is **4-DOF** —
+yaw about the aerial up-axis plus translation, so the tube's *tilt is locked* and it can't
+be laid flat — and it only uses points inside a cylinder (`--rim-radius` wide,
+`--rim-height` tall) around each opening, excluding the deep tube body and far ground.
+`--rim-height` is the key knob: shrink it until the refine stops being pulled toward the
+ground. As a safety net the refinement is **rejected** (the landmark alignment kept, with a
+warning) if it would move the matched skylights by more than `--rim-radius` or make the rim
+fit worse — so it can never make things dramatically worse. There is also a thin
+`lava-pcd transform IN OUT transform.json` to apply a transform to one cloud.
 
 From Python:
 

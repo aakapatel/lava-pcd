@@ -25,8 +25,8 @@ from lava_pcd.holes import (
     show_occupancy,
 )
 from lava_pcd.io.pcd_writer import BinaryPcdWriter
-from lava_pcd.merge import merge_clouds
-from lava_pcd.register import match_constellations, visualize_match
+from lava_pcd.merge import icp_refine, merge_clouds
+from lava_pcd.register import Transform, match_constellations, visualize_match
 
 
 # --------------------------------------------------------------------------- #
@@ -491,6 +491,48 @@ def test_merge_preserves_aerial_rgb_and_colors_tube(tmp_path: Path) -> None:
     # tube coloured by elevation -> a spread of colours, not constant
     tube_bits = np.ascontiguousarray(data[a_n:, 3]).view(np.uint32)
     assert len(np.unique(tube_bits)) > 5
+
+
+def _ring(radius=5.0, n=240, center=(0.0, 0.0), z=0.0):
+    th = np.linspace(0.0, 2 * np.pi, n, endpoint=False)
+    return np.column_stack([center[0] + radius * np.cos(th),
+                            center[1] + radius * np.sin(th), np.full(n, z)])
+
+
+def _identity_tf():
+    return Transform(np.eye(4).tolist(), [(0, 0)], 0.0, "4dof",
+                     (0, 0, 0), (0, 0, 0), aerial_up=(0, 0, 1), anchors=[[0.0, 0.0, 0.0]])
+
+
+def test_icp_refine_corrects_inplane_without_collapse(tmp_path: Path) -> None:
+    rng = np.random.default_rng(0)
+    aerial = _ring(5.0, 240, (0.0, 0.0), 0.0)            # opening rim at z=0
+    tube_ring = _ring(5.0, 240, (1.5, 0.0), 0.0)         # same rim, shifted +1.5 in x
+    # deep tube body well below the opening -- must be excluded by the height band,
+    # else point-to-point ICP would flatten the tube onto the ground.
+    ang = rng.uniform(0, 2 * np.pi, 600); rad = rng.uniform(0, 4, 600)
+    deep = np.column_stack([rad * np.cos(ang), rad * np.sin(ang),
+                            rng.uniform(-15.0, -6.0, 600)])
+    ap, tp = tmp_path / "a.pcd", tmp_path / "t.pcd"
+    _write_pcd(ap, aerial)
+    _write_pcd(tp, np.vstack([tube_ring, deep]))
+
+    ref = icp_refine(ap, tp, _identity_tf(), radius=8.0, rim_height=3.0)
+    M = ref.array
+    assert ref.mode.endswith("+icp")                    # accepted
+    np.testing.assert_allclose(M[:3, :3], np.eye(3), atol=0.1)    # no tilt
+    np.testing.assert_allclose(M[:3, 3], [-1.5, 0.0, 0.0], atol=0.4)  # in-plane fix, no Z collapse
+
+
+def test_icp_refine_rejects_large_correction(tmp_path: Path) -> None:
+    ap, tp = tmp_path / "a.pcd", tmp_path / "t.pcd"
+    _write_pcd(ap, _ring(5.0, 240, (0.0, 0.0), 0.0))
+    _write_pcd(tp, _ring(5.0, 240, (1.5, 0.0), 0.0))
+    # the fit wants a 1.5 shift, but max_shift caps it -> reject, keep landmark
+    ref = icp_refine(ap, tp, _identity_tf(), radius=8.0, rim_height=3.0, max_shift=0.5)
+    assert ref.mode == "4dof"
+    np.testing.assert_allclose(ref.array, np.eye(4), atol=1e-9)
+    assert any("rejected" in w for w in ref.warnings)
 
 
 def test_merge_rejects_output_equal_input(tmp_path: Path) -> None:

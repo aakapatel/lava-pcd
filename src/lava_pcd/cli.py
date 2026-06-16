@@ -36,6 +36,7 @@ from lava_pcd.holes import (
 from lava_pcd.io.laz_reader import DEFAULT_CHUNK_SIZE
 from lava_pcd.merge import (
     DEFAULT_CMAP,
+    DEFAULT_RIM_HEIGHT,
     DEFAULT_RIM_RADIUS,
     apply_transform,
     merge_clouds,
@@ -589,7 +590,12 @@ def merge(
     ),
     rim_radius: float = typer.Option(
         DEFAULT_RIM_RADIUS, "--rim-radius", min=0.0,
-        help="[--refine] radius around each skylight used for ICP.",
+        help="[--refine] horizontal radius around each skylight used for ICP.",
+    ),
+    rim_height: float = typer.Option(
+        DEFAULT_RIM_HEIGHT, "--rim-height", min=0.0,
+        help="[--refine] vertical band around each opening for ICP (excludes the "
+             "deep tube body / far ground that would collapse the fit).",
     ),
     chunk_size: int = typer.Option(
         DEFAULT_CHUNK_SIZE, "--chunk-size", "-c", min=1,
@@ -602,8 +608,8 @@ def merge(
         tf = Transform.from_json(transform)
         result = merge_clouds(
             aerial, tube, output, tf, refine=refine, color=color,
-            elevation_cmap=cmap, source_field=source_field,
-            rim_radius=rim_radius, chunk_size=chunk_size, show_progress=not quiet,
+            elevation_cmap=cmap, source_field=source_field, rim_radius=rim_radius,
+            rim_height=rim_height, chunk_size=chunk_size, show_progress=not quiet,
         )
     except (FileNotFoundError, ValueError) as err:
         typer.secho(f"error: {err}", fg=typer.colors.RED, err=True)
