@@ -20,11 +20,15 @@ from lava_pcd.filtering import (
 from lava_pcd.holes import (
     DEFAULT_CEILING_JUMP,
     DEFAULT_MIN_AREA,
+    DEFAULT_MIN_DENSITY,
     DEFAULT_RESOLUTION,
+    DEFAULT_SMOOTH,
     HoleSet,
-    detect_holes,
+    build_occupancy,
+    detect_skylights,
     pick_holes,
     review_holes,
+    show_occupancy,
 )
 from lava_pcd.io.laz_reader import DEFAULT_CHUNK_SIZE
 from lava_pcd.merge import DEFAULT_RIM_RADIUS, apply_transform, merge_clouds
@@ -330,6 +334,15 @@ def holes(
         DEFAULT_RESOLUTION, "--res", "-r", min=1e-6,
         help="Grid cell size in coordinate units.",
     ),
+    min_density: float = typer.Option(
+        DEFAULT_MIN_DENSITY, "--min-density", min=0.0,
+        help="Cells with fewer points than this count as empty (raise to catch "
+             "less-occupied holes).",
+    ),
+    smooth: float = typer.Option(
+        DEFAULT_SMOOTH, "--smooth", min=0.0,
+        help="Gaussian sigma (cells) to smooth the count image before thresholding.",
+    ),
     min_area: float = typer.Option(
         DEFAULT_MIN_AREA, "--min-area", min=0.0,
         help="Ignore voids smaller than this area (coord units squared).",
@@ -342,7 +355,8 @@ def holes(
         help="[ceiling] ceiling-height deviation flagged as an opening.",
     ),
     show: bool = typer.Option(
-        False, "--show/--no-show", help="Review/edit detections interactively."
+        False, "--show/--no-show",
+        help="Show the occupancy image with detections and let you toggle them.",
     ),
     manual: bool = typer.Option(
         False, "--manual", help="Place skylights by hand instead of detecting."
@@ -354,12 +368,14 @@ def holes(
         if manual:
             holeset = pick_holes(input, up=up_vec, resolution=res)
         else:
-            holeset = detect_holes(
-                input, mode=mode, up=up_vec, resolution=res,
-                min_area=min_area, max_area=max_area, ceiling_jump=ceiling_jump,
+            grid = build_occupancy(input, mode=mode, up=up_vec, resolution=res)
+            holes, hole_cells = detect_skylights(
+                grid, min_area=min_area, max_area=max_area,
+                min_density=min_density, smooth=smooth, ceiling_jump=ceiling_jump,
             )
+            holeset = HoleSet(holes, grid.origin, grid.up, mode, res, str(input))
             if show:
-                holeset = review_holes(holeset, input)
+                holeset = review_holes(grid, holeset, hole_cells)
         holeset.to_json(output)
     except (FileNotFoundError, ValueError, RuntimeError) as err:
         typer.secho(f"error: {err}", fg=typer.colors.RED, err=True)
@@ -376,6 +392,49 @@ def holes(
             f"  #{h.id}: centre ({cx:.2f}, {cy:.2f}, {cz:.2f})  "
             f"r~{h.radius:.2f}  area {h.area:.1f}"
         )
+
+
+@app.command()
+def occupancy(
+    input: Path = typer.Argument(..., help="Input .pcd file."),
+    mode: str = typer.Option(
+        "aerial", "--mode", "-m", help="'aerial' (top-down) or 'ceiling' (along --up)."
+    ),
+    up: str = typer.Option(
+        None, "--up", metavar="X,Y,Z", help="Up-axis for 'ceiling' (estimated if omitted)."
+    ),
+    res: float = typer.Option(
+        DEFAULT_RESOLUTION, "--res", "-r", min=1e-6, help="Grid cell size in coord units."
+    ),
+    min_density: float = typer.Option(
+        None, "--min-density", min=0.0,
+        help="If set, also preview the void mask at this points-per-cell threshold.",
+    ),
+    smooth: float = typer.Option(
+        DEFAULT_SMOOTH, "--smooth", min=0.0,
+        help="Gaussian sigma (cells) to smooth the count image before thresholding.",
+    ),
+    linear: bool = typer.Option(
+        False, "--linear", help="Use a linear colour scale (default is log)."
+    ),
+) -> None:
+    """Show the 2-D occupancy histogram of a cloud (to pick --res / --min-density)."""
+    try:
+        up_vec = _parse_up(up)
+        grid = build_occupancy(input, mode=mode, up=up_vec, resolution=res)
+        hole_cells = None
+        if min_density is not None:
+            _, hole_cells = detect_skylights(grid, min_density=min_density, smooth=smooth)
+    except (FileNotFoundError, ValueError) as err:
+        typer.secho(f"error: {err}", fg=typer.colors.RED, err=True)
+        raise typer.Exit(code=1)
+    nx, ny = grid.counts.shape
+    typer.echo(
+        f"{input.name}: {nx}x{ny} cells @ res {res}  "
+        f"(occupied {(grid.counts > 0).sum():,} / {nx * ny:,})"
+    )
+    show_occupancy(grid, hole_cells=hole_cells, log=not linear,
+                   title=f"{input.name} occupancy ({mode}, res {res:g})")
 
 
 @app.command()

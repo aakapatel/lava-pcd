@@ -180,24 +180,43 @@ lava-pcd register aerial_holes.json tube_holes.json -o transform.json
 lava-pcd merge aerial.pcd tube.pcd merged.pcd -t transform.json --refine --source-field
 ```
 
+### Detection: a 2-D occupancy image
+
+Both modes work by projecting the cloud to a **2-D occupancy histogram** (points per
+cell, looking along the up-axis) and finding **enclosed low-density regions** — that's
+where a skylight is. Inspect that image first to pick good parameters:
+
+```bash
+lava-pcd occupancy aerial.pcd --res 1.0                 # view the count image (log scale)
+lava-pcd occupancy aerial.pcd --res 1.0 --min-density 3 # preview the void mask at a threshold
+```
+
+A skylight rarely reads as *perfectly empty* — a few stray returns land inside it. So a
+cell counts as "ground" only when it holds at least `--min-density` points (raise it to
+turn *less-occupied* holes into voids), optionally after `--smooth`-ing the count image
+to wash out isolated stray points. Tune `--res`, `--min-density`, `--smooth` against the
+`occupancy` view, then run `holes` with the same values.
+
 ### `holes` — detect (or place) skylights
 ```
 #   -m / --mode          aerial (top-down voids) | ceiling (tube roof, along --up)
 #        --up X,Y,Z       up-axis for ceiling/manual mode (estimated if omitted)
 #   -r / --res            grid cell size in coordinate units (default 1.0)
+#        --min-density    points/cell below which a cell is "empty" (default 1)
+#        --smooth         Gaussian sigma (cells) to smooth counts before thresholding
 #        --min-area       ignore voids smaller than this (coord units squared)
 #        --max-area       ignore voids larger than this (optional)
 #        --ceiling-jump   [ceiling] roof-height deviation flagged as an opening
-#        --show           review/toggle detections interactively before saving
+#        --show           show the occupancy image + detections; click to toggle holes
 #        --manual         place skylights by hand (click each centre) — the fallback
 ```
-`aerial` finds **enclosed empty regions** of a top-down occupancy grid (the laser
-passes through a hole and gives no return). `ceiling` first rotates the tube so the
-`--up` axis points up, then flags enclosed cells where the ceiling is missing or
-jumps away from its neighbours. The tube is in an arbitrary SLAM frame, so give a
-known `--up` when you have one; otherwise it is estimated (approximate). `--show`
-lets you drop false positives; `--manual` lets you click skylights directly when
-automatic detection struggles.
+`aerial` finds **enclosed low-density regions** of a top-down occupancy grid (the laser
+passes through a hole and gives few/no returns). `ceiling` first rotates the tube so the
+`--up` axis points up, then flags enclosed cells where the ceiling is missing or jumps
+away from its neighbours. The tube is in an arbitrary SLAM frame, so give a known `--up`
+when you have one; otherwise it is estimated (approximate). `--show` overlays the
+detections on the occupancy image so you can drop false positives; `--manual` lets you
+click skylights directly when automatic detection struggles.
 
 ### `register` — match constellations
 ```

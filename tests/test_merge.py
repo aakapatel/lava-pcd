@@ -12,7 +12,18 @@ from lava_pcd.geometry import (
     rotation_about_axis,
     transform_points,
 )
-from lava_pcd.holes import Hole, HoleSet, detect_holes, estimate_up
+import matplotlib
+matplotlib.use("Agg")  # headless: plt.show() is a no-op, so the viewer is testable
+
+from lava_pcd.holes import (
+    Hole,
+    HoleSet,
+    build_occupancy,
+    detect_holes,
+    detect_skylights,
+    estimate_up,
+    show_occupancy,
+)
 from lava_pcd.io.pcd_writer import BinaryPcdWriter
 from lava_pcd.merge import merge_clouds
 from lava_pcd.register import match_constellations
@@ -146,6 +157,51 @@ def test_detect_aerial_voids(tmp_path: Path) -> None:
     found = sorted((h.centroid[0], h.centroid[1]) for h in hs.holes)
     for (cx, cy), (fx, fy) in zip(sorted(_CENTERS), found):
         assert abs(fx - cx) < 1.5 and abs(fy - cy) < 1.5
+
+
+def _ground_with_sparse_hole(center, radius=6.0, extent=60.0, spacing=0.5):
+    """Dense ground (4 pts/cell) except a disc thinned to exactly 1 pt/cell.
+
+    Inside the disc only the integer-coordinate points survive, so every 1.0-unit
+    cell there keeps exactly one point: occupied at min_density=1 (hole hidden),
+    empty at min_density=2 (hole revealed) -- with no fully empty cells to give it
+    away.
+    """
+    g = np.arange(0.0, extent, spacing)
+    gx, gy = np.meshgrid(g, g)
+    pts = np.column_stack([gx.ravel(), gy.ravel(), np.zeros(gx.size)])
+    inside = (pts[:, 0] - center[0]) ** 2 + (pts[:, 1] - center[1]) ** 2 < radius ** 2
+    on_coarse = np.isclose(pts[:, 0] % 1.0, 0.0) & np.isclose(pts[:, 1] % 1.0, 0.0)
+    keep = ~inside | on_coarse
+    return pts[keep]
+
+
+def test_density_threshold_catches_less_occupied_hole(tmp_path: Path) -> None:
+    # 4 points/cell on the ground; exactly 1 point/cell inside the thinned disc.
+    pcd = tmp_path / "sparse.pcd"
+    _write_pcd(pcd, _ground_with_sparse_hole((30.0, 30.0)))
+
+    # min_density=1: the disc still has returns, so it stays "occupied" -> missed.
+    miss = detect_holes(pcd, mode="aerial", resolution=1.0, min_area=15.0, min_density=1)
+    assert len(miss.holes) == 0
+    # min_density=2: the thinned disc drops below threshold -> detected as a void.
+    hit = detect_holes(pcd, mode="aerial", resolution=1.0, min_area=15.0, min_density=2)
+    assert len(hit.holes) == 1
+    cx, cy, _ = hit.holes[0].centroid
+    assert abs(cx - 30.0) < 2.0 and abs(cy - 30.0) < 2.0
+
+
+def test_occupancy_viewer_runs_headless(tmp_path: Path) -> None:
+    pcd = tmp_path / "aerial.pcd"
+    _write_pcd(pcd, _ground_with_voids(_CENTERS))
+    grid = build_occupancy(pcd, mode="aerial", resolution=1.0)
+    assert grid.counts.shape[0] > 0 and grid.extent[1] > grid.extent[0]
+    holes, mask = detect_skylights(grid, min_area=10.0)
+    assert len(holes) == len(_CENTERS)
+    hs = HoleSet(holes, grid.origin, grid.up, "aerial", 1.0, str(pcd))
+    # non-interactive viewer returns the holeset unchanged and doesn't raise
+    out = show_occupancy(grid, hs, mask, interactive=False)
+    assert out is hs
 
 
 # --------------------------------------------------------------------------- #

@@ -26,7 +26,7 @@ point count.
 from __future__ import annotations
 
 import json
-from dataclasses import asdict, dataclass
+from dataclasses import asdict, dataclass, field
 from pathlib import Path
 
 import numpy as np
@@ -38,6 +38,8 @@ from lava_pcd.io.pcd_reader import BinaryPcdReader
 
 DEFAULT_RESOLUTION = 1.0          # grid cell size in coordinate units (metres)
 DEFAULT_MIN_AREA = 4.0            # ignore voids smaller than this (m^2)
+DEFAULT_MIN_DENSITY = 1.0         # cells with fewer points than this count as empty
+DEFAULT_SMOOTH = 0.0             # Gaussian sigma (cells) applied to counts before threshold
 DEFAULT_CEILING_JUMP = 1.0        # ceiling-height deviation flagged as "open" (m)
 _MAX_GRID_CELLS = 50_000_000      # guard against an absurdly fine grid
 _UP_SAMPLE = 200_000             # points sampled for up-axis estimation
@@ -167,13 +169,26 @@ def estimate_up(xyz: np.ndarray, k: int = 30) -> tuple[float, float, float]:
 # grid accumulation (streamed)
 # --------------------------------------------------------------------------- #
 @dataclass
-class _Grid:
+class Occupancy:
+    """A 2-D occupancy histogram of a cloud, taken looking along its up-axis.
+
+    ``counts[ix, iy]`` is the number of points whose up-rotated XY falls in cell
+    ``(ix, iy)``; this is the image you inspect to see skylights (low/zero count
+    regions). ``zmax`` is the per-cell ceiling height (used by ``ceiling`` mode).
+    The cloud was rotated by ``R`` (up -> +Z) before binning, so ``R`` maps the
+    cloud's local frame into this working frame and ``R.T`` maps back.
+    """
+
     counts: np.ndarray   # (nx, ny) int
     zsum: np.ndarray     # (nx, ny) float, sum of z (working frame)
     zmax: np.ndarray     # (nx, ny) float, max z (-inf where empty)
     xmin: float
     ymin: float
     res: float
+    R: np.ndarray = field(default_factory=lambda: np.eye(3))
+    up: tuple[float, float, float] = (0.0, 0.0, 1.0)
+    origin: tuple[float, float, float] = (0.0, 0.0, 0.0)
+    mode: str = "aerial"
 
     @property
     def meanz(self) -> np.ndarray:
@@ -181,6 +196,17 @@ class _Grid:
         occ = self.counts > 0
         out[occ] = self.zsum[occ] / self.counts[occ]
         return out
+
+    @property
+    def extent(self) -> list[float]:
+        """``[x0, x1, y0, y1]`` in working-frame coords (for ``imshow``)."""
+        nx, ny = self.counts.shape
+        return [self.xmin, self.xmin + nx * self.res,
+                self.ymin, self.ymin + ny * self.res]
+
+
+# Backwards-compatible alias (older name used internally).
+_Grid = Occupancy
 
 
 def _accumulate_grid(input_path: Path, R: np.ndarray, res: float) -> _Grid:
@@ -223,23 +249,47 @@ def _accumulate_grid(input_path: Path, R: np.ndarray, res: float) -> _Grid:
 # --------------------------------------------------------------------------- #
 # detection
 # --------------------------------------------------------------------------- #
-def _hole_cells_aerial(grid: _Grid) -> np.ndarray:
-    """Enclosed empty cells of the occupancy grid (the void skylights)."""
-    occ = grid.counts > 0
+def _occupied_mask(
+    grid: Occupancy, min_density: float, smooth: float
+) -> np.ndarray:
+    """Boolean "occupied ground" mask from the density image.
+
+    A cell counts as occupied when it holds at least ``min_density`` points
+    (optionally after Gaussian-smoothing the count image by ``smooth`` cells, so
+    a few stray returns inside a hole don't keep it "occupied"). Raising
+    ``min_density`` turns *less-occupied* skylights into voids, not just empty
+    ones.
+    """
+    counts = grid.counts.astype(np.float64)
+    if smooth > 0:
+        counts = ndi.gaussian_filter(counts, smooth)
+    return counts >= min_density
+
+
+def _hole_cells_aerial(
+    grid: Occupancy, min_density: float, smooth: float
+) -> tuple[np.ndarray, np.ndarray]:
+    """Enclosed low-density cells of the occupancy grid (the void skylights).
+
+    Returns ``(hole_cells, occ)`` so callers can visualise the occupied mask too.
+    """
+    occ = _occupied_mask(grid, min_density, smooth)
     filled = ndi.binary_fill_holes(occ)
-    return filled & ~occ
+    return filled & ~occ, occ
 
 
-def _hole_cells_ceiling(grid: _Grid, jump: float, win: int = 7) -> np.ndarray:
+def _hole_cells_ceiling(
+    grid: Occupancy, jump: float, min_density: float, smooth: float, win: int = 7
+) -> tuple[np.ndarray, np.ndarray]:
     """Enclosed cells where the ceiling is missing or deviates from its neighbours."""
-    occ = grid.counts > 0
+    occ = _occupied_mask(grid, min_density, smooth)
     H = grid.zmax.copy()
     # Fill empty cells with the global ceiling median so the local filter is stable.
     H_filled = np.where(occ, H, np.median(H[occ]) if occ.any() else 0.0)
     local = ndi.median_filter(H_filled, size=win, mode="nearest")
     anomaly = occ & (np.abs(H - local) > jump)
     empty_enclosed = ndi.binary_fill_holes(occ) & ~occ
-    return anomaly | empty_enclosed
+    return (anomaly | empty_enclosed), occ
 
 
 def _components_to_holes(
@@ -278,6 +328,69 @@ def _components_to_holes(
     return holes
 
 
+def _resolve_up(
+    input_path: Path, mode: str, up: tuple[float, float, float] | None
+) -> tuple[float, float, float]:
+    if up is not None:
+        return tuple(normalize(np.asarray(up, dtype=np.float64)))
+    if mode == "ceiling":
+        return estimate_up(_load_sample(input_path, _UP_SAMPLE))
+    return (0.0, 0.0, 1.0)
+
+
+def build_occupancy(
+    input_path: str | Path,
+    mode: str = "aerial",
+    up: tuple[float, float, float] | None = None,
+    resolution: float = DEFAULT_RESOLUTION,
+) -> Occupancy:
+    """Project ``input_path`` to a 2-D occupancy histogram (looking along up).
+
+    This is the image to inspect when tuning detection: skylights show up as
+    low/zero-count regions. ``mode`` ``"aerial"`` bins top-down (up = ``+Z``);
+    ``"ceiling"`` rotates by ``up`` (given or estimated) first. Returns an
+    :class:`Occupancy` carrying the count image plus the frame it was taken in.
+    """
+    input_path = Path(input_path)
+    if input_path.suffix.lower() != ".pcd":
+        raise ValueError("hole detection works on a .pcd input")
+    if mode not in ("aerial", "ceiling"):
+        raise ValueError(f"mode must be 'aerial' or 'ceiling', got {mode!r}")
+    with BinaryPcdReader(input_path) as reader:
+        origin = reader.origin
+    up_vec = _resolve_up(input_path, mode, up)
+    R = rotation_align(np.asarray(up_vec), np.array([0.0, 0.0, 1.0]))
+    grid = _accumulate_grid(input_path, R, resolution)
+    grid.R = R
+    grid.up = up_vec
+    grid.origin = origin
+    grid.mode = mode
+    return grid
+
+
+def detect_skylights(
+    grid: Occupancy,
+    min_area: float = DEFAULT_MIN_AREA,
+    max_area: float | None = None,
+    min_density: float = DEFAULT_MIN_DENSITY,
+    smooth: float = DEFAULT_SMOOTH,
+    ceiling_jump: float = DEFAULT_CEILING_JUMP,
+) -> tuple[list[Hole], np.ndarray]:
+    """Find skylights in a prebuilt :class:`Occupancy`. Returns ``(holes, mask)``.
+
+    ``mask`` is the boolean grid of detected hole cells (handy to overlay on the
+    occupancy image). See :func:`detect_holes` for the parameter meanings.
+    """
+    if grid.mode == "aerial":
+        hole_cells, _ = _hole_cells_aerial(grid, min_density, smooth)
+    else:
+        hole_cells, _ = _hole_cells_ceiling(grid, ceiling_jump, min_density, smooth)
+    holes = _components_to_holes(hole_cells, grid, grid.R, min_area, max_area)
+    for i, h in enumerate(holes):  # renumber after area filtering
+        h.id = i
+    return holes, hole_cells
+
+
 def detect_holes(
     input_path: str | Path,
     mode: str = "aerial",
@@ -285,51 +398,32 @@ def detect_holes(
     resolution: float = DEFAULT_RESOLUTION,
     min_area: float = DEFAULT_MIN_AREA,
     max_area: float | None = None,
+    min_density: float = DEFAULT_MIN_DENSITY,
+    smooth: float = DEFAULT_SMOOTH,
     ceiling_jump: float = DEFAULT_CEILING_JUMP,
 ) -> HoleSet:
     """Detect skylight holes in ``input_path`` and return a :class:`HoleSet`.
 
-    ``mode`` is ``"aerial"`` (enclosed voids in a top-down occupancy grid, up =
-    ``+Z``) or ``"ceiling"`` (the tube ceiling, viewed along ``up``). For
-    ``"ceiling"`` the ``up`` axis is used if given, else estimated. Centroids are
-    returned in the cloud's **local** frame, alongside the ``up`` and ``origin``
-    so :mod:`lava_pcd.register` can reconcile the two clouds.
+    ``mode`` is ``"aerial"`` (enclosed low-density regions in a top-down
+    occupancy grid, up = ``+Z``) or ``"ceiling"`` (the tube ceiling, viewed along
+    ``up`` -- given or estimated). A cell counts as ground when it holds at least
+    ``min_density`` points (optionally after Gaussian smoothing the count image by
+    ``smooth`` cells), so *less-occupied* skylights are caught, not only empty
+    ones. ``min_area`` / ``max_area`` filter candidates by footprint. Centroids
+    are returned in the cloud's **local** frame, alongside ``up`` and ``origin``.
     """
-    input_path = Path(input_path)
-    if input_path.suffix.lower() != ".pcd":
-        raise ValueError("hole detection works on a .pcd input")
-    if mode not in ("aerial", "ceiling"):
-        raise ValueError(f"mode must be 'aerial' or 'ceiling', got {mode!r}")
-
-    with BinaryPcdReader(input_path) as reader:
-        origin = reader.origin
-
-    if up is not None:
-        up_vec = tuple(normalize(np.asarray(up, dtype=np.float64)))
-    elif mode == "ceiling":
-        up_vec = estimate_up(_load_sample(input_path, _UP_SAMPLE))
-    else:
-        up_vec = (0.0, 0.0, 1.0)
-
-    R = rotation_align(np.asarray(up_vec), np.array([0.0, 0.0, 1.0]))
-    grid = _accumulate_grid(input_path, R, resolution)
-
-    if mode == "aerial":
-        hole_cells = _hole_cells_aerial(grid)
-    else:
-        hole_cells = _hole_cells_ceiling(grid, ceiling_jump)
-
-    holes = _components_to_holes(hole_cells, grid, R, min_area, max_area)
-    # Renumber sequentially after filtering.
-    for i, h in enumerate(holes):
-        h.id = i
+    grid = build_occupancy(input_path, mode=mode, up=up, resolution=resolution)
+    holes, _ = detect_skylights(
+        grid, min_area=min_area, max_area=max_area, min_density=min_density,
+        smooth=smooth, ceiling_jump=ceiling_jump,
+    )
     return HoleSet(
         holes=holes,
-        origin=origin,
-        up=up_vec,
+        origin=grid.origin,
+        up=grid.up,
         mode=mode,
         resolution=resolution,
-        source_path=str(input_path),
+        source_path=str(Path(input_path)),
     )
 
 
@@ -342,57 +436,92 @@ def _rotated_sample(input_path: Path, up_vec: tuple[float, float, float], max_po
     return sample @ R.T, R
 
 
-def review_holes(
-    holeset: HoleSet, input_path: str | Path, max_display_points: int = 500_000
-) -> HoleSet:
-    """Show detected holes over a top-down scatter; click holes to toggle/keep them.
+def show_occupancy(
+    grid: Occupancy,
+    holeset: HoleSet | None = None,
+    hole_cells: np.ndarray | None = None,
+    interactive: bool = False,
+    log: bool = True,
+    title: str = "",
+) -> HoleSet | None:
+    """Render the 2-D occupancy histogram, optionally with detected skylights.
 
-    Holes are drawn as numbered circles in the up-rotated (top-down) view. Left
-    click toggles the nearest hole on/off; close the window to accept. Returns a
-    new :class:`HoleSet` with only the kept holes.
+    The count image is shown with ``imshow`` (log scale by default, so sparse
+    returns inside holes stay visible); detected hole cells are tinted red and
+    each :class:`Hole` is drawn as a numbered circle. With ``interactive=True``
+    and a ``holeset``, left-clicking a circle toggles that hole on/off and the
+    kept :class:`HoleSet` is returned when the window is closed. Otherwise this
+    is purely a viewer and returns ``holeset`` unchanged (or ``None``).
     """
     import matplotlib.pyplot as plt
 
-    input_path = Path(input_path)
-    work, R = _rotated_sample(input_path, holeset.up, max_display_points)
-    cent_local = holeset.centroids()
-    cent_work = cent_local @ R.T if len(cent_local) else cent_local
-    keep = [True] * len(holeset.holes)
+    nx, ny = grid.counts.shape
+    counts = grid.counts.astype(np.float64)
+    img = (np.log1p(counts) if log else counts).T  # transpose -> (row=y, col=x)
 
-    fig, ax = plt.subplots(figsize=(10, 8))
-    if len(work):
-        ax.scatter(work[:, 0], work[:, 1], c=work[:, 2], s=0.5, marker=".", linewidths=0,
-                   cmap="viridis")
-    ax.set_aspect("equal")
-    ax.set_title(f"{input_path.name} — click a circle to keep/drop it, then close")
+    fig, ax = plt.subplots(figsize=(11, 8))
+    im = ax.imshow(img, origin="lower", extent=grid.extent, cmap="viridis",
+                   aspect="equal", interpolation="nearest")
+    fig.colorbar(im, ax=ax,
+                 label=("log(1 + points)" if log else "points") + " per cell")
     ax.set_xlabel("up-plane a"); ax.set_ylabel("up-plane b")
+    ax.set_title(title or "occupancy histogram "
+                 f"({grid.mode}, res {grid.res:g})")
 
+    if hole_cells is not None and hole_cells.any():
+        rgba = np.zeros((ny, nx, 4))
+        rgba[..., 0] = 1.0                       # red
+        rgba[..., 3] = hole_cells.T.astype(float) * 0.45
+        ax.imshow(rgba, origin="lower", extent=grid.extent, aspect="equal",
+                  interpolation="nearest")
+
+    keep: list[bool] = []
     artists = []
-    for i, (cx, cy) in enumerate(cent_work[:, :2] if len(cent_work) else []):
-        circ = plt.Circle((cx, cy), holeset.holes[i].radius, fill=False,
-                          color="red", lw=2)
-        ax.add_patch(circ)
-        txt = ax.text(cx, cy, str(i), color="red", ha="center", va="center")
-        artists.append((circ, txt))
+    cent_work = np.empty((0, 2))
+    if holeset is not None and holeset.holes:
+        cent_work = (holeset.centroids() @ grid.R.T)[:, :2]
+        keep = [True] * len(holeset.holes)
+        for i, (cx, cy) in enumerate(cent_work):
+            circ = plt.Circle((cx, cy), max(holeset.holes[i].radius, grid.res),
+                              fill=False, color="red", lw=2)
+            ax.add_patch(circ)
+            txt = ax.text(cx, cy, str(i), color="white", ha="center", va="center",
+                          fontsize=8)
+            artists.append((circ, txt))
 
-    def on_click(event):
-        if event.inaxes != ax or event.xdata is None or not len(cent_work):
-            return
-        d = np.hypot(cent_work[:, 0] - event.xdata, cent_work[:, 1] - event.ydata)
-        i = int(np.argmin(d))
-        keep[i] = not keep[i]
-        artists[i][0].set_color("green" if not keep[i] else "red")
-        artists[i][0].set_linestyle(":" if not keep[i] else "-")
-        fig.canvas.draw_idle()
+    if interactive and len(cent_work):
+        ax.set_title(title or "click a circle to keep/drop it, then close")
 
-    fig.canvas.mpl_connect("button_press_event", on_click)
+        def on_click(event):
+            if event.inaxes != ax or event.xdata is None:
+                return
+            d = np.hypot(cent_work[:, 0] - event.xdata, cent_work[:, 1] - event.ydata)
+            i = int(np.argmin(d))
+            keep[i] = not keep[i]
+            artists[i][0].set_color("lime" if not keep[i] else "red")
+            artists[i][0].set_linestyle(":" if not keep[i] else "-")
+            fig.canvas.draw_idle()
+
+        fig.canvas.mpl_connect("button_press_event", on_click)
+
     plt.show()
 
+    if holeset is None:
+        return None
+    if not interactive:
+        return holeset
     kept = [h for h, k in zip(holeset.holes, keep) if k]
     for i, h in enumerate(kept):
         h.id = i
     return HoleSet(kept, holeset.origin, holeset.up, holeset.mode,
                    holeset.resolution, holeset.source_path)
+
+
+def review_holes(
+    grid: Occupancy, holeset: HoleSet, hole_cells: np.ndarray | None = None
+) -> HoleSet:
+    """Interactive review over the occupancy image (see :func:`show_occupancy`)."""
+    return show_occupancy(grid, holeset, hole_cells, interactive=True)
 
 
 def pick_holes(

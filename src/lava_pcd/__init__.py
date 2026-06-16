@@ -6,10 +6,14 @@ from lava_pcd.filtering import filter_pcd
 from lava_pcd.holes import (
     Hole,
     HoleSet,
+    Occupancy,
+    build_occupancy,
     detect_holes,
+    detect_skylights,
     estimate_up,
     pick_holes,
     review_holes,
+    show_occupancy,
 )
 from lava_pcd.merge import MergeResult, apply_transform, icp_refine, merge_clouds
 from lava_pcd.register import Transform, match_constellations
@@ -23,11 +27,15 @@ __all__ = [
     "select_rectangle",
     "filter_pcd",
     "detect_holes",
+    "detect_skylights",
+    "build_occupancy",
+    "show_occupancy",
     "estimate_up",
     "review_holes",
     "pick_holes",
     "Hole",
     "HoleSet",
+    "Occupancy",
     "match_constellations",
     "Transform",
     "merge_clouds",
