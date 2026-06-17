@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+from dataclasses import replace
 from pathlib import Path
 
 import numpy as np
@@ -25,7 +26,7 @@ from lava_pcd.holes import (
     show_occupancy,
 )
 from lava_pcd.io.pcd_writer import BinaryPcdWriter
-from lava_pcd.merge import icp_refine, merge_clouds, visualize_rims
+from lava_pcd.merge import _gather_rim, icp_refine, merge_clouds, visualize_rims
 from lava_pcd.register import (
     Transform,
     match_constellations,
@@ -514,7 +515,7 @@ def test_icp_refine_corrects_inplane_without_collapse(tmp_path: Path) -> None:
     aerial = _ring(5.0, 240, (0.0, 0.0), 0.0)            # opening rim at z=0
     tube_ring = _ring(5.0, 240, (1.5, 0.0), 0.0)         # same rim, shifted +1.5 in x
     # deep tube body well below the opening -- must be excluded by the height band,
-    # else point-to-point ICP would flatten the tube onto the ground.
+    # else GICP would have rim points to drag the tube down onto the ground.
     ang = rng.uniform(0, 2 * np.pi, 600); rad = rng.uniform(0, 4, 600)
     deep = np.column_stack([rad * np.cos(ang), rad * np.sin(ang),
                             rng.uniform(-15.0, -6.0, 600)])
@@ -524,9 +525,74 @@ def test_icp_refine_corrects_inplane_without_collapse(tmp_path: Path) -> None:
 
     ref = icp_refine(ap, tp, _identity_tf(), radius=8.0, rim_height=3.0)
     M = ref.array
-    assert ref.mode.endswith("+icp")                    # accepted
+    assert ref.mode.endswith("+gicp4")                  # accepted, 4-DOF
     np.testing.assert_allclose(M[:3, :3], np.eye(3), atol=0.1)    # no tilt
     np.testing.assert_allclose(M[:3, 3], [-1.5, 0.0, 0.0], atol=0.4)  # in-plane fix, no Z collapse
+
+
+def test_icp_refine_6dof_corrects_inplane(tmp_path: Path) -> None:
+    rng = np.random.default_rng(0)
+    aerial = _ring(5.0, 240, (0.0, 0.0), 0.0)
+    tube_ring = _ring(5.0, 240, (1.5, 0.0), 0.0)
+    ang = rng.uniform(0, 2 * np.pi, 600); rad = rng.uniform(0, 4, 600)
+    deep = np.column_stack([rad * np.cos(ang), rad * np.sin(ang),
+                            rng.uniform(-15.0, -6.0, 600)])
+    ap, tp = tmp_path / "a.pcd", tmp_path / "t.pcd"
+    _write_pcd(ap, aerial)
+    _write_pcd(tp, np.vstack([tube_ring, deep]))
+
+    ref = icp_refine(ap, tp, _identity_tf(), radius=8.0, rim_height=3.0, dof=6)
+    assert ref.mode.endswith("+gicp6")                  # accepted, full rigid
+    np.testing.assert_allclose(ref.array[:3, 3], [-1.5, 0.0, 0.0], atol=0.4)
+
+
+def test_icp_refine_invalid_dof(tmp_path: Path) -> None:
+    ap, tp = tmp_path / "a.pcd", tmp_path / "t.pcd"
+    _write_pcd(ap, _ring(5.0, 240, (0.0, 0.0), 0.0))
+    _write_pcd(tp, _ring(5.0, 240, (1.5, 0.0), 0.0))
+    with pytest.raises(ValueError):
+        icp_refine(ap, tp, _identity_tf(), dof=5)
+
+
+def test_gather_rim_follows_inflated_ellipse(tmp_path: Path) -> None:
+    # dense roof grid; one anchor with an ellipse elongated along +x (semi 5) and
+    # thin along y (semi 1), major axis = [1, 0, 0].
+    g = np.linspace(-8.0, 8.0, 33)                       # 0.5 m spacing
+    X, Y = np.meshgrid(g, g)
+    P = np.column_stack([X.ravel(), Y.ravel(), np.zeros(X.size)])
+    p = tmp_path / "grid.pcd"
+    _write_pcd(p, P)
+    anchors = np.array([[0.0, 0.0, 0.0]])
+    up = np.array([0.0, 0.0, 1.0])
+    axes = np.array([[5.0, 1.0, 1.0, 0.0, 0.0]])
+
+    rim = _gather_rim(p, anchors, up, radius=15.0, height=1.0, axes=axes, inflate=1.0)
+    xy = rim[:, :2]
+    assert len(rim) > 0
+    assert np.all((xy[:, 0] / 5.0) ** 2 + (xy[:, 1] / 1.0) ** 2 <= 1.0 + 1e-9)  # inside ellipse
+    assert np.any((np.abs(xy[:, 0] - 4.5) < 0.3) & (np.abs(xy[:, 1]) < 0.3))    # reaches along major
+    assert not np.any(np.abs(xy[:, 1]) > 1.0 + 1e-9)                            # thin across minor
+
+    bigger = _gather_rim(p, anchors, up, radius=15.0, height=1.0, axes=axes, inflate=2.0)
+    assert len(bigger) > len(rim)                        # inflation grows the patch
+
+
+def test_icp_refine_uses_ellipse_axes(tmp_path: Path) -> None:
+    # same ring scenario as the 4-DOF test, but the rim is gathered from the
+    # anchor's ellipse (a circle of semi 8) instead of a fallback radius.
+    rng = np.random.default_rng(0)
+    aerial = _ring(5.0, 240, (0.0, 0.0), 0.0)
+    ang = rng.uniform(0, 2 * np.pi, 600); rad = rng.uniform(0, 4, 600)
+    deep = np.column_stack([rad * np.cos(ang), rad * np.sin(ang),
+                            rng.uniform(-15.0, -6.0, 600)])
+    ap, tp = tmp_path / "a.pcd", tmp_path / "t.pcd"
+    _write_pcd(ap, aerial)
+    _write_pcd(tp, np.vstack([_ring(5.0, 240, (1.5, 0.0), 0.0), deep]))
+
+    tf = replace(_identity_tf(), anchor_axes=[[8.0, 8.0, 1.0, 0.0, 0.0]])
+    ref = icp_refine(ap, tp, tf, rim_height=3.0, rim_inflate=1.0)
+    assert ref.mode.endswith("+gicp4")
+    np.testing.assert_allclose(ref.array[:3, 3], [-1.5, 0.0, 0.0], atol=0.4)
 
 
 def test_visualize_rims_headless(tmp_path: Path) -> None:
@@ -536,6 +602,18 @@ def test_visualize_rims_headless(tmp_path: Path) -> None:
     tf = _identity_tf()
     ref = icp_refine(ap, tp, tf, radius=8.0, rim_height=3.0)
     visualize_rims(ap, tp, tf, refined=ref, radius=8.0, rim_height=3.0)  # must not raise
+
+
+def test_merge_show_rims_runs(tmp_path: Path) -> None:
+    # merge_clouds(show_rims=True) must drive visualize_rims without raising
+    # (regression: the internal call once used a stale `height=` keyword).
+    ap, tp = tmp_path / "a.pcd", tmp_path / "t.pcd"
+    _write_pcd(ap, _ring(5.0, 240, (0.0, 0.0), 0.0))
+    _write_pcd(tp, _ring(5.0, 240, (1.5, 0.0), 0.0))
+    out = tmp_path / "merged.pcd"
+    res = merge_clouds(ap, tp, out, _identity_tf(), refine=True, show_rims=True,
+                       rim_radius=8.0, rim_height=3.0, color=False, show_progress=False)
+    assert out.exists() and res.point_count == 480
 
 
 def test_icp_refine_rejects_large_correction(tmp_path: Path) -> None:

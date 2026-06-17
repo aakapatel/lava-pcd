@@ -4,9 +4,10 @@ Given a :class:`~lava_pcd.register.Transform` (tube-local -> aerial-local), this
 module:
 
 * :func:`apply_transform` -- streams a cloud and writes it rotated+translated.
-* :func:`icp_refine` -- a small point-to-point ICP run **only on the matched
-  skylight rims** (global overlap is too small for global ICP), to tighten the
-  landmark-based alignment.
+* :func:`icp_refine` -- a small **GICP** (via ``small_gicp``) run **only on the
+  matched skylight rims** (global overlap is too small for global ICP), to tighten
+  the landmark-based alignment; optionally constrained to 4-DOF (yaw + translation)
+  so the tilted tube can't be flattened onto the ground.
 * :func:`merge_clouds` -- transforms the tube into the aerial frame and writes a
   single combined cloud (optionally with a ``source`` channel so the two inputs
   can be told apart in a viewer).
@@ -17,6 +18,7 @@ bounded.
 
 from __future__ import annotations
 
+import os
 from dataclasses import dataclass, replace
 from pathlib import Path
 
@@ -34,10 +36,18 @@ from lava_pcd.io.pcd_reader import BinaryPcdReader
 from lava_pcd.io.pcd_writer import BinaryPcdWriter
 from lava_pcd.register import Transform
 
-DEFAULT_RIM_RADIUS = 15.0   # horizontal radius around each skylight used for ICP
+DEFAULT_RIM_RADIUS = 15.0   # fallback horizontal radius when a hole has no ellipse
+DEFAULT_RIM_INFLATE = 1.5   # factor each hole's ellipse semi-axes are grown by for the rim
 DEFAULT_RIM_HEIGHT = 6.0    # vertical band around each opening used for ICP (coord units)
-DEFAULT_ICP_ITERS = 30
 DEFAULT_CMAP = "viridis"    # elevation colormap for the tube in a merged cloud
+
+# --- small_gicp rim-refinement tunables (edit here to tune `merge --refine`) ---
+DEFAULT_GICP_TYPE = "GICP"       # registration_type: 'ICP' | 'PLANE_ICP' | 'GICP' | 'VGICP'
+DEFAULT_GICP_MAX_CORR = .0      # max_correspondence_distance (m): cap on rim-point matches
+DEFAULT_GICP_DOWNSAMPLE = 0.5   # downsampling_resolution (m): voxel size the rims are reduced to
+DEFAULT_GICP_VOXEL = 1.0         # voxel_resolution (m): correspondence voxels, VGICP only
+DEFAULT_GICP_ITERS = 30          # max_iterations for the GICP optimisation
+DEFAULT_GICP_THREADS = min(8, os.cpu_count() or 1)  # num_threads for GICP
 
 
 @dataclass
@@ -94,44 +104,64 @@ def _plane_basis(up: np.ndarray) -> tuple[np.ndarray, np.ndarray]:
     return e1, e2
 
 
-def _fit_4dof(src: np.ndarray, dst: np.ndarray, up: np.ndarray) -> np.ndarray:
-    """Best **yaw-about-up + translation** mapping ``src`` onto ``dst`` (4x4).
+def _import_small_gicp():
+    """Import ``small_gicp`` lazily so the rest of the package works without it."""
+    try:
+        import small_gicp
+    except ImportError as e:  # pragma: no cover - exercised only when missing
+        raise ImportError(
+            "icp_refine needs the 'small_gicp' package for GICP rim refinement; "
+            "install it with `pip install small_gicp`."
+        ) from e
+    return small_gicp
 
-    Constrained rigid fit: the rotation is only about ``up`` (so the tube's tilt
-    can't change), solved as a 2-D Procrustes in the up-plane plus a 1-D height
-    offset. This is what stops ICP from laying the tube flat on the ground.
+
+def _project_to_4dof(matrix: np.ndarray, up: np.ndarray, src_centroid: np.ndarray) -> np.ndarray:
+    """Project a 6-DOF rigid transform onto **yaw-about-up + translation** (4-DOF).
+
+    Keeps only the rotation component about ``up`` -- dropping any pitch/roll, so the
+    tube's tilt is fixed and it cannot be flattened onto the ground -- then adjusts
+    the translation (``t4 = t + (R - R4) @ src_centroid``) so the constrained map is
+    the least-squares-closest 4-DOF transform to ``matrix`` over points near the
+    rim centroid.
     """
     up = normalize(up)
+    R, t = matrix[:3, :3], matrix[:3, 3]
     e1, e2 = _plane_basis(up)
-    s2 = np.column_stack([src @ e1, src @ e2])
-    d2 = np.column_stack([dst @ e1, dst @ e2])
-    cs, cd = s2.mean(axis=0), d2.mean(axis=0)
-    H = (s2 - cs).T @ (d2 - cd)
-    U, _, Vt = np.linalg.svd(H)
-    D = np.diag([1.0, np.sign(np.linalg.det(Vt.T @ U.T))])
-    R2 = Vt.T @ D @ U.T
-    ang = float(np.arctan2(R2[1, 0], R2[0, 0]))
-    t2 = cd - R2 @ cs
-    dz = float(np.mean(dst @ up - src @ up))
-    R = rotation_about_axis(up, ang)
-    t = e1 * t2[0] + e2 * t2[1] + up * dz
-    return as_matrix(R, t)
+    Re1 = R @ e1
+    yaw = float(np.arctan2(Re1 @ e2, Re1 @ e1))
+    R4 = rotation_about_axis(up, yaw)
+    t4 = t + (R - R4) @ src_centroid
+    return as_matrix(R4, t4)
 
 
 def _gather_rim(
     input_path: Path, anchors: np.ndarray, up: np.ndarray, radius: float,
     height: float, matrix: np.ndarray | None = None,
+    axes: np.ndarray | None = None, inflate: float = 1.0,
 ) -> np.ndarray:
-    """Stream a cloud and keep XYZ inside a **cylinder** around the nearest anchor:
-    horizontal distance ``<= radius`` and vertical (along ``up``) ``<= height``.
+    """Stream a cloud and keep XYZ near the nearest anchor's opening.
 
-    The height band keeps only points near each opening's level, excluding the deep
-    tube body and far ground that point-to-point ICP would otherwise collapse
-    together. If ``matrix`` is given, points are transformed before the test but the
-    **original** coordinates are returned (so ICP can re-apply an evolving matrix).
+    The vertical gate is always a band ``<= height`` (along ``up``) -- it keeps only
+    points near each opening's level, excluding the deep tube body and far ground
+    that GICP would otherwise try to collapse together. The horizontal gate is
+    **per hole**: if ``axes`` is given (``(M, 5)`` rows ``[semi_major, semi_minor,
+    mx, my, mz]`` from :attr:`Transform.anchor_axes`), a point must fall inside that
+    anchor's ellipse grown by ``inflate``; otherwise it falls back to a circle of
+    ``radius`` (so transforms without ellipse data still work).
+
+    If ``matrix`` is given, points are transformed before the test but the
+    **original** coordinates are returned (so the caller can re-apply an evolving
+    matrix).
     """
     up = normalize(up)
     tree = cKDTree(anchors)
+    if axes is not None:
+        semis = np.maximum(axes[:, :2] * inflate, 1e-6)        # (M, 2) inflated semi-axes
+        major = axes[:, 2:5]
+        major = major / np.linalg.norm(major, axis=1, keepdims=True)
+        minor = np.cross(up, major)
+        minor = minor / np.linalg.norm(minor, axis=1, keepdims=True)
     kept: list[np.ndarray] = []
     with BinaryPcdReader(input_path) as reader:
         for chunk in reader.chunks():
@@ -140,11 +170,26 @@ def _gather_rim(
             _, j = tree.query(probe, k=1, workers=-1)
             dvec = probe - anchors[j]
             dz = dvec @ up
-            horiz = np.linalg.norm(dvec - np.outer(dz, up), axis=1)
-            mask = (horiz <= radius) & (np.abs(dz) <= height)
+            if axes is None:
+                horiz = np.linalg.norm(dvec - np.outer(dz, up), axis=1)
+                in_plane = horiz <= radius
+            else:
+                plane = dvec - dz[:, None] * up                # in-plane component
+                u = np.einsum("ij,ij->i", plane, major[j])
+                v = np.einsum("ij,ij->i", plane, minor[j])
+                in_plane = (u / semis[j, 0]) ** 2 + (v / semis[j, 1]) ** 2 <= 1.0
+            mask = in_plane & (np.abs(dz) <= height)
             if mask.any():
                 kept.append(xyz[mask])
     return np.concatenate(kept) if kept else np.empty((0, 3), dtype=np.float64)
+
+
+def _anchor_axes(transform: Transform, n_anchors: int) -> np.ndarray | None:
+    """``(M, 5)`` ellipse array from ``transform``, or ``None`` if absent/malformed."""
+    if not transform.anchor_axes:
+        return None
+    axes = np.asarray(transform.anchor_axes, dtype=np.float64)
+    return axes if axes.shape == (n_anchors, 5) else None
 
 
 def icp_refine(
@@ -153,21 +198,38 @@ def icp_refine(
     transform: Transform,
     radius: float = DEFAULT_RIM_RADIUS,
     rim_height: float = DEFAULT_RIM_HEIGHT,
-    max_iters: int = DEFAULT_ICP_ITERS,
+    rim_inflate: float = DEFAULT_RIM_INFLATE,
+    dof: int = 4,
+    reg_type: str = DEFAULT_GICP_TYPE,
+    max_corr_dist: float = DEFAULT_GICP_MAX_CORR,
+    downsample: float = DEFAULT_GICP_DOWNSAMPLE,
+    voxel_resolution: float = DEFAULT_GICP_VOXEL,
+    max_iters: int = DEFAULT_GICP_ITERS,
+    num_threads: int = DEFAULT_GICP_THREADS,
     max_shift: float | None = None,
-    tol: float = 1e-4,
 ) -> Transform:
-    """Refine ``transform`` with a **constrained** ICP on the matched skylight rims.
+    """Refine ``transform`` with **GICP** (via ``small_gicp``) on the matched rims.
 
-    Only points within a cylinder (``radius`` horizontally, ``rim_height``
-    vertically) of each matched rim centre (``transform.anchors``, aerial frame) are
-    used, and the fit is **4-DOF** (yaw about the aerial up-axis + translation), so
-    the tube's tilt is fixed and it cannot be flattened onto the ground. Far
-    correspondences are trimmed each iteration. As a safety net the result is
-    **rejected** -- the landmark alignment kept, with a warning -- if it moves the
-    matched skylights by more than ``max_shift`` (default: ``radius``) or makes the
-    rim RMS worse.
+    The rim of each matched skylight is gathered per hole: points within that hole's
+    ellipse (:attr:`Transform.anchor_axes`, aerial frame) grown by ``rim_inflate``
+    and within ``rim_height`` of its opening level. Holes without ellipse data fall
+    back to a ``radius`` circle. Only these rim patches are registered -- the global
+    overlap is too small for full-cloud registration; the aerial rim is the GICP
+    target, the tube rim the source, and the landmark transform the initial guess.
+
+    ``dof`` selects the result's degrees of freedom: ``4`` (default) projects GICP's
+    fit onto **yaw-about-up + translation**, so the tube's tilt is fixed and it
+    cannot be flattened onto the ground; ``6`` keeps GICP's full rigid transform.
+    The ``small_gicp`` knobs (``reg_type``, ``max_corr_dist``, ``downsample``,
+    ``voxel_resolution``, ``max_iters``, ``num_threads``) default to the
+    ``DEFAULT_GICP_*`` constants at the top of this module -- tune them there.
+
+    As a safety net the result is **rejected** -- the landmark alignment kept, with a
+    warning -- if it moves the matched skylights by more than ``max_shift``
+    (default: ``radius``) or makes the rim RMS worse.
     """
+    if dof not in (4, 6):
+        raise ValueError("dof must be 4 (yaw + translation) or 6 (full rigid)")
     anchors = np.asarray(transform.anchors, dtype=np.float64)
     if len(anchors) == 0:
         return transform
@@ -175,9 +237,12 @@ def icp_refine(
     M0 = transform.array
     if max_shift is None:
         max_shift = radius
+    axes = _anchor_axes(transform, len(anchors))
 
-    aerial_rim = _gather_rim(Path(aerial_path), anchors, up, radius, rim_height)
-    tube_rim = _gather_rim(Path(tube_path), anchors, up, radius, rim_height, matrix=M0)
+    aerial_rim = _gather_rim(Path(aerial_path), anchors, up, radius, rim_height,
+                             axes=axes, inflate=rim_inflate)
+    tube_rim = _gather_rim(Path(tube_path), anchors, up, radius, rim_height,
+                           matrix=M0, axes=axes, inflate=rim_inflate)
     if len(aerial_rim) < 4 or len(tube_rim) < 4:
         return transform  # not enough rim overlap to refine; keep the landmark fit
 
@@ -188,19 +253,23 @@ def icp_refine(
         return float(np.sqrt(np.mean(np.minimum(d, radius) ** 2)))
 
     old_rms = rim_rms(M0)
-    M = M0
-    for _ in range(max_iters):
-        dist, idx = tree.query(transform_points(tube_rim, M), k=1, workers=-1)
-        # Trim: keep the closer correspondences, ignore far (non-overlapping) pairs.
-        thr = min(radius, float(np.percentile(dist, 70)))
-        keep = dist <= max(thr, 1e-6)
-        if keep.sum() < 4:
-            break
-        M_new = _fit_4dof(tube_rim[keep], aerial_rim[idx[keep]], up)
-        if np.linalg.norm(M_new - M) < tol:
-            M = M_new
-            break
-        M = M_new
+
+    # GICP (plane-to-plane) on the rim patches. The result maps source -> target,
+    # i.e. tube-local -> aerial-local, just like the landmark transform M0.
+    small_gicp = _import_small_gicp()
+    result = small_gicp.align(
+        aerial_rim, tube_rim,
+        init_T_target_source=M0,
+        registration_type=reg_type,
+        voxel_resolution=voxel_resolution,
+        downsampling_resolution=downsample,
+        max_correspondence_distance=max_corr_dist,
+        num_threads=num_threads,
+        max_iterations=max_iters,
+    )
+    M = np.asarray(result.T_target_source, dtype=np.float64)
+    if dof == 4:
+        M = _project_to_4dof(M, up, tube_rim.mean(axis=0))
 
     # Safety: how far did the refinement move the (already-aligned) skylights?
     delta = M @ np.linalg.inv(M0)
@@ -208,9 +277,11 @@ def icp_refine(
     new_rms = rim_rms(M)
 
     warnings = list(transform.warnings)
+    if not result.converged:
+        warnings.append("GICP refine did not fully converge.")
     if moved > max_shift or new_rms > old_rms + 1e-9:
         warnings.append(
-            f"ICP refine rejected (skylights would move {moved:.2f}, rim RMS "
+            f"GICP refine rejected (skylights would move {moved:.2f}, rim RMS "
             f"{old_rms:.2f} -> {new_rms:.2f}); kept the landmark alignment."
         )
         return replace(transform, warnings=warnings)
@@ -219,9 +290,89 @@ def icp_refine(
         transform,
         matrix=[list(map(float, row)) for row in M],
         rms=new_rms,
-        mode=transform.mode + "+icp",
+        mode=f"{transform.mode}+gicp{dof}",
         warnings=warnings,
     )
+
+
+def visualize_rims(
+    aerial_path: str | Path,
+    tube_path: str | Path,
+    transform: Transform,
+    refined: Transform | None = None,
+    radius: float = DEFAULT_RIM_RADIUS,
+    rim_height: float = DEFAULT_RIM_HEIGHT,
+    rim_inflate: float = DEFAULT_RIM_INFLATE,
+    title: str | None = None,
+) -> None:
+    """Scatter the rim points the GICP refinement actually operates on.
+
+    Gathers the same per-hole rim patches as :func:`icp_refine` (each hole's ellipse
+    grown by ``rim_inflate``, or a ``radius`` circle without ellipse data, within
+    ``rim_height`` of the opening) and plots them in the aerial frame: **aerial** rim
+    points blue, **tube** rim points orange, the matched anchors as black crosses.
+    Each column shows a top-down view (the aerial up-plane) over an elevation view
+    (an in-plane axis vs the up-axis), so both the horizontal overlap and the
+    vertical rim-to-rim gap -- the offset GICP closes -- are visible. With ``refined``
+    given a second column redraws the *same* tube rim under the refined transform, so
+    before/after sit side by side.
+    """
+    import matplotlib.pyplot as plt
+    from matplotlib.lines import Line2D
+
+    anchors = np.asarray(transform.anchors, dtype=np.float64)
+    if len(anchors) == 0:
+        raise ValueError("transform has no matched rim anchors to visualise")
+    up = normalize(np.asarray(transform.aerial_up, dtype=np.float64))
+    e1, e2 = _plane_basis(up)
+    M0 = transform.array
+    axes = _anchor_axes(transform, len(anchors))
+
+    aerial_rim = _gather_rim(Path(aerial_path), anchors, up, radius, rim_height,
+                             axes=axes, inflate=rim_inflate)
+    # Gather the tube rim once (gated by M0, returned in tube-local coords) exactly
+    # as icp_refine does, so the same points can be redrawn under either matrix.
+    tube_local = _gather_rim(Path(tube_path), anchors, up, radius, rim_height,
+                             matrix=M0, axes=axes, inflate=rim_inflate)
+
+    columns = [("before refine", M0)]
+    if refined is not None:
+        columns.append((f"after refine  (rim RMS {refined.rms:.3f})", refined.array))
+
+    fig, axes = plt.subplots(2, len(columns), figsize=(8 * len(columns), 10),
+                             squeeze=False)
+    centre = anchors.mean(axis=0)  # recentre so axes read as metres from the rims
+
+    def proj(pts: np.ndarray, vy: np.ndarray) -> tuple[np.ndarray, np.ndarray]:
+        d = pts - centre
+        return d @ e1, d @ vy
+
+    for col, (subtitle, M) in enumerate(columns):
+        tube_rim = transform_points(tube_local, M)
+        for row, (vy, ylabel) in enumerate(
+            [(e2, "up-plane b (m)"), (up, "height along up (m)")]
+        ):
+            ax = axes[row][col]
+            ax.scatter(*proj(aerial_rim, vy), s=4, c="tab:blue", alpha=0.4)
+            ax.scatter(*proj(tube_rim, vy), s=4, c="tab:orange", alpha=0.4)
+            ax.scatter(*proj(anchors, vy), marker="x", s=80, c="k", zorder=3)
+            ax.set_aspect("equal")
+            ax.set_xlabel("up-plane a (m)")
+            ax.set_ylabel(ylabel)
+            if row == 0:
+                ax.set_title(subtitle)
+
+    fig.suptitle(title or (
+        f"merge rims: {len(anchors)} skylight(s)   radius {radius:g}   "
+        f"height {rim_height:g}"
+    ))
+    fig.legend(handles=[
+        Line2D([0], [0], marker="o", color="tab:blue", lw=0, label="aerial rim"),
+        Line2D([0], [0], marker="o", color="tab:orange", lw=0, label="tube rim"),
+        Line2D([0], [0], marker="x", color="k", lw=0, label="matched anchor"),
+    ], loc="lower center", ncol=3)
+    plt.tight_layout(rect=(0, 0.03, 1, 0.97))
+    plt.show()
 
 
 def merge_clouds(
@@ -232,9 +383,13 @@ def merge_clouds(
     refine: bool = False,
     color: bool = True,
     elevation_cmap: str = DEFAULT_CMAP,
+    z_offset: float = 0.0,
     source_field: bool = False,
     rim_radius: float = DEFAULT_RIM_RADIUS,
     rim_height: float = DEFAULT_RIM_HEIGHT,
+    rim_inflate: float = DEFAULT_RIM_INFLATE,
+    dof: int = 4,
+    show_rims: bool = False,
     chunk_size: int = 5_000_000,
     show_progress: bool = True,
 ) -> MergeResult:
@@ -248,6 +403,17 @@ def merge_clouds(
     -- so the photographic aerial surface and the depth-shaded tube read distinctly
     in a viewer. Set ``color=False`` for a plain ``x y z`` cloud. ``source_field``
     adds a ``source`` channel (0 = aerial, 1 = tube) either way.
+
+    With ``refine`` the alignment is tightened by GICP on the matched rims (see
+    :func:`icp_refine`); ``dof`` picks 4 (yaw + translation, default) or 6 (full
+    rigid). Each rim is gathered per hole from its ellipse grown by ``rim_inflate``
+    (falling back to a ``rim_radius`` circle without ellipse data). ``z_offset``
+    slides the transformed tube along the aerial up-axis
+    (metres, applied after any ``refine``) to set how deep its roof sits relative to
+    the aerial surface -- useful when the matched skylights disagree on depth. With
+    ``show_rims`` the rim patches GICP operates on are plotted (see
+    :func:`visualize_rims`) before the cloud is written; with ``refine`` this shows
+    the rims before and after refinement side by side.
     """
     aerial_path, tube_path, output_path = (
         Path(aerial_path), Path(tube_path), Path(output_path)
@@ -259,11 +425,23 @@ def merge_clouds(
         raise ValueError("merge output must be a .pcd")
     if output_path.resolve() in (aerial_path.resolve(), tube_path.resolve()):
         raise ValueError("output must differ from both inputs")
+    if dof not in (4, 6):
+        raise ValueError("dof must be 4 (yaw + translation) or 6 (full rigid)")
 
+    landmark = transform
     if refine:
         transform = icp_refine(aerial_path, tube_path, transform,
-                               radius=rim_radius, rim_height=rim_height)
+                               radius=rim_radius, rim_height=rim_height,
+                               rim_inflate=rim_inflate, dof=dof)
+    if show_rims:
+        visualize_rims(aerial_path, tube_path, landmark,
+                       refined=transform if refine else None,
+                       radius=rim_radius, rim_height=rim_height, rim_inflate=rim_inflate)
     M = transform.array
+    if z_offset:
+        up = normalize(np.asarray(transform.aerial_up, dtype=np.float64))
+        M = M.copy()
+        M[:3, 3] += z_offset * up
 
     fields = ("x", "y", "z")
     if color:

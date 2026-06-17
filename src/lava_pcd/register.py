@@ -65,6 +65,10 @@ class Transform:
     shape_score: float = 0.0                  # ellipse-shape penalty over inliers (lower = better)
     aerial_up: tuple[float, float, float] = (0.0, 0.0, 1.0)  # aerial up-axis (for constrained ICP)
     anchors: list[list[float]] = field(default_factory=list)  # matched rim centres (aerial frame)
+    # Per anchor: [semi_major, semi_minor, mx, my, mz] -- the matched aerial hole's
+    # up-plane ellipse (semi-axes in m) and its 3-D major-axis unit vector, so the
+    # rim refinement can gather points per-hole from an inflated ellipse.
+    anchor_axes: list[list[float]] = field(default_factory=list)
     warnings: list[str] = field(default_factory=list)
 
     @property
@@ -86,6 +90,7 @@ class Transform:
             "shape_score": float(self.shape_score),
             "aerial_up": list(self.aerial_up),
             "anchors": [list(map(float, a)) for a in self.anchors],
+            "anchor_axes": [list(map(float, a)) for a in self.anchor_axes],
             "warnings": list(self.warnings),
         }
         path.write_text(json.dumps(payload, indent=2))
@@ -106,6 +111,7 @@ class Transform:
             shape_score=float(d.get("shape_score", 0.0)),
             aerial_up=tuple(d.get("aerial_up", (0.0, 0.0, 1.0))),
             anchors=[list(map(float, a)) for a in d.get("anchors", [])],
+            anchor_axes=[list(map(float, a)) for a in d.get("anchor_axes", [])],
             warnings=list(d.get("warnings", [])),
         )
 
@@ -432,6 +438,17 @@ def match_constellations(
     if rms > tolerance:
         warnings.append(f"landmark RMS {rms:.2f} exceeds tolerance {tolerance:.2f}.")
 
+    # Per-anchor ellipse (aerial frame) for the rim refinement: semi-axes plus the
+    # 3-D major-axis unit vector, taken from each matched aerial hole.
+    Ra = rotation_align(np.asarray(aerial.up, dtype=np.float64), np.array([0.0, 0.0, 1.0]))
+    anchor_axes = []
+    for a in ai:
+        h = aerial.holes[a]
+        sm = h.semi_major if h.semi_major > 0 else h.radius
+        sn = h.semi_minor if h.semi_minor > 0 else sm
+        mx, my, mz = _major_axis_3d(h, Ra)
+        anchor_axes.append([float(sm), float(sn), float(mx), float(my), float(mz)])
+
     return Transform(
         matrix=[list(map(float, row)) for row in np.asarray(matrix)],
         inliers=[(int(p), int(a)) for p, a in inliers],
@@ -444,6 +461,7 @@ def match_constellations(
         shape_score=float(shape_score),
         aerial_up=tuple(map(float, aerial.up)),
         anchors=[list(map(float, A[a])) for a in ai],
+        anchor_axes=anchor_axes,
         warnings=warnings,
     )
 

@@ -37,6 +37,7 @@ from lava_pcd.io.laz_reader import DEFAULT_CHUNK_SIZE
 from lava_pcd.merge import (
     DEFAULT_CMAP,
     DEFAULT_RIM_HEIGHT,
+    DEFAULT_RIM_INFLATE,
     DEFAULT_RIM_RADIUS,
     apply_transform,
     merge_clouds,
@@ -581,7 +582,12 @@ def merge(
         ..., "--transform", "-t", help="Transform .json from `register`."
     ),
     refine: bool = typer.Option(
-        False, "--refine", help="ICP-refine on the matched rims before merging."
+        False, "--refine", help="GICP-refine on the matched rims before merging."
+    ),
+    dof: int = typer.Option(
+        4, "--dof",
+        help="[--refine] GICP degrees of freedom: 4 (yaw + translation, keeps the "
+             "tube from tilting/flattening) or 6 (full rigid).",
     ),
     color: bool = typer.Option(
         True, "--color/--no-color",
@@ -599,9 +605,15 @@ def merge(
         False, "--source-field", "-s",
         help="Also add a 'source' channel (0=aerial, 1=tube).",
     ),
+    rim_inflate: float = typer.Option(
+        DEFAULT_RIM_INFLATE, "--rim-inflate", min=1.0,
+        help="[--refine] grow each skylight's ellipse by this factor to gather its "
+             "rim points (so the patch fits each hole's size/shape automatically).",
+    ),
     rim_radius: float = typer.Option(
         DEFAULT_RIM_RADIUS, "--rim-radius", min=0.0,
-        help="[--refine] horizontal radius around each skylight used for ICP.",
+        help="[--refine] fallback horizontal radius for holes that have no ellipse "
+             "data; also the GICP correspondence-clamp scale.",
     ),
     rim_height: float = typer.Option(
         DEFAULT_RIM_HEIGHT, "--rim-height", min=0.0,
@@ -624,8 +636,8 @@ def merge(
         result = merge_clouds(
             aerial, tube, output, tf, refine=refine, color=color,
             elevation_cmap=cmap, z_offset=z_offset, source_field=source_field,
-            rim_radius=rim_radius, rim_height=rim_height, show_rims=show_rims,
-            chunk_size=chunk_size, show_progress=not quiet,
+            rim_radius=rim_radius, rim_height=rim_height, rim_inflate=rim_inflate,
+            dof=dof, show_rims=show_rims, chunk_size=chunk_size, show_progress=not quiet,
         )
     except (FileNotFoundError, ValueError) as err:
         typer.secho(f"error: {err}", fg=typer.colors.RED, err=True)
