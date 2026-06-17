@@ -45,6 +45,7 @@ from lava_pcd.register import (
     DEFAULT_TOLERANCE,
     Transform,
     match_constellations,
+    vertical_residuals,
     visualize_match,
 )
 
@@ -556,6 +557,12 @@ def register(
         f"shape score: {transform.shape_score:.3f}"
     )
     typer.echo(f"matches (tube -> aerial hole id): {transform.inliers}")
+    vres = vertical_residuals(aerial, tube, transform)
+    typer.echo(
+        "per-skylight vertical residual (m): "
+        + " ".join(f"{v:+.2f}" for v in vres)
+        + "   (large spread => skylights disagree on depth; tune `merge --z-offset`)"
+    )
     typer.echo("transform (tube-local -> aerial-local):")
     for row in transform.array:
         typer.echo("  " + "  ".join(f"{v: .4f}" for v in row))
@@ -584,6 +591,10 @@ def merge(
         DEFAULT_CMAP, "--cmap",
         help="Matplotlib colormap for the tube's elevation colour.",
     ),
+    z_offset: float = typer.Option(
+        0.0, "--z-offset", "-z",
+        help="Slide the tube vertically (along aerial up) to set its roof depth.",
+    ),
     source_field: bool = typer.Option(
         False, "--source-field", "-s",
         help="Also add a 'source' channel (0=aerial, 1=tube).",
@@ -597,6 +608,10 @@ def merge(
         help="[--refine] vertical band around each opening for ICP (excludes the "
              "deep tube body / far ground that would collapse the fit).",
     ),
+    show_rims: bool = typer.Option(
+        False, "--show-rims",
+        help="Plot the rim points the ICP operates on (aerial vs tube, before/after).",
+    ),
     chunk_size: int = typer.Option(
         DEFAULT_CHUNK_SIZE, "--chunk-size", "-c", min=1,
         help="Points read per chunk (lower = less memory).",
@@ -608,8 +623,9 @@ def merge(
         tf = Transform.from_json(transform)
         result = merge_clouds(
             aerial, tube, output, tf, refine=refine, color=color,
-            elevation_cmap=cmap, source_field=source_field, rim_radius=rim_radius,
-            rim_height=rim_height, chunk_size=chunk_size, show_progress=not quiet,
+            elevation_cmap=cmap, z_offset=z_offset, source_field=source_field,
+            rim_radius=rim_radius, rim_height=rim_height, show_rims=show_rims,
+            chunk_size=chunk_size, show_progress=not quiet,
         )
     except (FileNotFoundError, ValueError) as err:
         typer.secho(f"error: {err}", fg=typer.colors.RED, err=True)

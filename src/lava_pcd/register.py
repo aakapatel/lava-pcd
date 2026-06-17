@@ -30,7 +30,7 @@ by a local ICP on the matched rims (:func:`lava_pcd.merge.icp_refine`).
 from __future__ import annotations
 
 import json
-from dataclasses import asdict, dataclass, field
+from dataclasses import dataclass, field
 from itertools import combinations, permutations
 from pathlib import Path
 
@@ -305,10 +305,33 @@ def _refit(aerial: HoleSet, tube: HoleSet, inliers, mode: str) -> np.ndarray:
     A2 = np.column_stack([A @ e1, A @ e2]); Ah = A @ a_up
     B2 = np.column_stack([B3 @ e1, B3 @ e2]); Bh = B3 @ a_up
     ang, t2 = _kabsch2d(B2[ti], A2[ai])
-    dh = float(np.mean(Ah[ai] - Bh[ti]))
+    # Median (not mean) vertical offset: robust to one skylight whose roof depth
+    # differs. The vertical alignment is the weak/ambiguous DOF -- see
+    # `vertical_residuals` and `merge --z-offset`.
+    dh = float(np.median(Ah[ai] - Bh[ti]))
     R = rotation_about_axis(a_up, ang) @ R_up
     t = e1 * t2[0] + e2 * t2[1] + a_up * dh
     return as_matrix(R, t)
+
+
+def vertical_residuals(
+    aerial: HoleSet, tube: HoleSet, transform: Transform
+) -> list[float]:
+    """Per-skylight vertical (along aerial up) residual after alignment, in metres.
+
+    For each matched skylight, how far the transformed tube opening sits above (+)
+    or below (-) the aerial opening along the up-axis. All near 0 -> the skylights
+    are vertically consistent; a large spread -> they disagree on depth (a bad
+    up-axis, or genuinely different roof depths), which no single rigid Z can fix.
+    """
+    up = normalize(np.asarray(transform.aerial_up))
+    A, B = aerial.centroids(), tube.centroids()
+    M = transform.array
+    out: list[float] = []
+    for t_idx, a_idx in transform.inliers:
+        p = transform_points(B[t_idx:t_idx + 1], M)[0]
+        out.append(float((p - A[a_idx]) @ up))
+    return out
 
 
 # --------------------------------------------------------------------------- #

@@ -277,6 +277,14 @@ more holes the best solution explains than the next distinct one — `0` means a
 the ellipse **shape score**, and warnings. Lower `--min-inliers` to 2 only if you trust a
 2-hole match.
 
+**The vertical (Z) caveat.** The skylight openings pin down XY and yaw well, but the
+*vertical* offset is only a best fit of the tube's **ceiling** level to the aerial
+**surface** level — two different elevations — so it tends to lift the tube toward the
+surface. `register` prints the **per-skylight vertical residual** so you can see whether
+the openings even agree on depth (all near 0 = consistent; a big spread = a bad up-axis or
+genuinely different roof depths). Correct the depth directly with `merge --z-offset` (you
+can judge it by eye in the viewer); the constellation XY/yaw stays put.
+
 `--show` plots the constellations **before and after** registration, side by side, looking
 down the aerial up-axis: *left* is the raw, unaligned state (tube holes offset/rotated from
 the aerial, long green correspondence lines); *right* is after the transform (tube mapped
@@ -291,6 +299,8 @@ threw out.
 #        --refine       constrained ICP on the matched rims before merging
 #        --rim-radius   [--refine] horizontal radius around each skylight for ICP
 #        --rim-height   [--refine] vertical band around each opening for ICP
+#        --show-rims    plot the rim points the ICP operates on (aerial vs tube, before/after)
+#   -z / --z-offset    slide the tube vertically (along aerial up) to set its depth
 #        --color / --no-color  keep aerial RGB + elevation-colour the tube (default on)
 #        --cmap         matplotlib colormap for the tube's elevation colour (default viridis)
 #   -s / --source-field  also add a 'source' channel (0=aerial, 1=tube)
@@ -309,7 +319,9 @@ yaw about the aerial up-axis plus translation, so the tube's *tilt is locked* an
 be laid flat — and it only uses points inside a cylinder (`--rim-radius` wide,
 `--rim-height` tall) around each opening, excluding the deep tube body and far ground.
 `--rim-height` is the key knob: shrink it until the refine stops being pulled toward the
-ground. As a safety net the refinement is **rejected** (the landmark alignment kept, with a
+ground — use `--show-rims` to see exactly which points each opening's cylinder is capturing
+(aerial rim in blue, tube rim before/after refine in orange/green), so you can tell whether
+the band is grabbing the deep tube body before you trust the fit. As a safety net the refinement is **rejected** (the landmark alignment kept, with a
 warning) if it would move the matched skylights by more than `--rim-radius` or make the rim
 fit worse — so it can never make things dramatically worse. There is also a thin
 `lava-pcd transform IN OUT transform.json` to apply a transform to one cloud.

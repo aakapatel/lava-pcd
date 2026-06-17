@@ -15,8 +15,19 @@ from lava_pcd.holes import (
     review_holes,
     show_occupancy,
 )
-from lava_pcd.merge import MergeResult, apply_transform, icp_refine, merge_clouds
-from lava_pcd.register import Transform, match_constellations, visualize_match
+from lava_pcd.merge import (
+    MergeResult,
+    apply_transform,
+    icp_refine,
+    merge_clouds,
+    visualize_rims,
+)
+from lava_pcd.register import (
+    Transform,
+    match_constellations,
+    vertical_residuals,
+    visualize_match,
+)
 
 __version__ = "0.1.0"
 
@@ -38,10 +49,12 @@ __all__ = [
     "Occupancy",
     "match_constellations",
     "visualize_match",
+    "vertical_residuals",
     "Transform",
     "merge_clouds",
     "apply_transform",
     "icp_refine",
+    "visualize_rims",
     "MergeResult",
     "__version__",
 ]

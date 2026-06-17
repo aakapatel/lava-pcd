@@ -25,8 +25,13 @@ from lava_pcd.holes import (
     show_occupancy,
 )
 from lava_pcd.io.pcd_writer import BinaryPcdWriter
-from lava_pcd.merge import icp_refine, merge_clouds
-from lava_pcd.register import Transform, match_constellations, visualize_match
+from lava_pcd.merge import icp_refine, merge_clouds, visualize_rims
+from lava_pcd.register import (
+    Transform,
+    match_constellations,
+    vertical_residuals,
+    visualize_match,
+)
 
 
 # --------------------------------------------------------------------------- #
@@ -524,6 +529,15 @@ def test_icp_refine_corrects_inplane_without_collapse(tmp_path: Path) -> None:
     np.testing.assert_allclose(M[:3, 3], [-1.5, 0.0, 0.0], atol=0.4)  # in-plane fix, no Z collapse
 
 
+def test_visualize_rims_headless(tmp_path: Path) -> None:
+    ap, tp = tmp_path / "a.pcd", tmp_path / "t.pcd"
+    _write_pcd(ap, _ring(5.0, 240, (0.0, 0.0), 0.0))
+    _write_pcd(tp, _ring(5.0, 240, (1.5, 0.0), 0.0))
+    tf = _identity_tf()
+    ref = icp_refine(ap, tp, tf, radius=8.0, rim_height=3.0)
+    visualize_rims(ap, tp, tf, refined=ref, radius=8.0, rim_height=3.0)  # must not raise
+
+
 def test_icp_refine_rejects_large_correction(tmp_path: Path) -> None:
     ap, tp = tmp_path / "a.pcd", tmp_path / "t.pcd"
     _write_pcd(ap, _ring(5.0, 240, (0.0, 0.0), 0.0))
@@ -533,6 +547,32 @@ def test_icp_refine_rejects_large_correction(tmp_path: Path) -> None:
     assert ref.mode == "4dof"
     np.testing.assert_allclose(ref.array, np.eye(4), atol=1e-9)
     assert any("rejected" in w for w in ref.warnings)
+
+
+def test_merge_z_offset_shifts_tube_vertically(tmp_path: Path) -> None:
+    A = np.array([[0.0, 0.0, 0.0], [1.0, 1.0, 0.0]])
+    B = np.array([[2.0, 2.0, -10.0], [3.0, 3.0, -12.0]])
+    ap, tp = tmp_path / "a.pcd", tmp_path / "t.pcd"
+    _write_pcd(ap, A)
+    _write_pcd(tp, B)
+    tf = Transform(np.eye(4).tolist(), [], 0.0, "4dof", (0, 0, 0), (0, 0, 0),
+                   aerial_up=(0, 0, 1))
+    out = tmp_path / "m.pcd"
+    res = merge_clouds(ap, tp, out, tf, color=False, z_offset=5.0, show_progress=False)
+    _, data = _read_pcd_xyz(out)
+    # aerial unchanged, tube lifted by +5 along z
+    np.testing.assert_allclose(np.sort(data[res.aerial_count:, 2]),
+                               np.sort(B[:, 2] + 5.0), atol=1e-4)
+
+
+def test_vertical_residuals(tmp_path: Path) -> None:
+    # aligned holes -> residuals near 0; offset one tube hole in Z -> shows up
+    A = np.array([[0.0, 0.0, 0.0], [20.0, 0.0, 0.0], [10.0, 18.0, 0.0]])
+    aerial = _holeset(A)
+    tube = _holeset(A.copy())  # identity-aligned
+    tf = match_constellations(aerial, tube, mode="6dof", tolerance=0.5)
+    res = vertical_residuals(aerial, tube, tf)
+    assert max(abs(r) for r in res) < 0.2
 
 
 def test_merge_rejects_output_equal_input(tmp_path: Path) -> None:
