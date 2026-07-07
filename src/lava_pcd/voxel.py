@@ -2,12 +2,14 @@
 
 Open3D's ``voxel_down_sample`` needs the whole cloud in memory at once, which is
 impractical for hundred-million-point clouds. This accumulator instead consumes
-``(k, 4)`` chunks (``x y z intensity``) incrementally: each chunk is reduced to
-its occupied voxels, buffered, and periodically compacted so memory stays
-bounded by the *downsampled* size (plus a flush buffer) rather than the input.
+``(k, C)`` chunks (``x y z`` plus any trailing attribute columns such as
+``intensity`` or unpacked ``r g b``) incrementally: each chunk is reduced to its
+occupied voxels, buffered, and periodically compacted so memory stays bounded by
+the *downsampled* size (plus a flush buffer) rather than the input.
 
-Each output point is the centroid of the points in its voxel, with intensity
-averaged the same way -- matching the usual voxel-downsample semantics.
+Each output point is the centroid of the points in its voxel, with every
+attribute column averaged the same way -- matching the usual voxel-downsample
+semantics.
 """
 
 from __future__ import annotations
@@ -29,8 +31,10 @@ def _reduce(vox: np.ndarray, acc: np.ndarray, cnt: np.ndarray):
 
 
 class VoxelDownsampler:
-    """Accumulate ``(k, 4)`` chunks into voxel centroids.
+    """Accumulate ``(k, C)`` chunks into voxel centroids.
 
+    Each chunk's first three columns are ``x y z``; any remaining columns (e.g.
+    ``intensity`` or unpacked ``r g b``) are summed and averaged per voxel too.
     ``voxel_size`` is the edge length of each cubic voxel (same units as the
     coordinates). ``flush_points`` caps how many buffered voxel rows accumulate
     before an intermediate compaction.
@@ -42,7 +46,7 @@ class VoxelDownsampler:
         self.voxel_size = float(voxel_size)
         self.flush_points = flush_points
         self._vox: list[np.ndarray] = []
-        self._acc: list[np.ndarray] = []  # summed x, y, z, intensity (float64)
+        self._acc: list[np.ndarray] = []  # summed x, y, z + attribute columns (float64)
         self._cnt: list[np.ndarray] = []  # point count per voxel (float64)
         self._buffered = 0
 
@@ -83,7 +87,8 @@ class VoxelDownsampler:
         self._buffered = len(vox)
 
     def result(self) -> np.ndarray:
-        """Return the downsampled cloud as a ``(N, 4)`` float32 array."""
+        """Return the downsampled cloud as a ``(N, C)`` float32 array (same column
+        layout as the chunks that were added)."""
         if not self._vox:
             return np.empty((0, 4), dtype=np.float32)
         self._compact()

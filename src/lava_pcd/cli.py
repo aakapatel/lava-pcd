@@ -8,7 +8,7 @@ from typing import Optional
 import typer
 
 from lava_pcd import __version__
-from lava_pcd.convert import downsample_pcd, laz_to_pcd
+from lava_pcd.convert import downsample_pcd, laz_to_pcd, pcd_to_las
 from lava_pcd.crop import DEFAULT_MAX_DISPLAY, crop_pcd, select_rectangle
 from lava_pcd.filtering import (
     DEFAULT_K,
@@ -191,6 +191,47 @@ def downsample(
     )
     ox, oy, oz = result.origin
     typer.echo(f"local origin (global = local + origin): {ox} {oy} {oz}")
+
+
+@app.command(name="to-las")
+def to_las(
+    input: Path = typer.Argument(..., help="Input .pcd file."),
+    output: Path = typer.Argument(..., help="Output .las (uncompressed) or .laz (compressed) file."),
+    crs: str = typer.Option(
+        None, "--crs", metavar="CRS",
+        help="Embed this CRS in the LAS header, e.g. EPSG:32627 (.pcd carries none).",
+    ),
+    scale: float = typer.Option(
+        0.001, "--scale", "-s",
+        help="LAS coordinate quantisation step in coord units (e.g. 0.001 = 1 mm).",
+    ),
+    chunk_size: int = typer.Option(
+        DEFAULT_CHUNK_SIZE, "--chunk-size", "-c", min=1,
+        help="Points read per chunk (lower = less memory).",
+    ),
+    quiet: bool = typer.Option(False, "--quiet", "-q", help="Suppress the progress bar."),
+) -> None:
+    """Convert a binary .pcd back to .las/.laz (restores global coordinates)."""
+    try:
+        result = pcd_to_las(
+            input, output, crs=crs, scale=scale, chunk_size=chunk_size,
+            show_progress=not quiet,
+        )
+    except (FileNotFoundError, ValueError) as err:
+        typer.secho(f"error: {err}", fg=typer.colors.RED, err=True)
+        raise typer.Exit(code=1)
+
+    typer.secho(
+        f"wrote {result.point_count:,} points -> {result.output_path}",
+        fg=typer.colors.GREEN,
+    )
+    typer.echo(f"fields: {' '.join(result.fields)}")
+    if result.extra_dims:
+        typer.echo(f"extra dimensions: {' '.join(result.extra_dims)}")
+    if result.crs:
+        typer.echo(f"CRS: {result.crs}")
+    ox, oy, oz = result.origin
+    typer.echo(f"LAS offset (origin), scale {result.scale}: {ox} {oy} {oz}")
 
 
 @app.command()
@@ -650,7 +691,7 @@ def merge(
     typer.echo(f"fields: {' '.join(result.fields)}")
     typer.echo(
         f"aerial {result.aerial_count:,} + tube {result.tube_count:,} points"
-        + (f"   (ICP-refined, rim RMS {result.rms:.3f})" if result.refined else "")
+        + (f"   (GICP-refined, rim RMS {result.rms:.3f})" if result.refined else "")
     )
     ox, oy, oz = result.origin
     typer.echo(f"local origin (global = local + origin): {ox} {oy} {oz}")

@@ -6,6 +6,8 @@ import json
 from dataclasses import dataclass
 from pathlib import Path
 
+import laspy
+import numpy as np
 from tqdm import tqdm
 
 from lava_pcd.io.laz_reader import DEFAULT_CHUNK_SIZE, LazChunkReader
@@ -14,6 +16,11 @@ from lava_pcd.io.pcd_writer import BinaryPcdWriter, pack_columns, pcd_fields_for
 from lava_pcd.voxel import VoxelDownsampler
 
 _LAZ_SUFFIXES = {".laz", ".las"}
+# Output formats for pcd_to_las: .las (uncompressed) and .laz (laszip/lazrs).
+_LAS_OUT_SUFFIXES = {".las", ".laz"}
+# PCD fields that map onto native LAS dimensions; anything else becomes an
+# ``ExtraBytes`` dimension (e.g. the ``source`` channel that ``merge`` adds).
+_STANDARD_PCD_FIELDS = {"x", "y", "z", "intensity", "rgb"}
 
 
 @dataclass
@@ -44,6 +51,22 @@ class DownsampleResult:
     origin: tuple[float, float, float]
     output_path: Path
     fields: tuple[str, ...] = ()
+
+    def __int__(self) -> int:
+        return self.point_count
+
+
+@dataclass
+class ExportResult:
+    """Outcome of a :func:`pcd_to_las` call."""
+
+    point_count: int
+    output_path: Path
+    origin: tuple[float, float, float]
+    fields: tuple[str, ...] = ()
+    scale: float = 0.0
+    crs: str | None = None
+    extra_dims: tuple[str, ...] = ()
 
     def __int__(self) -> int:
         return self.point_count
@@ -270,4 +293,127 @@ def downsample_pcd(
         origin=origin,
         output_path=output_path,
         fields=pcd_fields,
+    )
+
+
+def pcd_to_las(
+    input_path: str | Path,
+    output_path: str | Path,
+    crs: str | None = None,
+    scale: float = 0.001,
+    chunk_size: int = DEFAULT_CHUNK_SIZE,
+    show_progress: bool = True,
+) -> ExportResult:
+    """Convert a binary ``.pcd`` back into a ``.las`` / ``.laz`` file.
+
+    The reverse of :func:`laz_to_pcd`. The output suffix selects the encoding:
+    ``.las`` is uncompressed, ``.laz`` is laszip/lazrs-compressed. Reads the
+    input in chunks of ``chunk_size`` points so memory stays bounded.
+
+    Coordinates are written **georeferenced**: the cloud's local-origin shift
+    (the ``# LAVA_PCD_ORIGIN`` header comment, i.e. ``global = local + origin``)
+    is added back, and that origin is stored as the LAS header offset so the
+    quantised integer coordinates stay small and exact.
+
+    ``scale`` is the LAS coordinate quantisation step in coordinate units
+    (default ``0.001`` = 1 mm); coordinates are stored as
+    ``round((global - offset) / scale)`` in int32.
+
+    Field mapping:
+
+    * ``intensity`` -> LAS ``intensity`` (rounded/clamped to uint16).
+    * packed ``rgb`` -> LAS ``red``/``green``/``blue`` (8-bit channels scaled to
+      16-bit by ``x257``; point format 2). Without colour, point format 0.
+    * any other field (e.g. ``merge``'s ``source`` channel) -> a float32
+      ``ExtraBytes`` dimension of the same name.
+
+    ``crs`` optionally embeds a coordinate reference system in the header
+    (e.g. ``"EPSG:32627"``); ``.pcd`` files carry no CRS of their own, so pass
+    the one the cloud is in (the output CRS used during the original convert).
+
+    Returns an :class:`ExportResult`.
+    """
+    input_path = Path(input_path)
+    output_path = Path(output_path)
+
+    if input_path.suffix.lower() != ".pcd":
+        raise ValueError(
+            f"expected a .pcd input, got '{input_path.suffix}' ({input_path})"
+        )
+    if output_path.suffix.lower() not in _LAS_OUT_SUFFIXES:
+        raise ValueError(
+            f"expected a .las or .laz output, got '{output_path.suffix}' ({output_path})"
+        )
+    if scale <= 0:
+        raise ValueError(f"scale must be > 0, got {scale}")
+
+    with BinaryPcdReader(input_path) as reader:
+        fields = reader.fields
+        for axis in ("x", "y", "z"):
+            if axis not in fields:
+                raise ValueError(
+                    f"{input_path.name}: PCD is missing the required '{axis}' field"
+                )
+        has_intensity = "intensity" in fields
+        has_rgb = "rgb" in fields
+        extra = tuple(f for f in fields if f not in _STANDARD_PCD_FIELDS)
+        origin = reader.origin
+        ox, oy, oz = origin
+        point_count = reader.point_count
+
+        header = laspy.LasHeader(point_format=2 if has_rgb else 0, version="1.4")
+        header.scales = [scale, scale, scale]
+        header.offsets = [ox, oy, oz]
+        for name in extra:
+            header.add_extra_dim(laspy.ExtraBytesParams(name=name, type=np.float32))
+        if crs is not None:
+            import pyproj  # lazy: only needed when embedding a CRS
+
+            header.add_crs(pyproj.CRS.from_user_input(crs))
+
+        # unpack_columns expands a packed rgb field to r/g/b columns; map names.
+        internal = pcd_fields_to_columns(fields)
+        cidx = {name: i for i, name in enumerate(internal)}
+
+        output_path.parent.mkdir(parents=True, exist_ok=True)
+        written = 0
+        progress = tqdm(
+            total=point_count, unit="pts", unit_scale=True,
+            desc=input_path.name, disable=not show_progress,
+        )
+        with laspy.open(output_path, mode="w", header=header) as writer, progress:
+            for chunk in reader.chunks(chunk_size):
+                cols = unpack_columns(chunk, fields)
+                k = len(cols)
+                record = laspy.ScaleAwarePointRecord.zeros(k, header=header)
+                # Restore global coords in float64; laspy quantises with offset/scale.
+                record.x = cols[:, cidx["x"]].astype(np.float64) + ox
+                record.y = cols[:, cidx["y"]].astype(np.float64) + oy
+                record.z = cols[:, cidx["z"]].astype(np.float64) + oz
+                if has_intensity:
+                    record.intensity = (
+                        np.clip(np.round(cols[:, cidx["intensity"]]), 0, 65535)
+                        .astype(np.uint16)
+                    )
+                if has_rgb:
+                    for channel, dim in (("r", "red"), ("g", "green"), ("b", "blue")):
+                        setattr(
+                            record, dim,
+                            np.clip(np.round(cols[:, cidx[channel]] * 257.0), 0, 65535)
+                            .astype(np.uint16),
+                        )
+                for name in extra:
+                    setattr(record, name, cols[:, cidx[name]].astype(np.float32))
+                writer.write_points(record)
+                written += k
+                progress.update(k)
+
+    return ExportResult(
+        point_count=written,
+        output_path=output_path,
+        origin=origin,
+        fields=fields,
+        scale=scale,
+        crs=crs,
+        extra_dims=extra,
     )

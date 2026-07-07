@@ -8,7 +8,7 @@ import laspy
 import numpy as np
 import pytest
 
-from lava_pcd.convert import downsample_pcd, laz_to_pcd
+from lava_pcd.convert import downsample_pcd, laz_to_pcd, pcd_to_las
 from lava_pcd.crop import crop_pcd
 from lava_pcd.filtering import filter_pcd
 from lava_pcd.io.laz_reader import LazChunkReader, in_bounds_mask
@@ -366,6 +366,127 @@ def test_filter_bad_method_and_same_file(tmp_path: Path) -> None:
         filter_pcd(pcd_path, tmp_path / "o.pcd", method="nope", show_progress=False)
     with pytest.raises(ValueError):
         filter_pcd(pcd_path, pcd_path, method="radius", show_progress=False)
+
+
+def test_pcd_to_las_roundtrip_preserves_global_coords(tmp_path: Path) -> None:
+    """.las -> .pcd -> .las restores global coords + intensity (georeferenced)."""
+    rng = np.random.default_rng(20)
+    n = 1500
+    offsets = (479157.0, 7089825.0, 100.0)
+    xyz = np.array(offsets) + rng.uniform(0.0, 400.0, size=(n, 3))
+    intensity = rng.integers(0, 65535, size=n, dtype=np.uint16)
+
+    las_in = tmp_path / "in.las"
+    pcd_path = tmp_path / "mid.pcd"
+    las_out = tmp_path / "out.las"
+    _make_las(las_in, xyz, intensity, offsets=offsets)
+
+    laz_to_pcd(las_in, pcd_path, show_progress=False)
+    result = pcd_to_las(pcd_path, las_out, chunk_size=400, show_progress=False)
+    assert result.point_count == n
+    np.testing.assert_allclose(result.origin, offsets, atol=1e-6)
+
+    las = laspy.read(las_out)
+    # The header offset is the local origin; coords reconstruct to global UTM.
+    np.testing.assert_allclose(las.header.offsets, offsets, atol=1e-6)
+    recovered = np.column_stack([np.asarray(las.x), np.asarray(las.y), np.asarray(las.z)])
+    np.testing.assert_allclose(recovered, xyz, atol=1e-2)
+    np.testing.assert_array_equal(np.asarray(las.intensity), intensity)
+
+
+def test_pcd_to_las_rgb_and_format(tmp_path: Path) -> None:
+    """A coloured .pcd exports point format 2 with 16-bit RGB (8-bit x257)."""
+    rng = np.random.default_rng(21)
+    n = 600
+    xyz = rng.uniform(-10, 10, size=(n, 3))
+    intensity = np.zeros(n, dtype=np.uint16)
+    rgb8 = rng.integers(0, 256, size=(n, 3), dtype=np.uint16)
+    rgb16 = (rgb8 * 257).astype(np.uint16)
+
+    las_in = tmp_path / "c.las"
+    pcd_path = tmp_path / "c.pcd"
+    las_out = tmp_path / "c_out.las"
+    _make_las(las_in, xyz, intensity, rgb=rgb16)
+
+    laz_to_pcd(las_in, pcd_path, show_progress=False)
+    pcd_to_las(pcd_path, las_out, show_progress=False)
+
+    las = laspy.read(las_out)
+    assert las.header.point_format.id == 2
+    rgb_back = np.column_stack([las.red, las.green, las.blue]).astype(np.uint16)
+    np.testing.assert_array_equal(rgb_back, rgb16)
+
+
+def test_pcd_to_laz_compressed(tmp_path: Path) -> None:
+    """.laz output is laszip-compressed and reads back identically."""
+    rng = np.random.default_rng(22)
+    xyz = rng.uniform(-50, 50, size=(800, 3))
+    intensity = rng.integers(0, 65535, size=800, dtype=np.uint16)
+    las_in = tmp_path / "in.las"
+    pcd_path = tmp_path / "mid.pcd"
+    laz_out = tmp_path / "out.laz"
+    _make_las(las_in, xyz, intensity)
+
+    laz_to_pcd(las_in, pcd_path, show_progress=False)
+    pcd_to_las(pcd_path, laz_out, show_progress=False)
+
+    las = laspy.read(laz_out)
+    recovered = np.column_stack([las.x, las.y, las.z])
+    np.testing.assert_allclose(recovered, xyz, atol=1e-2)
+    np.testing.assert_array_equal(np.asarray(las.intensity), intensity)
+
+
+def test_pcd_to_las_embeds_crs(tmp_path: Path) -> None:
+    import pyproj
+
+    rng = np.random.default_rng(23)
+    xyz = rng.uniform(-10, 10, size=(100, 3))
+    las_in = tmp_path / "in.las"
+    pcd_path = tmp_path / "mid.pcd"
+    las_out = tmp_path / "out.las"
+    _make_las(las_in, xyz, np.zeros(100, dtype=np.uint16))
+
+    laz_to_pcd(las_in, pcd_path, show_progress=False)
+    result = pcd_to_las(pcd_path, las_out, crs="EPSG:32627", show_progress=False)
+    assert result.crs == "EPSG:32627"
+
+    crs = laspy.read(las_out).header.parse_crs()
+    assert crs is not None and crs.to_epsg() == 32627
+
+
+def test_pcd_to_las_extra_dim_roundtrip(tmp_path: Path) -> None:
+    """A non-standard PCD field is written as a float32 ExtraBytes dimension."""
+    from lava_pcd.io.pcd_writer import BinaryPcdWriter
+
+    pcd_path = tmp_path / "src.pcd"
+    las_out = tmp_path / "src.las"
+    pts = np.array(
+        [[1.0, 2.0, 3.0, 0.0], [4.0, 5.0, 6.0, 1.0]], dtype=np.float32
+    )  # x y z source
+    fields = ("x", "y", "z", "source")
+    with BinaryPcdWriter(pcd_path, max_points=len(pts), fields=fields) as w:
+        w.write_chunk(pts)
+
+    result = pcd_to_las(pcd_path, las_out, show_progress=False)
+    assert result.extra_dims == ("source",)
+
+    las = laspy.read(las_out)
+    assert "source" in las.point_format.dimension_names
+    np.testing.assert_array_equal(np.asarray(las.source), pts[:, 3])
+
+
+def test_pcd_to_las_bad_suffixes(tmp_path: Path) -> None:
+    rng = np.random.default_rng(24)
+    xyz = rng.uniform(-5, 5, size=(20, 3))
+    las_in = tmp_path / "in.las"
+    pcd_path = tmp_path / "mid.pcd"
+    _make_las(las_in, xyz, np.zeros(20, dtype=np.uint16))
+    laz_to_pcd(las_in, pcd_path, show_progress=False)
+
+    with pytest.raises(ValueError):  # wrong input suffix
+        pcd_to_las(las_in, tmp_path / "o.las", show_progress=False)
+    with pytest.raises(ValueError):  # wrong output suffix
+        pcd_to_las(pcd_path, tmp_path / "o.txt", show_progress=False)
 
 
 def test_missing_input(tmp_path: Path) -> None:

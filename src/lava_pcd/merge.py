@@ -43,7 +43,7 @@ DEFAULT_CMAP = "viridis"    # elevation colormap for the tube in a merged cloud
 
 # --- small_gicp rim-refinement tunables (edit here to tune `merge --refine`) ---
 DEFAULT_GICP_TYPE = "GICP"       # registration_type: 'ICP' | 'PLANE_ICP' | 'GICP' | 'VGICP'
-DEFAULT_GICP_MAX_CORR = .0      # max_correspondence_distance (m): cap on rim-point matches
+DEFAULT_GICP_MAX_CORR = 1.0      # max_correspondence_distance (m): cap on rim-point matches
 DEFAULT_GICP_DOWNSAMPLE = 0.5   # downsampling_resolution (m): voxel size the rims are reduced to
 DEFAULT_GICP_VOXEL = 1.0         # voxel_resolution (m): correspondence voxels, VGICP only
 DEFAULT_GICP_ITERS = 30          # max_iterations for the GICP optimisation

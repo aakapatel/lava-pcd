@@ -68,14 +68,20 @@ def _resolve_backend(parallel: bool) -> "laspy.LazBackend | None":
 
 
 class LazChunkReader:
-    """Stream the XYZ + intensity of a LAZ/LAS file as ``(k, 4)`` float32 chunks.
+    """Stream a LAZ/LAS file as ``(k, len(columns))`` float32 chunks.
+
+    :meth:`chunks` takes the internal column names to emit (from
+    :meth:`resolve_fields`, e.g. ``("x", "y", "z", "intensity")`` or, for a
+    colourised cloud, ``("x", "y", "z", "r", "g", "b")``), so the shape follows
+    the requested schema.
 
     Usage::
 
         with LazChunkReader("scan.laz") as reader:
-            print(reader.point_count, reader.header_offset)
-            for chunk in reader.chunks(origin=reader.header_offset):
-                ...  # chunk is np.ndarray, shape (k, 4): x y z intensity
+            print(reader.point_count, reader.suggested_origin)
+            columns = reader.resolve_fields("auto")
+            for chunk in reader.chunks(columns, origin=reader.suggested_origin):
+                ...  # chunk is np.ndarray, shape (k, len(columns))
     """
 
     def __init__(

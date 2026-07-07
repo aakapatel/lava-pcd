@@ -24,7 +24,7 @@ Two fitting paths (chosen automatically by ``mode="auto"``):
 Ellipse shape (size, axis-ratio, orientation) is used only as a **soft tie-break**
 between geometrically equivalent solutions, never as a gate. The result carries an
 inlier count, a uniqueness ``margin`` and a ``shape_score``, and is refined later
-by a local ICP on the matched rims (:func:`lava_pcd.merge.icp_refine`).
+by a local GICP on the matched rims (:func:`lava_pcd.merge.icp_refine`).
 """
 
 from __future__ import annotations
@@ -63,7 +63,7 @@ class Transform:
     n_inliers: int = 0                        # number of matched skylights
     margin: int = 0                           # best inlier count minus next distinct solution
     shape_score: float = 0.0                  # ellipse-shape penalty over inliers (lower = better)
-    aerial_up: tuple[float, float, float] = (0.0, 0.0, 1.0)  # aerial up-axis (for constrained ICP)
+    aerial_up: tuple[float, float, float] = (0.0, 0.0, 1.0)  # aerial up-axis (for the GICP rim refinement)
     anchors: list[list[float]] = field(default_factory=list)  # matched rim centres (aerial frame)
     # Per anchor: [semi_major, semi_minor, mx, my, mz] -- the matched aerial hole's
     # up-plane ellipse (semi-axes in m) and its 3-D major-axis unit vector, so the
@@ -433,7 +433,7 @@ def match_constellations(
     if _collinear(A[ai], tolerance):
         warnings.append(
             "matched skylights are nearly collinear: rotation about that line is "
-            "weakly constrained; --refine (ICP on the rims) is recommended."
+            "weakly constrained; --refine (GICP on the rims) is recommended."
         )
     if rms > tolerance:
         warnings.append(f"landmark RMS {rms:.2f} exceeds tolerance {tolerance:.2f}.")

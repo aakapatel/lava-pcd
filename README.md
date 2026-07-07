@@ -13,7 +13,8 @@ pip install -e .
 ```
 
 This pulls `laspy[lazrs,laszip]` (both LAZ backends), `pyproj` (reprojection), `numpy`,
-`typer`, and `tqdm`.
+`typer`, `tqdm`, `scipy` (KD-trees / grid filters), `matplotlib` (the interactive
+selectors and plots), and `small_gicp` (the `merge --refine` GICP).
 
 ## Convert a file
 
@@ -79,6 +80,36 @@ from lava_pcd import downsample_pcd
 
 res = downsample_pcd("input.pcd", "output.pcd", voxel_size=0.5)
 print(f"{res.source_count} -> {res.point_count} points")
+```
+
+## Convert a .pcd back to .las/.laz
+
+The reverse of `convert`: write a binary `.pcd` back out as a LAS/LAZ file. The
+output suffix selects the encoding — `.las` is uncompressed, `.laz` is
+laszip-compressed:
+
+```bash
+lava-pcd to-las input.pcd output.las
+# options:
+#   --crs              embed a CRS in the header, e.g. EPSG:32627 (.pcd carries none)
+#   -s / --scale       LAS coordinate quantisation step in coord units (default 0.001 = 1 mm)
+#   -c / --chunk-size  points read per chunk (lower = less memory; default 5,000,000)
+#   -q / --quiet       suppress the progress bar
+```
+
+Coordinates are written **georeferenced**: the cloud's local-origin shift (the
+`# LAVA_PCD_ORIGIN` header comment, `global = local + origin`) is added back and
+stored as the LAS header offset, so the quantised integer coordinates stay small
+and exact. `intensity` maps to LAS `intensity`, packed `rgb` to 16-bit
+`red`/`green`/`blue` (point format 2), and any other field (e.g. `merge`'s
+`source` channel) becomes a float32 `ExtraBytes` dimension. A `.pcd` stores no
+CRS of its own, so pass `--crs` to label the output.
+
+```python
+from lava_pcd import pcd_to_las
+
+res = pcd_to_las("input.pcd", "output.las", crs="EPSG:32627")
+print(f"wrote {res.point_count} points, offset {res.origin}")
 ```
 
 ## Crop a .pcd to a rectangle
@@ -176,7 +207,7 @@ lava-pcd holes tube.pcd   tube_holes.json   --mode ceiling --up 0,0.2,0.98 --sho
 # 2. match the two constellations -> rigid transform (tube -> aerial)
 lava-pcd register aerial_holes.json tube_holes.json -o transform.json
 
-# 3. apply + write the merged cloud (optionally ICP-refined on the rims)
+# 3. apply + write the merged cloud (optionally GICP-refined on the rims)
 lava-pcd merge aerial.pcd tube.pcd merged.pcd -t transform.json --refine --source-field
 ```
 
@@ -296,10 +327,12 @@ threw out.
 ### `merge` — apply and combine
 ```
 #   -t / --transform   transform .json from `register` (required)
-#        --refine       constrained ICP on the matched rims before merging
-#        --rim-radius   [--refine] horizontal radius around each skylight for ICP
-#        --rim-height   [--refine] vertical band around each opening for ICP
-#        --show-rims    plot the rim points the ICP operates on (aerial vs tube, before/after)
+#        --refine       GICP (small_gicp) on the matched rims before merging
+#        --dof          [--refine] 4 (yaw + translation; default) or 6 (full rigid)
+#        --rim-inflate  [--refine] grow each skylight's ellipse by this factor to gather its rim
+#        --rim-radius   [--refine] fallback rim radius for holes with no ellipse; also the GICP clamp
+#        --rim-height   [--refine] vertical band around each opening for GICP
+#        --show-rims    plot the rim points GICP operates on (aerial vs tube, before/after)
 #   -z / --z-offset    slide the tube vertically (along aerial up) to set its depth
 #        --color / --no-color  keep aerial RGB + elevation-colour the tube (default on)
 #        --cmap         matplotlib colormap for the tube's elevation colour (default viridis)
@@ -313,17 +346,21 @@ points are shaded by **elevation** (output-frame Z) with `--cmap` — so the pho
 surface and the depth-coloured tube read distinctly in `pcl_viewer`. `--no-color` writes a
 plain `x y z` cloud; `--source-field` adds a `0/1` origin channel either way.
 
-`--refine` runs a **constrained** ICP on the matched skylight rims (the two clouds barely
-overlap, so a global ICP would just flatten the tube onto the ground). It is **4-DOF** —
-yaw about the aerial up-axis plus translation, so the tube's *tilt is locked* and it can't
-be laid flat — and it only uses points inside a cylinder (`--rim-radius` wide,
-`--rim-height` tall) around each opening, excluding the deep tube body and far ground.
-`--rim-height` is the key knob: shrink it until the refine stops being pulled toward the
-ground — use `--show-rims` to see exactly which points each opening's cylinder is capturing
-(aerial rim in blue, tube rim before/after refine in orange/green), so you can tell whether
-the band is grabbing the deep tube body before you trust the fit. As a safety net the refinement is **rejected** (the landmark alignment kept, with a
-warning) if it would move the matched skylights by more than `--rim-radius` or make the rim
-fit worse — so it can never make things dramatically worse. There is also a thin
+`--refine` runs **GICP** (plane-to-plane, via `small_gicp`) on the matched skylight rims
+(the two clouds barely overlap, so a global registration would just flatten the tube onto
+the ground). By default it is **4-DOF** (`--dof 4`) — yaw about the aerial up-axis plus
+translation, so the tube's *tilt is locked* and it can't be laid flat; pass `--dof 6` for a
+full rigid fit. Each rim is gathered **per hole**: points inside that skylight's fitted
+ellipse (from `register`) grown by `--rim-inflate`, and within `--rim-height` of the opening
+level — so the patch adapts to each hole's size/shape and excludes the deep tube body and
+far ground. Holes with no ellipse data fall back to a `--rim-radius` circle (that radius is
+also the GICP correspondence clamp). `--rim-height` is the key knob: shrink it until the
+refine stops being pulled toward the ground — use `--show-rims` to see exactly which points
+each opening's patch is capturing (aerial rim in blue, tube rim before/after refine in
+orange/green), so you can tell whether the band is grabbing the deep tube body before you
+trust the fit. As a safety net the refinement is **rejected** (the landmark alignment kept,
+with a warning) if it would move the matched skylights by more than `--rim-radius` or make
+the rim fit worse — so it can never make things dramatically worse. There is also a thin
 `lava-pcd transform IN OUT transform.json` to apply a transform to one cloud.
 
 From Python:
