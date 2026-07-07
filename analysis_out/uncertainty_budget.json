@@ -1,0 +1,12 @@
+{
+  "sigma_reg_z_m": 0.5,
+  "sigma_reg_z_basis": "per-skylight rim-lip q90 elevation differences after the 6-DOF constellation solve: -0.04 m (S3) and +0.47 m (S1) at the two well-sampled skylights; the -1.37 m at the narrow S2 reflects lip occlusion from below, not registration error (vertical_check.json). Adopted 0.5 m.",
+  "sigma_lidar_z_m": 0.1,
+  "sigma_lidar_basis": "Ouster range precision (~3 cm) plus SLAM surface thickness of the aggregated map (~10 cm at 10 cm voxel working copy).",
+  "sigma_dem_z_m": 0.15,
+  "sigma_dem_basis": "ASSUMED photogrammetric DEM vertical accuracy ~2x GSD; UPDATE when Birgir supplies survey metadata (gate G1).",
+  "sigma_tau_m": 0.532,
+  "horizontal_rim_rms_m": 1.102,
+  "horizontal_note": "constellation rim-centroid RMS; dominated by centroid estimation on the large irregular skylight seen from opposite sides; the scale-ruler long-pair differences (2.2-2.4 m) share the same cause and are an upper bound mixing centroid bias with SLAM drift; separate on office PC with per-flight maps.",
+  "final_transform": "transform_landmark.json (6-DOF constellation; GICP rim refine rejected by its safety net in all variants: the two sensors sample opposite sides of the rim lip)."
+}
