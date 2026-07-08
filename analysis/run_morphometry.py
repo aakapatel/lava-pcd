@@ -324,6 +324,10 @@ def main() -> None:
         eta=dict(median=round(float(np.median(etas)), 2),
                  q25=round(float(np.percentile(etas, 25)), 2),
                  q75=round(float(np.percentile(etas, 75)), 2)),
+        width_m=dict(min=round(float(min(r["width"] for r in ok)), 2),
+                     median=round(float(np.median([r["width"] for r in ok])), 2),
+                     max=round(float(max(r["width"] for r in ok)), 2)),
+        width_min_m=round(float(min(r["width"] for r in ok)), 2),
         sinuosity_50m=dict(mean=round(float(np.nanmean(sin_vals)), 3),
                            max=round(float(np.nanmax(sin_vals)), 3)),
     )

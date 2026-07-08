@@ -1,0 +1,113 @@
+{
+  "reg_mode": "6dof",
+  "reg_matches": 3,
+  "reg_rim_rms_m": 1.102,
+  "reg_vres_mm": [
+    -7,
+    -20,
+    27
+  ],
+  "reg_sigma_tau_m": 0.532,
+  "reg_sigma_reg_z_m": 0.5,
+  "vertical_q90_diffs_m": [
+    -0.043,
+    -1.369,
+    0.471
+  ],
+  "scale_ruler_diff_m": [
+    -0.181,
+    2.179,
+    2.425
+  ],
+  "centreline_length_m": 338.0,
+  "n_stations": 339,
+  "n_valid_sections": 333,
+  "area": {
+    "min": 3.4,
+    "max": 80.1,
+    "median": 50.3,
+    "q25": 40.6,
+    "q75": 60.5,
+    "mean_boot_ci95": [
+      47.9,
+      51.5
+    ]
+  },
+  "height": {
+    "min": 6.53,
+    "median": 9.69,
+    "max": 18.77
+  },
+  "eta": {
+    "median": 1.5,
+    "q25": 1.27,
+    "q75": 1.82
+  },
+  "width": {
+    "min": 6.37,
+    "median": 10.08,
+    "max": 25.84
+  },
+  "sinuosity": {
+    "mean": 1.174,
+    "max": 1.383
+  },
+  "tau": {
+    "min": 0.32,
+    "max": 13.91,
+    "median": 8.03,
+    "q25": 2.98,
+    "q75": 11.01,
+    "median_ci95": [
+      7.18,
+      9.42
+    ],
+    "sigma": 0.532
+  },
+  "n_tau_clean": 50,
+  "n_multipass": 92,
+  "n_skylight_stations": 24,
+  "n_no_dem": 173,
+  "tau_s_range_m": [
+    122.0,
+    171.0
+  ],
+  "kappa_env": 0.033,
+  "kappa_env_station": {
+    "s": 122.0,
+    "tau": 0.32,
+    "span": 9.55
+  },
+  "shielding": {
+    "median": 2410.0,
+    "min": 95.0,
+    "atmosphere_ratio_median": 2.33
+  },
+  "span_scale": {
+    "mars": 1.63,
+    "moon": 2.46
+  },
+  "mars": {
+    "n_total": 1062,
+    "n_dimensioned": 131,
+    "aperture_median_m": 120.0,
+    "counts": {
+      "ge_5m": 131,
+      "ge_10m": 131,
+      "ge_20m": 131,
+      "ge_50m": 120
+    }
+  },
+  "moon": {
+    "n_total": 278,
+    "n_dimensioned": 266,
+    "aperture_median_m": 29.0,
+    "counts": {
+      "ge_5m": 266,
+      "ge_10m": 258,
+      "ge_20m": 190,
+      "ge_50m": 63
+    }
+  },
+  "note": "Single-flight map (first_long_flight_full). Multipass-flagged stations excluded from tau; re-run everything after the office-PC loop-closed multi-flight assembly (HANDOFF.md)."
+}

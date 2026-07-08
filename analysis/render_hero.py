@@ -22,7 +22,7 @@ from pathlib import Path
 
 import numpy as np
 import open3d as o3d
-from matplotlib import cm
+import matplotlib.pyplot as _plt
 
 from lava_pcd.io.pcd_reader import BinaryPcdReader
 
@@ -53,9 +53,20 @@ def load_cloud(path: Path) -> tuple[np.ndarray, np.ndarray | None]:
     return xyz, (np.vstack(rgb_parts) if rgb_parts else None)
 
 
-def make_scene() -> list[o3d.geometry.Geometry]:
+def make_scene(cutaway: float = 0.0) -> list[o3d.geometry.Geometry]:
+    """cutaway > 0 removes the surface within that horizontal distance of the
+    centreline, opening a window onto the conduit below (marked in captions)."""
     geoms = []
     axyz, argb = load_cloud(AERIAL)
+    if cutaway > 0 and (OUT / "centreline.csv").exists():
+        from scipy.spatial import cKDTree
+        rows = list(csv.DictReader(open(OUT / "centreline.csv")))
+        C = np.array([[float(r["x"]), float(r["y"])] for r in rows])
+        d, _ = cKDTree(C).query(axyz[:, :2], workers=-1)
+        keep = d > cutaway
+        axyz = axyz[keep]
+        if argb is not None:
+            argb = argb[keep]
     apc = o3d.geometry.PointCloud(o3d.utility.Vector3dVector(axyz))
     if argb is not None:
         apc.colors = o3d.utility.Vector3dVector(argb)
@@ -65,7 +76,7 @@ def make_scene() -> list[o3d.geometry.Geometry]:
     txyz, _ = load_cloud(TUBE)
     z = txyz[:, 2]
     zlo, zhi = np.percentile(z, 1), np.percentile(z, 99)
-    tcol = cm.get_cmap("turbo")((z - zlo) / max(zhi - zlo, 1e-6))[:, :3]
+    tcol = _plt.get_cmap("turbo")((z - zlo) / max(zhi - zlo, 1e-6))[:, :3]
     tpc = o3d.geometry.PointCloud(o3d.utility.Vector3dVector(txyz))
     tpc.colors = o3d.utility.Vector3dVector(tcol)
     geoms.append(tpc)
@@ -106,23 +117,23 @@ def capture(geoms, lookat, front, up, zoom, out_png, point_size=1.5):
 
 
 def main() -> None:
-    geoms = make_scene()
     sky = json.loads((OUT / "aerial_holes.json").read_text())
     centres = np.array([h["centroid"] for h in sky["holes"][:3]])
     mid = centres.mean(0)
 
-    # Scene centre: middle of the tube footprint.
+    geoms = make_scene()
     tube_xyz = np.asarray(geoms[1].points)
     c = tube_xyz.mean(0)
-
-    capture(geoms, lookat=c, front=[0.55, -0.55, 0.63], up=[0, 0, 1],
-            zoom=0.32, out_png=REN / "hero_oblique.png")
     capture(geoms, lookat=c, front=[0.0, 0.0, 1.0], up=[0, 1, 0],
             zoom=0.42, out_png=REN / "hero_topdown.png")
-    capture(geoms, lookat=c, front=[0.9, -0.2, 0.38], up=[0, 0, 1],
-            zoom=0.25, out_png=REN / "hero_side.png")
     capture(geoms, lookat=mid, front=[0.25, -0.25, 0.93], up=[0, 1, 0],
             zoom=0.06, out_png=REN / "skylight_closeup.png", point_size=2.0)
+
+    geoms = make_scene(cutaway=8.0)
+    capture(geoms, lookat=c, front=[0.55, -0.55, 0.63], up=[0, 0, 1],
+            zoom=0.32, out_png=REN / "hero_oblique.png")
+    capture(geoms, lookat=c, front=[0.9, -0.2, 0.38], up=[0, 0, 1],
+            zoom=0.25, out_png=REN / "hero_side.png")
 
 
 if __name__ == "__main__":
