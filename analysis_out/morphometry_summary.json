@@ -1,0 +1,31 @@
+{
+  "total_centreline_m": 338.0,
+  "n_stations": 339,
+  "n_valid_sections": 333,
+  "min_coverage": 0.5,
+  "area_m2": {
+    "min": 3.4,
+    "max": 80.1,
+    "median": 50.3,
+    "q25": 40.6,
+    "q75": 60.5,
+    "mean_boot_ci95": [
+      47.9,
+      51.5
+    ]
+  },
+  "height_m": {
+    "min": 6.53,
+    "median": 9.69,
+    "max": 18.77
+  },
+  "eta": {
+    "median": 1.5,
+    "q25": 1.27,
+    "q75": 1.82
+  },
+  "sinuosity_50m": {
+    "mean": 1.174,
+    "max": 1.383
+  }
+}
