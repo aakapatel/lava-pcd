@@ -1,0 +1,32 @@
+{
+  "n_stations": 339,
+  "n_intact": 217,
+  "n_skylight": 30,
+  "n_no_dem": 0,
+  "n_low_coverage": 0,
+  "n_multipass": 92,
+  "tau_m": {
+    "min": 0.35,
+    "max": 73.14,
+    "median": 26.68,
+    "q25": 13.52,
+    "q75": 51.05,
+    "median_ci95": [
+      23.03,
+      28.29
+    ],
+    "sigma": 0.532
+  },
+  "kappa_env": 0.0362,
+  "kappa_env_station": {
+    "s": 122.0,
+    "tau": 0.35,
+    "span": 9.55
+  },
+  "shielding_g_cm2": {
+    "median": 8003.0,
+    "min": 104.0,
+    "atmosphere_ratio_median": 7.75
+  },
+  "rho_basalt": 3000.0
+}

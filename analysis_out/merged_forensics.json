@@ -1,0 +1,37 @@
+{
+  "merged": {
+    "n_points": 186382952,
+    "x": [
+      1200.7,
+      1520.5
+    ],
+    "y": [
+      500.2,
+      881.5
+    ],
+    "z": [
+      218.8,
+      250.6
+    ],
+    "extent_x_m": 319.8,
+    "extent_y_m": 381.3
+  },
+  "aerial_crop": {
+    "n_points": 25640431,
+    "x": [
+      1299.1,
+      1598.4
+    ],
+    "y": [
+      410.0,
+      721.6
+    ],
+    "extent_x_m": 299.3,
+    "extent_y_m": 311.6
+  },
+  "stations_total": 339,
+  "stations_with_merged_coverage": 339,
+  "stations_with_aerial_crop_coverage": 169,
+  "stations_gained": 170,
+  "n_cells_tall_span_gt5m": 3573
+}

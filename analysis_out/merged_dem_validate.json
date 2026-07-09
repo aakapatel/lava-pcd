@@ -1,0 +1,29 @@
+{
+  "n_stations": 339,
+  "n_merged_dem": 339,
+  "n_merged_dem_realcell": 339,
+  "n_aerial_dem": 166,
+  "overlap_n": 166,
+  "dem_diff_merged_minus_aerial": {
+    "median": 0.0,
+    "mean": 0.01,
+    "std": 0.04,
+    "p10": -0.04,
+    "p90": 0.04,
+    "absmedian": 0.01
+  },
+  "tau_merged": {
+    "n": 339,
+    "min": -9.22,
+    "max": 73.14,
+    "median": 13.15,
+    "mean": 17.92
+  },
+  "tau_aerial": {
+    "n": 166,
+    "min": -7.9,
+    "max": 13.91,
+    "median": -3.38,
+    "mean": -0.76
+  }
+}

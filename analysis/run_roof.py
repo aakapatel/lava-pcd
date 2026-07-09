@@ -37,7 +37,16 @@ from lava_pcd.io.pcd_reader import BinaryPcdReader
 
 ROOT = Path(__file__).resolve().parents[1]
 OUT = ROOT / "analysis_out"
-AERIAL = ROOT / "maps/aerial_crop.pcd"
+# DEM source. Default is the cropped aerial surface (aerial_crop.pcd), which
+# only covers ~half the surveyed centreline. Set ROOF_DEM_PCD to the
+# full-extent surface (e.g. full_surface_and_subsurface_merged.pcd, whose
+# surface component is co-registered with aerial_crop to <0.05 m; see
+# analysis/merged_dem_validate.py) to extend tau to every station. A distinct
+# DEM cache is used per source so the two never clobber each other.
+import os
+AERIAL = Path(os.environ.get("ROOF_DEM_PCD", str(ROOT / "maps/aerial_crop.pcd")))
+DEM_CACHE = OUT / (f"dem_grid_{AERIAL.stem}.npz"
+                   if os.environ.get("ROOF_DEM_PCD") else "dem_grid.npz")
 
 DEM_RES = 0.5
 RHO_BASALT = 3000.0          # kg/m^3
@@ -83,7 +92,7 @@ def dem_at(dem: dict, x: np.ndarray, y: np.ndarray) -> np.ndarray:
 
 
 def main() -> None:
-    dem_npz = OUT / "dem_grid.npz"
+    dem_npz = DEM_CACHE
     if dem_npz.exists():
         d = np.load(dem_npz)
         dem = dict(z=d["z"], xmin=float(d["xmin"]), ymin=float(d["ymin"]),
