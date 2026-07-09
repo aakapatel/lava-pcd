@@ -31,8 +31,9 @@ OUT = ROOT / "analysis_out"
 REN = OUT / "renders"
 REN.mkdir(exist_ok=True)
 
-AERIAL = ROOT / "maps/aerial_10cm.pcd"
-TUBE = ROOT / "maps/tube_10cm_aerial.pcd"
+import os
+AERIAL = Path(os.environ.get("HERO_AERIAL_PCD", str(ROOT / "maps/aerial_10cm.pcd")))
+TUBE = Path(os.environ.get("HERO_TUBE_PCD", str(ROOT / "maps/tube_10cm_aerial.pcd")))
 W, H = 3840, 2160
 
 
