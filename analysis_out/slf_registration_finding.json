@@ -1,0 +1,37 @@
+{
+  "flight": "day2/second_long_flight (FAST-LIO scans.pcd, 73.6M pts)",
+  "raw_frame": {
+    "z_span_p1_p99_m": 23.1,
+    "z_minmax_m": [
+      -62.9,
+      76.6
+    ],
+    "note": "p1-p99 only 23 m; extremes are SLAM flyaway outliers"
+  },
+  "coverage": "shallow ~23 m vertical section around the 3 skylights; does NOT reach the deep tube (first_long_flight spans z 166-250, ~80 m). Adds no deep tau coverage.",
+  "registration": {
+    "match_6dof": {
+      "matches": 3,
+      "rms_m": 0.705,
+      "vertical_residuals_m": [
+        0.007,
+        0.014,
+        -0.02
+      ],
+      "raw_up_tilt_deg": 46.7,
+      "verdict": "fits skylights well but tilts gravity by 46.7 deg -> converts the ~200 m section into a 100 m vertical span, inconsistent with the tube 11 deg grade. Unphysical roll (near-collinear skylights leave roll unconstrained)."
+    },
+    "match_4dof": {
+      "tolerance_needed": 6.0,
+      "matches": 3,
+      "rms_m": 3.124,
+      "vertical_residuals_m": [
+        0.0,
+        -0.04,
+        5.29
+      ],
+      "verdict": "gravity-preserving fit cannot reconcile all 3 skylights (one off 5.3 m) -> residual vertical drift or wrong-twin-hole pick."
+    }
+  },
+  "conclusion": "second_long_flight is NOT a clean tau basis: cannot register preserving gravity AND fitting 3 skylights. Use it for mission metrics (T7) and as a drift datapoint (T6, ~5 m skylight non-coplanarity). first_long_flight + full-extent DEM (T3) remains the primary tau reconstruction."
+}

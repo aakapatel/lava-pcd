@@ -1,0 +1,208 @@
+{
+  "inputs": {
+    "aerial": "aerial_crop.pcd",
+    "tube": "slf_10cm.pcd",
+    "tube_source": "second_long_flight/scans.pcd (FAST-LIO)"
+  },
+  "tube_params": {
+    "mode": "ceiling",
+    "up": [
+      0.0,
+      0.0,
+      1.0
+    ],
+    "resolution": 1.0,
+    "min_area": 4.0,
+    "max_area": 400.0,
+    "edge_margin": 3.0,
+    "ceiling_jump": 2.0,
+    "merge_factor": 1.3
+  },
+  "tolerance": 3.0,
+  "aerial_holes": [
+    {
+      "id": 0,
+      "centroid": [
+        1374.705,
+        614.842,
+        235.788
+      ],
+      "area": 11.0,
+      "semi_major": 2.28,
+      "semi_minor": 1.61
+    },
+    {
+      "id": 1,
+      "centroid": [
+        1379.281,
+        636.811,
+        236.079
+      ],
+      "area": 3.0,
+      "semi_major": 1.41,
+      "semi_minor": 0.82
+    },
+    {
+      "id": 2,
+      "centroid": [
+        1381.214,
+        671.478,
+        236.659
+      ],
+      "area": 30.0,
+      "semi_major": 4.67,
+      "semi_minor": 2.07
+    },
+    {
+      "id": 3,
+      "centroid": [
+        1463.614,
+        517.478,
+        234.357
+      ],
+      "area": 3.0,
+      "semi_major": 2.0,
+      "semi_minor": 0.0
+    }
+  ],
+  "tube_holes": [
+    {
+      "id": 0,
+      "centroid": [
+        -230.06,
+        111.427,
+        22.401
+      ],
+      "area": 34.0,
+      "semi_major": 6.42,
+      "semi_minor": 3.01
+    },
+    {
+      "id": 1,
+      "centroid": [
+        -194.491,
+        131.927,
+        14.265
+      ],
+      "area": 6.0,
+      "semi_major": 2.1,
+      "semi_minor": 1.03
+    },
+    {
+      "id": 2,
+      "centroid": [
+        -181.575,
+        134.677,
+        14.173
+      ],
+      "area": 4.0,
+      "semi_major": 2.0,
+      "semi_minor": 0.82
+    },
+    {
+      "id": 3,
+      "centroid": [
+        -38.525,
+        57.727,
+        12.13
+      ],
+      "area": 5.0,
+      "semi_major": 2.24,
+      "semi_minor": 0.77
+    },
+    {
+      "id": 4,
+      "centroid": [
+        -36.188,
+        59.927,
+        11.782
+      ],
+      "area": 22.0,
+      "semi_major": 6.71,
+      "semi_minor": 2.14
+    },
+    {
+      "id": 5,
+      "centroid": [
+        -17.725,
+        29.727,
+        5.872
+      ],
+      "area": 5.0,
+      "semi_major": 1.73,
+      "semi_minor": 1.0
+    },
+    {
+      "id": 6,
+      "centroid": [
+        -8.491,
+        8.261,
+        5.624
+      ],
+      "area": 6.0,
+      "semi_major": 2.39,
+      "semi_minor": 0.91
+    },
+    {
+      "id": 7,
+      "centroid": [
+        -9.125,
+        10.727,
+        5.271
+      ],
+      "area": 5.0,
+      "semi_major": 2.24,
+      "semi_minor": 0.77
+    }
+  ],
+  "landmark": {
+    "mode": "6dof",
+    "matches": 3,
+    "rms": 0.705,
+    "margin": 0,
+    "shape_score": 0.277,
+    "inliers": [
+      [
+        4,
+        2
+      ],
+      [
+        7,
+        0
+      ],
+      [
+        5,
+        1
+      ]
+    ],
+    "vertical_residuals_m": [
+      0.007,
+      0.014,
+      -0.02
+    ],
+    "warnings": [
+      "ambiguous: a different correspondence set explains as many skylights (3); verify with --refine and visual inspection.",
+      "matched skylights are nearly collinear: rotation about that line is weakly constrained; --refine (GICP on the rims) is recommended."
+    ]
+  },
+  "scale_ruler": [
+    {
+      "pair": "a2-a0",
+      "aerial_m": 57.016,
+      "tube_m": 56.529,
+      "diff_m": -0.487
+    },
+    {
+      "pair": "a2-a1",
+      "aerial_m": 34.725,
+      "tube_m": 35.887,
+      "diff_m": 1.162
+    },
+    {
+      "pair": "a0-a1",
+      "aerial_m": 22.443,
+      "tube_m": 20.864,
+      "diff_m": -1.579
+    }
+  ]
+}
