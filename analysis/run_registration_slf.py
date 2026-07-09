@@ -16,6 +16,7 @@ Run:  env -u PYTHONPATH .venv/bin/python analysis/run_registration_slf.py
 from __future__ import annotations
 
 import json
+import sys
 from pathlib import Path
 
 import matplotlib
@@ -32,7 +33,11 @@ MAPS = ROOT / "maps"
 OUT = ROOT / "analysis_out"
 
 AERIAL = MAPS / "aerial_crop.pcd"
-TUBE = MAPS / "slf_10cm.pcd"
+# Tube cloud selectable so the same z-up ceiling registration can be run on any
+# FAST-LIO map (second_long_flight default; pass a path + tag to reuse for the
+# first_long_flight FAST-LIO map). Outputs are prefixed by <tag>_.
+TUBE = Path(sys.argv[1]) if len(sys.argv) > 1 else (MAPS / "slf_10cm.pcd")
+TAG = sys.argv[2] if len(sys.argv) > 2 else "slf"
 
 TUBE_PARAMS = dict(
     mode="ceiling", up=(0.0, 0.0, 1.0), resolution=1.0,
@@ -96,15 +101,15 @@ def main():
     aerial_hs = HoleSet.from_json(OUT / "aerial_holes.json")
     print(f"[1/3] aerial holes (cached): {len(aerial_hs.holes)}")
 
-    print("[2/3] ceiling hole detection on slf_10cm ...")
+    print(f"[2/3] ceiling hole detection on {TUBE.name} ...")
     tube_hs = detect_holes(TUBE, **TUBE_PARAMS)
-    tube_hs.to_json(OUT / "slf_tube_holes.json")
-    render_holes(TUBE, TUBE_PARAMS, tube_hs, OUT / "fig_slf_tube_holes.png")
+    tube_hs.to_json(OUT / f"{TAG}_tube_holes.json")
+    render_holes(TUBE, TUBE_PARAMS, tube_hs, OUT / f"fig_{TAG}_tube_holes.png")
     print(f"      {len(tube_hs.holes)} holes")
 
     print("[3/3] constellation match ...")
     tf = match_constellations(aerial_hs, tube_hs, mode="auto", tolerance=TOLERANCE)
-    tf.to_json(OUT / "slf_transform_landmark.json")
+    tf.to_json(OUT / f"{TAG}_transform_landmark.json")
     vres = vertical_residuals(aerial_hs, tube_hs, tf)
     A, B = aerial_hs.centroids(), tube_hs.centroids()
     ruler = []
@@ -117,8 +122,8 @@ def main():
             ruler.append(dict(pair=f"a{a1}-a{a2}", aerial_m=round(da, 3),
                               tube_m=round(dt, 3), diff_m=round(dt - da, 3)))
     report = dict(
-        inputs=dict(aerial=AERIAL.name, tube=TUBE.name,
-                    tube_source="second_long_flight/scans.pcd (FAST-LIO)"),
+        inputs=dict(aerial=AERIAL.name, tube=TUBE.name, tag=TAG,
+                    tube_source=f"{TAG} FAST-LIO scans.pcd"),
         tube_params={k: (list(v) if isinstance(v, tuple) else v)
                      for k, v in TUBE_PARAMS.items()},
         tolerance=TOLERANCE,
@@ -132,11 +137,11 @@ def main():
                       warnings=list(tf.warnings)),
         scale_ruler=ruler,
     )
-    (OUT / "slf_registration_report.json").write_text(json.dumps(report, indent=2))
+    (OUT / f"{TAG}_registration_report.json").write_text(json.dumps(report, indent=2))
     print(f"      mode={tf.mode} matches={len(tf.inliers)} RMS={tf.rms:.3f} "
           f"margin={tf.margin} vres={[f'{v:+.2f}' for v in vres]}")
-    render_match(aerial_hs, tube_hs, tf, OUT / "fig_slf_match.png")
-    print("wrote slf_registration_report.json")
+    render_match(aerial_hs, tube_hs, tf, OUT / f"fig_{TAG}_match.png")
+    print(f"wrote {TAG}_registration_report.json")
 
 
 if __name__ == "__main__":

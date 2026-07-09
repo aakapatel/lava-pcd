@@ -1,0 +1,8 @@
+{
+  "n_compared": 305,
+  "near_skylight_mean_diff_m": 1.27,
+  "near_skylight_absmedian_m": 0.93,
+  "deep_end_mean_diff_m": -42.76,
+  "max_divergence_m": -62.72,
+  "interpretation": "DLIO ceiling agrees with FAST-LIO to ~+-3 m near the skylights (both pinned there) but falls up to tens of m below FAST-LIO toward the deep end, i.e. the DLIO 74 m descent is largely vertical drift. FAST-LIO stays roughly flat, consistent with its 12 m odometry descent. The barometric altitude from the bag (T7) is the arbiter."
+}
