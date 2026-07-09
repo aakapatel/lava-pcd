@@ -1,5 +1,5 @@
 {
-  "kappa_env_earth": 0.0043,
+  "kappa_env_earth": 0.033,
   "span_scale": {
     "mars": 1.63,
     "moon": 2.46
@@ -31,5 +31,5 @@
       "ge_narrowest": 265
     }
   },
-  "demonstrated_min_span_m": 6.12
+  "demonstrated_min_span_m": 6.37
 }

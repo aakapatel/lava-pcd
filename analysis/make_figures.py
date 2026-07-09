@@ -77,21 +77,32 @@ def fig_morphometry():
                           wspace=0.28)
 
     ax = fig.add_subplot(gs[0, :])   # (a) plan view with centreline
-    ax.plot(x, y, color=C["tube"], lw=1.8)
+    # The conduit is strongly elongated (~4:1), so an equal-aspect plan in the
+    # E/N frame collapses to a thin vertical strip. Rotate to the centreline's
+    # principal axis so the plan view fills the wide panel.
+    XY = np.column_stack([x, y])
+    ctr = XY.mean(0)
+    _, _, Vt = np.linalg.svd(XY - ctr, full_matrices=False)
+    uv = (XY - ctr) @ Vt.T
+    u, v = uv[:, 0], uv[:, 1]
+    if u[-1] < u[0]:                  # orient travel direction to +u
+        u = -u
+    ax.plot(u, v, color=C["tube"], lw=1.8)
     for i, (lo, hi) in enumerate(bands):
         m = (s_all >= lo) & (s_all <= hi)
-        ax.plot(x[m], y[m], color=C["skylight"], lw=3.5,
+        ax.plot(u[m], v[m], color=C["skylight"], lw=3.5,
                 label="skylight" if i == 0 else None)
     for tick in range(0, int(s.max()) + 1, 50):
         j = np.argmin(np.abs(s_all - tick))
-        ax.annotate(f"{tick}", (x[j], y[j]), fontsize=6, color="0.35",
-                    xytext=(3, 3), textcoords="offset points")
+        ax.annotate(f"{tick} m", (u[j], v[j]), fontsize=6, color="0.35",
+                    xytext=(0, 6), textcoords="offset points", ha="center")
     ax.set_aspect("equal")
-    ax.set_xlabel("easting (m, local frame)")
-    ax.set_ylabel("northing (m)")
-    ax.set_title("a  Centreline of the surveyed conduit (1 m stations, "
-                 "ticks every 50 m)", loc="left")
-    ax.legend(frameon=False)
+    ax.margins(x=0.02, y=0.25)
+    ax.set_xlabel("along principal axis (m, local frame)")
+    ax.set_ylabel("across (m)")
+    ax.set_title("a  Plan view of the surveyed centreline (stations every 50 m)",
+                 loc="left")
+    ax.legend(frameon=False, loc="lower right")
 
     panels = [("b  Cross-section area", A, r"$A$ (m$^2$)"),
               ("c  Width and height", None, "extent (m)"),
@@ -103,7 +114,7 @@ def fig_morphometry():
         if title.startswith("c"):
             ax.plot(s, W, lw=0.9, color=C["tube"], label="width")
             ax.plot(s, H, lw=0.9, color=C["intact"], label="height")
-            ax.legend(frameon=False, ncols=2)
+            ax.legend(frameon=False, ncols=2, loc="upper left")
         else:
             ax.plot(s, val, lw=0.9, color=C["tube"])
         ax.set_ylabel(ylab)
@@ -195,11 +206,11 @@ def fig_roof():
                color=C["skylight"], label=r"skylights ($\tau\to0$)")
     Ls = np.linspace(4, 27, 50)
     ax.plot(Ls, kappa * Ls, "k--", lw=1,
-            label=rf"$\tau/L={kappa:.3f}$ (observed min.)")
+            label=rf"$\tau/L={kappa:.3f}$ (min.)")
     ax.set_xlabel("local span $L$ (m)")
     ax.set_ylabel(r"$\tau$ (m)")
     ax.set_title("c  Thickness against span", loc="left")
-    ax.legend(frameon=False, loc="upper left")
+    ax.legend(frameon=False, loc="center right")
 
     fig.savefig(FIGS / "roof_panel.pdf", bbox_inches="tight")
     plt.close(fig)
@@ -216,8 +227,8 @@ def fig_planetary():
     ours = [2 * h["semi_major"] for h in sky["holes"][:3]]
     pla = json.loads((OUT / "planetary_summary.json").read_text())
 
-    fig = plt.figure(figsize=(7.1, 3.1))
-    gs = fig.add_gridspec(1, 2, wspace=0.3)
+    fig = plt.figure(figsize=(7.1, 3.2))
+    gs = fig.add_gridspec(1, 2, wspace=0.34)
 
     ax = fig.add_subplot(gs[0, 0])   # (a) aperture ECDFs
     for arr, key, name in ((mars, "mars", f"Mars APCs (n={len(mars)})"),
@@ -231,8 +242,7 @@ def fig_planetary():
     ax.set_xscale("log")
     ax.set_xlabel("aperture long axis (m)")
     ax.set_ylabel("cumulative fraction")
-    ax.set_title("a  Orbital aperture catalogues against the surveyed "
-                 "skylights", loc="left")
+    ax.set_title("a  Aperture catalogues vs. skylights", loc="left")
     ax.legend(frameon=False, loc="upper left")
 
     ax = fig.add_subplot(gs[0, 1])   # (b) gravity-scaled stable span
@@ -247,8 +257,7 @@ def fig_planetary():
     ax.fill_between(taus, 0, taus / kappa, color=C["earth"], alpha=0.07, lw=0)
     ax.set_xlabel(r"roof thickness $\tau$ (m)")
     ax.set_ylabel("max. span at the observed envelope (m)")
-    ax.set_title("b  Stable span propagated by $L\\propto g^{-1/2}$",
-                 loc="left")
+    ax.set_title(r"b  Stable span scaled by $g^{-1/2}$", loc="left")
     ax.legend(frameon=False, loc="upper left")
 
     fig.savefig(FIGS / "planetary_panel.pdf", bbox_inches="tight")

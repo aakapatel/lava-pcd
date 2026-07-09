@@ -38,12 +38,21 @@ from scipy.spatial import cKDTree
 
 from lava_pcd.io.pcd_reader import BinaryPcdReader
 
+import os
+
 ROOT = Path(__file__).resolve().parents[1]
 OUT = ROOT / "analysis_out"
 RNG = np.random.default_rng(7)
 
-SKEL_INPUT = ROOT / "maps/tube_30cm_aerial.pcd"
-SECT_INPUT = ROOT / "maps/tube_10cm_aerial.pcd"
+# Tube map selectable so the pipeline can be re-run on a different reconstruction
+# (default: the DLIO tube_10cm/30cm_aerial). Set MORPHO_SKEL_PCD /
+# MORPHO_SECT_PCD to swap in e.g. the FAST-LIO first-flight map
+# (maps/flf_30cm_aerial.pcd / flf_10cm_aerial.pcd) after the DLIO map was found
+# to carry ~60 m of vertical drift (see analysis/dlio_vs_fastlio_drift.py).
+SKEL_INPUT = Path(os.environ.get("MORPHO_SKEL_PCD",
+                                 str(ROOT / "maps/tube_30cm_aerial.pcd")))
+SECT_INPUT = Path(os.environ.get("MORPHO_SECT_PCD",
+                                 str(ROOT / "maps/tube_10cm_aerial.pcd")))
 
 # L1-skeleton parameters
 N_Q = 60_000          # shell points used as the attraction set

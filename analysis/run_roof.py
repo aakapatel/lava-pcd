@@ -116,8 +116,10 @@ def main() -> None:
     # re-run (office PC, stage S6.2) replaces this map.
     from scipy.spatial import cKDTree
     from lava_pcd.io.pcd_reader import BinaryPcdReader as _R
+    tube_pcd = Path(os.environ.get("ROOF_TUBE_PCD",
+                                   str(ROOT / "maps/tube_10cm_aerial.pcd")))
     parts = []
-    with _R(ROOT / "maps/tube_10cm_aerial.pcd") as r:
+    with _R(tube_pcd) as r:
         for c in r.chunks():
             parts.append(c[:, :3].astype(np.float64))
     tube_pts = np.vstack(parts)
@@ -154,6 +156,15 @@ def main() -> None:
         ghost_frac[i] = float(np.mean(zcol > zdem[i] + 1.0))
     klass[(ghost_frac > 0.05) & (klass == "intact")] = "multipass"
 
+    # Physical-consistency screen: a non-positive roof over intact (non-skylight)
+    # ground means the mapped ceiling sits at or above the surface DEM, which is
+    # impossible for real roof; it signals residual registration/DEM error or an
+    # unmapped opening. Exclude such stations from the intact statistics and from
+    # kappa_env (roof thickness cannot be negative). Near the skylights the roof
+    # genuinely pinches out (tau -> 0); those stations are already 'skylight' or
+    # 'multipass'.
+    klass[(tau <= 0) & (klass == "intact")] = "inconsistent"
+
     with open(OUT / "roof_thickness.csv", "w", newline="") as f:
         w = csv.writer(f)
         w.writerow(["s", "x", "y", "z_dem", "z_ceil", "tau", "sigma_tau",
@@ -178,6 +189,7 @@ def main() -> None:
         n_no_dem=int((klass == "no_dem").sum()),
         n_low_coverage=int((klass == "low_coverage").sum()),
         n_multipass=int((klass == "multipass").sum()),
+        n_inconsistent=int((klass == "inconsistent").sum()),
         tau_m=dict(min=round(float(np.nanmin(ti)), 2),
                    max=round(float(np.nanmax(ti)), 2),
                    median=round(float(np.nanmedian(ti)), 2),

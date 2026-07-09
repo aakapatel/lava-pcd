@@ -59,9 +59,12 @@ def main() -> None:
         span_scale=pla["span_scale"],
         mars=pla["mars"], moon=pla["moon"],
         # --- provenance ---
-        note="Single-flight map (first_long_flight_full). Multipass-flagged "
-             "stations excluded from tau; re-run everything after the office-PC "
-             "loop-closed multi-flight assembly (HANDOFF.md).",
+        note="Tube map = offline FAST-LIO first_long_flight (flf_*_aerial), "
+             "gravity-preserving 4dof skylight registration. Replaces the Mac "
+             "DLIO map, which carried ~60 m of vertical drift that inflated the "
+             "deep roof (see analysis/dlio_vs_fastlio_drift.py). Surface DEM = "
+             "full_surface_and_subsurface_merged.pcd. tau uses intact stations "
+             "(tau>0, non-skylight, non-multipass, non-inconsistent).",
     )
     (OUT / "paper_numbers.json").write_text(json.dumps(n, indent=2))
     print(json.dumps(n, indent=2))

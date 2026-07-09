@@ -1,32 +1,33 @@
 {
   "n_stations": 339,
-  "n_intact": 50,
-  "n_skylight": 24,
-  "n_no_dem": 173,
+  "n_intact": 212,
+  "n_skylight": 27,
+  "n_no_dem": 0,
   "n_low_coverage": 0,
-  "n_multipass": 92,
+  "n_multipass": 80,
+  "n_inconsistent": 20,
   "tau_m": {
-    "min": 0.32,
-    "max": 13.91,
-    "median": 8.03,
-    "q25": 2.98,
-    "q75": 11.01,
+    "min": 0.04,
+    "max": 16.17,
+    "median": 4.2,
+    "q25": 1.84,
+    "q75": 8.12,
     "median_ci95": [
-      7.18,
-      9.42
+      3.64,
+      4.54
     ],
     "sigma": 0.532
   },
-  "kappa_env": 0.033,
+  "kappa_env": 0.0043,
   "kappa_env_station": {
-    "s": 122.0,
-    "tau": 0.32,
-    "span": 9.55
+    "s": 144.0,
+    "tau": 0.04,
+    "span": 10.26
   },
   "shielding_g_cm2": {
-    "median": 2410.0,
-    "min": 95.0,
-    "atmosphere_ratio_median": 2.33
+    "median": 1261.0,
+    "min": 13.0,
+    "atmosphere_ratio_median": 1.22
   },
   "rho_basalt": 3000.0
 }
