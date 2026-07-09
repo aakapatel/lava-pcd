@@ -1,12 +1,11 @@
 {
-  "sigma_reg_z_m": 0.5,
-  "sigma_reg_z_basis": "per-skylight rim-lip q90 elevation differences after the 6-DOF constellation solve: -0.04 m (S3) and +0.47 m (S1) at the two well-sampled skylights; the -1.37 m at the narrow S2 reflects lip occlusion from below, not registration error (vertical_check.json). Adopted 0.5 m.",
+  "sigma_reg_z_m": 1.09,
+  "sigma_reg_z_basis": "RMS of the per-skylight vertical rim residuals of the gravity-preserving 4-DOF FAST-LIO constellation solve (flf_registration_report.json): [np.float64(0.0), np.float64(-1.07), np.float64(1.55)] m. The 4-DOF (yaw+translation) solve keeps the map z-axis aligned to gravity; the residual is the real non-coplanarity of the three skylight rims between the surface model and the interior map. (The DLIO 6-DOF solve reached 0.03 m only by an unphysical 47 deg roll about the near-collinear skylight axis.)",
   "sigma_lidar_z_m": 0.1,
-  "sigma_lidar_basis": "Ouster range precision (~3 cm) plus SLAM surface thickness of the aggregated map (~10 cm at 10 cm voxel working copy).",
+  "sigma_lidar_basis": "Ouster range precision (~3 cm) plus aggregated-map surface thickness (~10 cm at the 10 cm voxel working copy).",
   "sigma_dem_z_m": 0.15,
   "sigma_dem_basis": "ASSUMED photogrammetric DEM vertical accuracy ~2x GSD; UPDATE when Birgir supplies survey metadata (gate G1).",
-  "sigma_tau_m": 0.532,
-  "horizontal_rim_rms_m": 1.102,
-  "horizontal_note": "constellation rim-centroid RMS; dominated by centroid estimation on the large irregular skylight seen from opposite sides; the scale-ruler long-pair differences (2.2-2.4 m) share the same cause and are an upper bound mixing centroid bias with SLAM drift; separate on office PC with per-flight maps.",
-  "final_transform": "transform_landmark.json (6-DOF constellation; GICP rim refine rejected by its safety net in all variants: the two sensors sample opposite sides of the rim lip)."
+  "sigma_tau_m": 1.1,
+  "horizontal_rim_rms_m": 1.093,
+  "final_transform": "flf_transform_landmark.json (FAST-LIO first-flight, 4-DOF gravity-preserving constellation). Replaces the DLIO transform_landmark.json after the DLIO map was found to carry ~60 m vertical drift (dlio_vs_fastlio_drift.py)."
 }

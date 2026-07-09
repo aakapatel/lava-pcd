@@ -16,7 +16,7 @@
       3.64,
       4.54
     ],
-    "sigma": 0.532
+    "sigma": 1.1
   },
   "kappa_env": 0.0043,
   "kappa_env_station": {
