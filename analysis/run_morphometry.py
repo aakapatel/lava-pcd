@@ -316,6 +316,12 @@ def main() -> None:
                      median=round(float(np.median(areas)), 1),
                      q25=round(float(np.percentile(areas, 25)), 1),
                      q75=round(float(np.percentile(areas, 75)), 1),
+                     # Robust central 90% range. The area minimum (3.4 m2) is a
+                     # genuine, fully covered constriction, not a coverage
+                     # artifact, so a percentile range (not a coverage filter) is
+                     # the honest way to quote a representative span in text.
+                     p5=round(float(np.percentile(areas, 5)), 1),
+                     p95=round(float(np.percentile(areas, 95)), 1),
                      mean_boot_ci95=[round(float(np.percentile(boot, 2.5)), 1),
                                      round(float(np.percentile(boot, 97.5)), 1)]),
         height_m=dict(min=round(float(heights.min()), 2),

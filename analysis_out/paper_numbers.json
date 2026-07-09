@@ -28,6 +28,8 @@
     "median": 50.3,
     "q25": 40.6,
     "q75": 60.5,
+    "p5": 16.3,
+    "p95": 77.1,
     "mean_boot_ci95": [
       47.9,
       51.5
@@ -95,7 +97,8 @@
       "ge_5m": 131,
       "ge_10m": 131,
       "ge_20m": 131,
-      "ge_50m": 120
+      "ge_50m": 120,
+      "ge_narrowest": 131
     }
   },
   "moon": {
@@ -106,7 +109,8 @@
       "ge_5m": 266,
       "ge_10m": 258,
       "ge_20m": 190,
-      "ge_50m": 63
+      "ge_50m": 63,
+      "ge_narrowest": 265
     }
   },
   "note": "Single-flight map (first_long_flight_full). Multipass-flagged stations excluded from tau; re-run everything after the office-PC loop-closed multi-flight assembly (HANDOFF.md)."

@@ -71,7 +71,14 @@ def main() -> None:
     thresholds = [5.0, 10.0, 20.0, 50.0]
 
     def counts(ap: np.ndarray) -> dict:
-        return {f"ge_{int(t)}m": int((ap >= t).sum()) for t in thresholds}
+        c = {f"ge_{int(t)}m": int((ap >= t).sum()) for t in thresholds}
+        # Exact count of dimensioned apertures at least as wide as the narrowest
+        # section the vehicle actually traversed (demonstrated flyable span).
+        # This replaces the >=10 m proxy previously used in the manuscript for
+        # the "exceed the narrowest conduit section" sentence.
+        if w_min is not None:
+            c["ge_narrowest"] = int((ap >= float(w_min)).sum())
+        return c
 
     summary = dict(
         kappa_env_earth=kappa,

@@ -15,7 +15,8 @@
       "ge_5m": 131,
       "ge_10m": 131,
       "ge_20m": 131,
-      "ge_50m": 120
+      "ge_50m": 120,
+      "ge_narrowest": 131
     }
   },
   "moon": {
@@ -26,7 +27,8 @@
       "ge_5m": 266,
       "ge_10m": 258,
       "ge_20m": 190,
-      "ge_50m": 63
+      "ge_50m": 63,
+      "ge_narrowest": 265
     }
   },
   "demonstrated_min_span_m": 6.37
