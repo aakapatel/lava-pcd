@@ -1,0 +1,30 @@
+{
+  "source": "~/colcon_workspaces/exploration_ws/src/voxblox_ros2/travblox_wrapper/config/aerial/{stage_config,map_manager_config}_shafterx2.yaml (deployment workspace for the Iceland campaign; CONFIRM with Aakash these were the flown values, gate G2)",
+  "mapping": {
+    "tsdf_voxel_size_m": 0.25,
+    "tsdf_voxels_per_side": 16,
+    "max_ray_length_m": 15.0,
+    "truncation_distance_m": 0.6,
+    "esdf_max_distance_m": 2.0
+  },
+  "robot": {
+    "bounding_box_m": [1.2, 1.2, 1.2],
+    "clearance_extension_m": 0.4,
+    "safety_extension_m": 1.5
+  },
+  "planner": {
+    "sensor_model": "OS064: azimuth 2*pi, vertical fov 0.5236 rad, ray resolution 0.1221 rad, max_range 8.0 m",
+    "v_max_mps": 2.0,
+    "v_homing_mps": 0.9,
+    "yaw_rate_max_radps": 0.15,
+    "edge_length_max_m": 2.0,
+    "local_bounded_space_m": 15.0,
+    "num_vertices_max": 700,
+    "unknown_voxel_gain": 60.0,
+    "path_direction_penalty": 0.1,
+    "path_length_penalty": 0.04,
+    "traverse_length_max_m": 8.0,
+    "exploration_time_budget_s": 1800.0,
+    "auto_homing": true
+  }
+}
