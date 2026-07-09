@@ -1,0 +1,26 @@
+[
+  {
+    "bag": "first_long_flight",
+    "duration_s": 560.2,
+    "n_pose": 55847,
+    "path_length_m": 298.5,
+    "straight_line_extent_m": 234.5,
+    "z_range_m": 13.2,
+    "n_vehicle_status": 1108,
+    "n_manual_control_setpoint": 12959,
+    "n_bt_transitions": 7271,
+    "n_execution_complete": 43
+  },
+  {
+    "bag": "second_long_flight",
+    "duration_s": 543.4,
+    "n_pose": 54166,
+    "path_length_m": 286.6,
+    "straight_line_extent_m": 235.2,
+    "z_range_m": 21.9,
+    "n_vehicle_status": 1076,
+    "n_manual_control_setpoint": 10248,
+    "n_bt_transitions": 4903,
+    "n_execution_complete": 47
+  }
+]
