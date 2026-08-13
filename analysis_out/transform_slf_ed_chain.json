@@ -1,0 +1,69 @@
+{
+  "matrix": [
+    [
+      0.8068205844044951,
+      0.5901711950555856,
+      -0.027175450462712136,
+      1376.4326026086746
+    ],
+    [
+      -0.5876503242686468,
+      0.8064153002799901,
+      0.0660413496325522,
+      601.9445548595111
+    ],
+    [
+      0.06089040128085906,
+      -0.03731385802883797,
+      0.9974467579930566,
+      225.89922006842946
+    ],
+    [
+      0.0,
+      0.0,
+      0.0,
+      1.0
+    ]
+  ],
+  "inliers": [],
+  "rms": 0.0,
+  "mode": "ed_chain_gicp_slf",
+  "aerial_origin": [
+    479158.0,
+    7089826.0,
+    0.0
+  ],
+  "tube_origin": [
+    0.0,
+    0.0,
+    0.0
+  ],
+  "n_inliers": 0,
+  "margin": 0,
+  "shape_score": 0.0,
+  "aerial_up": [
+    0.0,
+    0.0,
+    1.0
+  ],
+  "anchors": [],
+  "anchor_axes": [],
+  "gicp_stages": [
+    {
+      "max_dist": 8.0,
+      "converged": true,
+      "iterations": 11,
+      "num_inliers": 250188
+    },
+    {
+      "max_dist": 2.0,
+      "converged": true,
+      "iterations": 0,
+      "num_inliers": 250103
+    }
+  ],
+  "warnings": [
+    "tilt 4.10 deg",
+    "second_long_flight -> registered frame via map-to-map GICP against the first-flight cloud"
+  ]
+}

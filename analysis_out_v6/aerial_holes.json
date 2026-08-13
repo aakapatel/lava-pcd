@@ -1,0 +1,73 @@
+{
+  "origin": [
+    479158.0,
+    7089826.0,
+    0.0
+  ],
+  "up": [
+    0.0,
+    0.0,
+    1.0
+  ],
+  "mode": "aerial",
+  "resolution": 1.0,
+  "source_path": "/Users/aakapatel/Documents/Claude/Projects/Nature Journal Article | Autonomous lava tube mapping/lavatube_maps_data_analysis/maps/aerial_crop.pcd",
+  "holes": [
+    {
+      "id": 0,
+      "centroid": [
+        1374.704922762784,
+        614.8415416370739,
+        235.7880280472363
+      ],
+      "radius": 1.8712051592547776,
+      "area": 11.0,
+      "n_cells": 11,
+      "semi_major": 2.2791297913328066,
+      "semi_minor": 1.6085352268686752,
+      "orientation": 1.307763117296515
+    },
+    {
+      "id": 1,
+      "centroid": [
+        1379.2806803385417,
+        636.8112386067709,
+        236.07883142655896
+      ],
+      "radius": 0.9772050238058398,
+      "area": 3.0,
+      "n_cells": 3,
+      "semi_major": 1.4142135623730951,
+      "semi_minor": 0.816496580927726,
+      "orientation": 0.7853981633974483
+    },
+    {
+      "id": 2,
+      "centroid": [
+        1381.214013671875,
+        671.4779052734375,
+        236.65874520615017
+      ],
+      "radius": 3.0901936161855166,
+      "area": 30.0,
+      "n_cells": 30,
+      "semi_major": 4.668308414005641,
+      "semi_minor": 2.0744754218505626,
+      "orientation": 1.5707963267948966
+    },
+    {
+      "id": 3,
+      "centroid": [
+        1463.614013671875,
+        517.4779052734375,
+        234.35745922168653
+      ],
+      "radius": 0.9772050238058398,
+      "area": 3.0,
+      "n_cells": 3,
+      "semi_major": 2.0,
+      "semi_minor": 0.0,
+      "orientation": 1.5707963267948966
+    }
+  ]
+}

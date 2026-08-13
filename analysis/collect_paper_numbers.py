@@ -62,12 +62,18 @@ def main() -> None:
         mars=pla["mars"], moon=pla["moon"],
         # --- provenance ---
         note=(
-            "Tube map = DLIO first_long_flight in the Llewellin slice-based "
-            "registration (transform_ed_slice.json); cross-checked against the "
-            "FAST-LIO map chained into the same frame (ceilings agree to "
-            "0.1-0.2 m, analysis/chain_flf_to_ed.py). Surface DEM = "
-            "full_surface_and_subsurface_merged.pcd. tau uses intact stations "
-            "(tau>0, non-skylight, non-multipass, non-inconsistent)."
+            ("Tube map = offline FAST-LIO2 first_long_flight carried into the "
+             "Llewellin slice-registered frame by map-to-map GICP "
+             "(transform_flf_ed_chain.json); onboard DLIO map processed "
+             "identically as cross-check (analysis_out_ed, basis_comparison)."
+             if OUT.name.endswith("_v6") else
+             "Tube map = DLIO first_long_flight in the Llewellin slice-based "
+             "registration (transform_ed_slice.json); cross-checked against the "
+             "FAST-LIO map chained into the same frame (ceilings agree to "
+             "0.1-0.2 m, analysis/chain_flf_to_ed.py).")
+            + " Surface DEM = full_surface_and_subsurface_merged.pcd. tau uses "
+            "intact stations (tau>0, non-skylight, non-multipass, "
+            "non-inconsistent)."
             if reg["landmark"]["mode"] == "slice_manual_ed" else
             "Tube map = offline FAST-LIO first_long_flight (flf_*_aerial), "
             "gravity-preserving 4dof skylight registration. Replaces the Mac "

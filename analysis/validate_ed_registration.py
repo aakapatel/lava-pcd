@@ -63,17 +63,18 @@ def main() -> None:
     def near_s3(q):
         return np.hypot(q[:, 0] - s3[0], q[:, 1] - s3[1]) < r_disc
 
+    tube_pcd = Path(os.environ.get("VALID_TUBE_PCD",
+                                   str(ROOT / "maps/tube_10cm_ed.pcd")))
     aer = load(ROOT / "maps/aerial_10cm.pcd", keep=near_s3)
-    tube = load(ROOT / "maps/tube_10cm_ed.pcd", keep=near_s3)
+    tube = load(tube_pcd, keep=near_s3)
 
     # Aerial below-rim (through-skylight) points: below the local surface.
     surf = np.percentile(aer[:, 2], 90)
     a_in = aer[aer[:, 2] < surf - 3.0]
 
     # Tube floor surface: per-column lowest band of the interior cloud.
-    t_floor = []
     txy = cKDTree(tube[:, :2])
-    dz = []
+    dz, rr = [], []
     for p in a_in:
         idx = txy.query_ball_point(p[:2], 0.5)
         if len(idx) < 5:
@@ -81,14 +82,20 @@ def main() -> None:
         z = tube[idx, 2]
         floor = np.median(z[z < np.percentile(z, 30)])  # local floor band
         dz.append(p[2] - floor)
-    dz = np.array(dz)
-    floor_stats = dict(
-        n=int(len(dz)),
-        median_m=float(np.median(dz)),
-        rms_m=float(np.sqrt((dz ** 2).mean())),
-        p10_m=float(np.percentile(dz, 10)),
-        p90_m=float(np.percentile(dz, 90)),
-    )
+        rr.append(np.hypot(p[0] - s3[0], p[1] - s3[1]))
+    dz, rr = np.array(dz), np.array(rr)
+
+    def stats(v):
+        return dict(n=int(len(v)), median_m=float(np.median(v)),
+                    rms_m=float(np.sqrt((v ** 2).mean())),
+                    p10_m=float(np.percentile(v, 10)),
+                    p90_m=float(np.percentile(v, 90)))
+
+    floor_stats = stats(dz)
+    # The snow cone accumulates under the opening; the annulus outside the
+    # aperture footprint bounds the snow contribution to the residual.
+    ann = rr > 2.5
+    floor_stats["annulus_outside_cone"] = stats(dz[ann]) if ann.sum() > 20 else None
     print("S3 floor-through-skylight residual (aerial minus tube floor):")
     print(json.dumps(floor_stats, indent=2))
 

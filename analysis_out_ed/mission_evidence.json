@@ -1,0 +1,2234 @@
+{
+ "generated_by": "analysis/mission_evidence.py (rosbag2_py in stage_cuda container) + metadata.yaml topic lists",
+ "bags": {
+  "first_long_flight": {
+   "bag": "first_long_flight.db3",
+   "read_span_s": 560.2,
+   "pose": {
+    "n_msgs": 55847,
+    "duration_s": 560.2,
+    "path_length_m": 298.5,
+    "max_dist_from_start_m": 234.51,
+    "max_dist_time_rel_s": 537.6,
+    "closure_first_to_last": {
+     "dx_m": 196.825,
+     "dy_m": 112.26,
+     "dz_m": -4.724,
+     "norm_m": 226.637
+    },
+    "z_min_m": -5.1,
+    "z_max_m": 8.09,
+    "z_range_m": 13.19,
+    "start_xyz": [
+     0.003,
+     0.001,
+     -0.0
+    ],
+    "end_xyz": [
+     196.827,
+     112.261,
+     -4.724
+    ]
+   },
+   "bt_transitions": {
+    "n_total": 7271,
+    "by_node": {
+     "CheckPlannerStatus": 979,
+     "RootSequence": 746,
+     "IfReady": 745,
+     "PlannerStatusFallback": 743,
+     "HealthCheckFallback": 724,
+     "IfExecuting": 724,
+     "HealthSequence": 706,
+     "CheckSensors": 473,
+     "CheckOdometry": 473,
+     "CheckPlannerMode": 124,
+     "PlannerModeSelector": 106,
+     "WaypointNavSequence": 104,
+     "RetryUntilSuccessful": 104,
+     "ExecutePath": 104,
+     "AutoLocalPlanExec": 89,
+     "AutonomousExplorationSequence": 73,
+     "LocalOrGlobalOrHomeFallback": 73,
+     "CheckPlanValidity": 71,
+     "RunLocalPlanner": 60,
+     "WaypointLocalPlanExec": 26,
+     "RunWaypointPlanner": 19,
+     "AutoGlobalPlanExec": 3,
+     "RunGlobalPlanner": 2
+    },
+    "top_transition_kinds": {
+     "CheckPlannerStatus: IDLE->FAILURE": 456,
+     "CheckPlannerStatus: FAILURE->IDLE": 454,
+     "IfExecuting: FAILURE->IDLE": 254,
+     "HealthCheckFallback: SUCCESS->IDLE": 254,
+     "RootSequence: IDLE->RUNNING": 239,
+     "HealthCheckFallback: IDLE->RUNNING": 238,
+     "CheckSensors: IDLE->SUCCESS": 238,
+     "CheckOdometry: SUCCESS->IDLE": 238,
+     "HealthSequence: IDLE->RUNNING": 237,
+     "IfReady: IDLE->RUNNING": 237,
+     "CheckOdometry: IDLE->SUCCESS": 235,
+     "CheckSensors: SUCCESS->IDLE": 235,
+     "HealthSequence: RUNNING->SUCCESS": 235,
+     "PlannerStatusFallback: IDLE->RUNNING": 235,
+     "IfExecuting: IDLE->RUNNING": 235,
+     "IfExecuting: RUNNING->FAILURE": 235,
+     "HealthSequence: SUCCESS->IDLE": 234,
+     "HealthCheckFallback: RUNNING->SUCCESS": 232,
+     "IfReady: RUNNING->FAILURE": 218,
+     "IfReady: FAILURE->IDLE": 218,
+     "PlannerStatusFallback: RUNNING->FAILURE": 218,
+     "PlannerStatusFallback: FAILURE->IDLE": 218,
+     "RootSequence: RUNNING->FAILURE": 218,
+     "RootSequence: FAILURE->IDLE": 218,
+     "RetryUntilSuccessful: IDLE->RUNNING": 38,
+     "PlannerModeSelector: IDLE->RUNNING": 37,
+     "WaypointNavSequence: IDLE->RUNNING": 37,
+     "CheckPlannerMode: IDLE->SUCCESS": 37,
+     "CheckPlanValidity: IDLE->SUCCESS": 37,
+     "ExecutePath: IDLE->RUNNING": 36,
+     "CheckPlannerStatus: SUCCESS->IDLE": 36,
+     "PlannerModeSelector: SUCCESS->IDLE": 36,
+     "IfReady: RUNNING->SUCCESS": 36,
+     "IfReady: SUCCESS->IDLE": 36,
+     "PlannerStatusFallback: RUNNING->SUCCESS": 36,
+     "PlannerStatusFallback: SUCCESS->IDLE": 36,
+     "RootSequence: RUNNING->SUCCESS": 36,
+     "RootSequence: SUCCESS->IDLE": 35,
+     "ExecutePath: RUNNING->SUCCESS": 34,
+     "CheckPlanValidity: SUCCESS->IDLE": 34
+    },
+    "failures_by_node": {
+     "CheckPlannerStatus": 456,
+     "IfExecuting": 235,
+     "IfReady": 218,
+     "PlannerStatusFallback": 218,
+     "RootSequence": 218,
+     "CheckPlannerMode": 27,
+     "WaypointNavSequence": 27,
+     "RunLocalPlanner": 5,
+     "AutoLocalPlanExec": 5,
+     "RetryUntilSuccessful": 1
+    },
+    "first_seen_rel_s": {
+     "RootSequence": 2.6,
+     "HealthCheckFallback": 2.6,
+     "HealthSequence": 2.6,
+     "CheckSensors": 2.6,
+     "CheckOdometry": 2.6,
+     "PlannerStatusFallback": 2.6,
+     "IfExecuting": 2.6,
+     "CheckPlannerStatus": 2.6,
+     "IfReady": 2.6,
+     "PlannerModeSelector": 24.4,
+     "WaypointNavSequence": 24.4,
+     "CheckPlannerMode": 24.4,
+     "RetryUntilSuccessful": 24.4,
+     "WaypointLocalPlanExec": 24.4,
+     "RunWaypointPlanner": 27.7,
+     "CheckPlanValidity": 27.7,
+     "ExecutePath": 27.7,
+     "AutonomousExplorationSequence": 37.3,
+     "LocalOrGlobalOrHomeFallback": 37.3,
+     "AutoLocalPlanExec": 37.3,
+     "RunLocalPlanner": 37.7,
+     "AutoGlobalPlanExec": 38.1,
+     "RunGlobalPlanner": 38.1
+    },
+    "first_running_rel_s": {
+     "RootSequence": 2.6,
+     "HealthCheckFallback": 2.6,
+     "HealthSequence": 2.6,
+     "PlannerStatusFallback": 2.6,
+     "IfExecuting": 2.6,
+     "IfReady": 2.6,
+     "PlannerModeSelector": 24.4,
+     "WaypointNavSequence": 24.4,
+     "RetryUntilSuccessful": 24.4,
+     "WaypointLocalPlanExec": 24.4,
+     "ExecutePath": 27.7,
+     "AutonomousExplorationSequence": 37.3,
+     "LocalOrGlobalOrHomeFallback": 37.3,
+     "AutoLocalPlanExec": 37.3,
+     "AutoGlobalPlanExec": 38.1
+    }
+   },
+   "execution_complete": {
+    "n": 43,
+    "payloads": [
+     [
+      "complete",
+      43
+     ]
+    ],
+    "times_rel_s": [
+     24.4,
+     35.6,
+     35.8,
+     35.9,
+     36.0,
+     36.1,
+     36.2,
+     36.3,
+     36.4,
+     36.5,
+     36.6,
+     36.7,
+     36.8,
+     36.9,
+     37.0,
+     37.1,
+     37.2,
+     37.3,
+     43.2,
+     64.5,
+     83.2,
+     100.8,
+     117.0,
+     140.8,
+     163.4,
+     181.1,
+     197.3,
+     218.9,
+     237.9,
+     255.6,
+     277.2,
+     299.9,
+     318.9,
+     336.3,
+     355.3,
+     375.7,
+     398.5,
+     416.8,
+     435.8,
+     451.4,
+     469.4,
+     487.5,
+     506.5
+    ]
+   },
+   "homing_path": {
+    "n": 27,
+    "first_rel_s": 37.7,
+    "last_rel_s": 506.9,
+    "times_rel_s": [
+     37.7,
+     38.1,
+     43.6,
+     64.9,
+     83.6,
+     101.3,
+     117.4,
+     141.3,
+     163.8,
+     181.5,
+     197.7,
+     219.5,
+     238.4,
+     256.0,
+     277.6,
+     300.5,
+     319.5,
+     336.7,
+     355.7,
+     376.2,
+     398.9,
+     417.6,
+     436.6,
+     451.9,
+     470.0,
+     487.9,
+     506.9
+    ],
+    "n_waypoints": [
+     7,
+     8,
+     7,
+     15,
+     22,
+     29,
+     36,
+     44,
+     54,
+     61,
+     68,
+     77,
+     85,
+     91,
+     101,
+     110,
+     116,
+     124,
+     132,
+     139,
+     151,
+     158,
+     165,
+     171,
+     179,
+     185,
+     191
+    ]
+   },
+   "small_string_topics": {
+    "/shafterx2/takeoff": [
+     [
+      15.6,
+      "takeoff"
+     ]
+    ],
+    "/shafterx2/planner_status": [
+     [
+      35.0,
+      "ready"
+     ]
+    ],
+    "/shafterx2/planner_mode": [
+     [
+      37.3,
+      "exploration_mode"
+     ]
+    ]
+   },
+   "rosout": {
+    "n_total": 4565,
+    "keyword_hits": {
+     "plan": [
+      [
+       13.3,
+       "shafterx2.stage_interface_node",
+       "Planner initialization requested \n"
+      ],
+      [
+       24.4,
+       "shafterx2.stage_interface_node",
+       "[PlannerModeUpdate] Set planner mode to 0"
+      ],
+      [
+       24.4,
+       "shafterx2.stage_interface_node",
+       "[PlannerModeUpdate] Set planner status to 1"
+      ],
+      [
+       24.4,
+       "shafterx2.stage_interface_node",
+       "[RunWaypointPlanner] Received waypoint : 4.21488, 2.33285, 2.99253\n"
+      ],
+      [
+       27.7,
+       "shafterx2.stage_interface_node",
+       "[RunWaypointPlanner] Published plan to waypoint with 6 poses."
+      ],
+      [
+       27.7,
+       "shafterx2.stage_interface_node",
+       "[Planning iter -> 1] BT Exec time :3290 ms"
+      ],
+      [
+       35.0,
+       "shafterx2.stage_interface_node",
+       "Set planner status to 1"
+      ],
+      [
+       37.3,
+       "shafterx2.stage_interface_node",
+       "[PlannerModeUpdate] Set planner mode to 1"
+      ],
+      [
+       37.3,
+       "shafterx2.stage_interface_node",
+       "[PlannerModeUpdate] Set planner status to 1"
+      ],
+      [
+       37.7,
+       "shafterx2.stage_interface_node",
+       "[Planning iter -> 2] BT Exec time :375 ms"
+      ],
+      [
+       37.8,
+       "shafterx2.stage_interface_node",
+       "[RunLocalPlanner] Local planner failed."
+      ],
+      [
+       37.9,
+       "shafterx2.stage_interface_node",
+       "[RunLocalPlanner] Local planner failed."
+      ],
+      [
+       38.0,
+       "shafterx2.stage_interface_node",
+       "[RunLocalPlanner] Local planner failed."
+      ],
+      [
+       38.0,
+       "shafterx2.stage_interface_node",
+       "[RunLocalPlanner] Local planner failed."
+      ],
+      [
+       38.1,
+       "shafterx2.stage_interface_node",
+       "[RunLocalPlanner] Local planner failed."
+      ],
+      [
+       38.1,
+       "shafterx2.stage_interface_node",
+       "[Planning iter -> 3] BT Exec time :395 ms"
+      ],
+      [
+       43.6,
+       "shafterx2.stage_interface_node",
+       "[Planning iter -> 4] BT Exec time :266 ms"
+      ],
+      [
+       64.9,
+       "shafterx2.stage_interface_node",
+       "[Planning iter -> 5] BT Exec time :313 ms"
+      ],
+      [
+       83.6,
+       "shafterx2.stage_interface_node",
+       "[Planning iter -> 6] BT Exec time :310 ms"
+      ],
+      [
+       101.3,
+       "shafterx2.stage_interface_node",
+       "[Planning iter -> 7] BT Exec time :304 ms"
+      ],
+      [
+       117.4,
+       "shafterx2.stage_interface_node",
+       "[Planning iter -> 8] BT Exec time :282 ms"
+      ],
+      [
+       141.3,
+       "shafterx2.stage_interface_node",
+       "[Planning iter -> 9] BT Exec time :307 ms"
+      ],
+      [
+       163.8,
+       "shafterx2.stage_interface_node",
+       "[Planning iter -> 10] BT Exec time :268 ms"
+      ],
+      [
+       181.5,
+       "shafterx2.stage_interface_node",
+       "[Planning iter -> 11] BT Exec time :307 ms"
+      ],
+      [
+       197.7,
+       "shafterx2.stage_interface_node",
+       "[Planning iter -> 12] BT Exec time :278 ms"
+      ],
+      [
+       219.5,
+       "shafterx2.stage_interface_node",
+       "[Planning iter -> 13] BT Exec time :366 ms"
+      ],
+      [
+       238.4,
+       "shafterx2.stage_interface_node",
+       "[Planning iter -> 14] BT Exec time :306 ms"
+      ],
+      [
+       256.0,
+       "shafterx2.stage_interface_node",
+       "[Planning iter -> 15] BT Exec time :302 ms"
+      ],
+      [
+       277.6,
+       "shafterx2.stage_interface_node",
+       "[Planning iter -> 16] BT Exec time :285 ms"
+      ],
+      [
+       300.5,
+       "shafterx2.stage_interface_node",
+       "[Planning iter -> 17] BT Exec time :275 ms"
+      ],
+      [
+       319.5,
+       "shafterx2.stage_interface_node",
+       "[Planning iter -> 18] BT Exec time :290 ms"
+      ],
+      [
+       336.7,
+       "shafterx2.stage_interface_node",
+       "[Planning iter -> 19] BT Exec time :285 ms"
+      ],
+      [
+       355.7,
+       "shafterx2.stage_interface_node",
+       "[Planning iter -> 20] BT Exec time :259 ms"
+      ],
+      [
+       376.2,
+       "shafterx2.stage_interface_node",
+       "[Planning iter -> 21] BT Exec time :320 ms"
+      ],
+      [
+       398.9,
+       "shafterx2.stage_interface_node",
+       "[Planning iter -> 22] BT Exec time :300 ms"
+      ],
+      [
+       417.6,
+       "shafterx2.stage_interface_node",
+       "[Planning iter -> 23] BT Exec time :315 ms"
+      ],
+      [
+       436.6,
+       "shafterx2.stage_interface_node",
+       "[Planning iter -> 24] BT Exec time :313 ms"
+      ],
+      [
+       451.9,
+       "shafterx2.stage_interface_node",
+       "[Planning iter -> 25] BT Exec time :347 ms"
+      ],
+      [
+       470.0,
+       "shafterx2.stage_interface_node",
+       "[Planning iter -> 26] BT Exec time :459 ms"
+      ],
+      [
+       488.0,
+       "shafterx2.stage_interface_node",
+       "[Planning iter -> 27] BT Exec time :327 ms"
+      ]
+     ],
+     "fail": [
+      [
+       37.8,
+       "shafterx2.stage_interface_node",
+       "[RunLocalPlanner] Local planner failed."
+      ],
+      [
+       37.9,
+       "shafterx2.stage_interface_node",
+       "[RunLocalPlanner] Local planner failed."
+      ],
+      [
+       38.0,
+       "shafterx2.stage_interface_node",
+       "[RunLocalPlanner] Local planner failed."
+      ],
+      [
+       38.0,
+       "shafterx2.stage_interface_node",
+       "[RunLocalPlanner] Local planner failed."
+      ],
+      [
+       38.1,
+       "shafterx2.stage_interface_node",
+       "[RunLocalPlanner] Local planner failed."
+      ]
+     ],
+     "time": [
+      [
+       27.7,
+       "shafterx2.stage_interface_node",
+       "[Planning iter -> 1] BT Exec time :3290 ms"
+      ],
+      [
+       37.7,
+       "shafterx2.stage_interface_node",
+       "[Planning iter -> 2] BT Exec time :375 ms"
+      ],
+      [
+       38.1,
+       "shafterx2.stage_interface_node",
+       "[Planning iter -> 3] BT Exec time :395 ms"
+      ],
+      [
+       43.6,
+       "shafterx2.stage_interface_node",
+       "[Planning iter -> 4] BT Exec time :266 ms"
+      ],
+      [
+       64.9,
+       "shafterx2.stage_interface_node",
+       "[Planning iter -> 5] BT Exec time :313 ms"
+      ],
+      [
+       83.6,
+       "shafterx2.stage_interface_node",
+       "[Planning iter -> 6] BT Exec time :310 ms"
+      ],
+      [
+       101.3,
+       "shafterx2.stage_interface_node",
+       "[Planning iter -> 7] BT Exec time :304 ms"
+      ],
+      [
+       117.4,
+       "shafterx2.stage_interface_node",
+       "[Planning iter -> 8] BT Exec time :282 ms"
+      ],
+      [
+       141.3,
+       "shafterx2.stage_interface_node",
+       "[Planning iter -> 9] BT Exec time :307 ms"
+      ],
+      [
+       163.8,
+       "shafterx2.stage_interface_node",
+       "[Planning iter -> 10] BT Exec time :268 ms"
+      ],
+      [
+       181.5,
+       "shafterx2.stage_interface_node",
+       "[Planning iter -> 11] BT Exec time :307 ms"
+      ],
+      [
+       197.7,
+       "shafterx2.stage_interface_node",
+       "[Planning iter -> 12] BT Exec time :278 ms"
+      ],
+      [
+       219.5,
+       "shafterx2.stage_interface_node",
+       "[Planning iter -> 13] BT Exec time :366 ms"
+      ],
+      [
+       238.4,
+       "shafterx2.stage_interface_node",
+       "[Planning iter -> 14] BT Exec time :306 ms"
+      ],
+      [
+       256.0,
+       "shafterx2.stage_interface_node",
+       "[Planning iter -> 15] BT Exec time :302 ms"
+      ],
+      [
+       277.6,
+       "shafterx2.stage_interface_node",
+       "[Planning iter -> 16] BT Exec time :285 ms"
+      ],
+      [
+       300.5,
+       "shafterx2.stage_interface_node",
+       "[Planning iter -> 17] BT Exec time :275 ms"
+      ],
+      [
+       319.5,
+       "shafterx2.stage_interface_node",
+       "[Planning iter -> 18] BT Exec time :290 ms"
+      ],
+      [
+       336.7,
+       "shafterx2.stage_interface_node",
+       "[Planning iter -> 19] BT Exec time :285 ms"
+      ],
+      [
+       355.7,
+       "shafterx2.stage_interface_node",
+       "[Planning iter -> 20] BT Exec time :259 ms"
+      ],
+      [
+       376.2,
+       "shafterx2.stage_interface_node",
+       "[Planning iter -> 21] BT Exec time :320 ms"
+      ],
+      [
+       398.9,
+       "shafterx2.stage_interface_node",
+       "[Planning iter -> 22] BT Exec time :300 ms"
+      ],
+      [
+       417.6,
+       "shafterx2.stage_interface_node",
+       "[Planning iter -> 23] BT Exec time :315 ms"
+      ],
+      [
+       436.6,
+       "shafterx2.stage_interface_node",
+       "[Planning iter -> 24] BT Exec time :313 ms"
+      ],
+      [
+       451.9,
+       "shafterx2.stage_interface_node",
+       "[Planning iter -> 25] BT Exec time :347 ms"
+      ],
+      [
+       470.0,
+       "shafterx2.stage_interface_node",
+       "[Planning iter -> 26] BT Exec time :459 ms"
+      ],
+      [
+       488.0,
+       "shafterx2.stage_interface_node",
+       "[Planning iter -> 27] BT Exec time :327 ms"
+      ],
+      [
+       506.9,
+       "shafterx2.stage_interface_node",
+       "[Planning iter -> 28] BT Exec time :321 ms"
+      ]
+     ]
+    }
+   },
+   "bag_path": "/home/aakapatel/rosbags/LavaTube_Iceland/April2025/Iceland_Apr_25/day2/first_long_flight/first_long_flight.db3",
+   "metadata_duration_s": 560.3,
+   "metadata_message_count": 2536988,
+   "topics": {
+    "/tf": {
+     "type": "tf2_msgs/msg/TFMessage",
+     "count": 128318
+    },
+    "/shafterx2/vectornav/raw/gps": {
+     "type": "vectornav_msgs/msg/GpsGroup",
+     "count": 112030
+    },
+    "/shafterx2/vectornav/raw/ins": {
+     "type": "vectornav_msgs/msg/InsGroup",
+     "count": 112029
+    },
+    "/shafterx2/vectornav/raw/common": {
+     "type": "vectornav_msgs/msg/CommonGroup",
+     "count": 112029
+    },
+    "/shafterx2/vectornav/imu": {
+     "type": "sensor_msgs/msg/Imu",
+     "count": 111939
+    },
+    "/shafterx2/vectornav/time_gps": {
+     "type": "sensor_msgs/msg/TimeReference",
+     "count": 111938
+    },
+    "/shafterx2/vectornav/pose": {
+     "type": "geometry_msgs/msg/PoseWithCovarianceStamped",
+     "count": 111938
+    },
+    "/shafterx2/vectornav/time_syncin": {
+     "type": "sensor_msgs/msg/TimeReference",
+     "count": 111938
+    },
+    "/shafterx2/vectornav/magnetic": {
+     "type": "sensor_msgs/msg/MagneticField",
+     "count": 111937
+    },
+    "/shafterx2/vectornav/velocity_body": {
+     "type": "geometry_msgs/msg/TwistWithCovarianceStamped",
+     "count": 111937
+    },
+    "/shafterx2/vectornav/gnss": {
+     "type": "sensor_msgs/msg/NavSatFix",
+     "count": 111937
+    },
+    "/shafterx2/vectornav/time_pps": {
+     "type": "sensor_msgs/msg/TimeReference",
+     "count": 111937
+    },
+    "/shafterx2/vectornav/temperature": {
+     "type": "sensor_msgs/msg/Temperature",
+     "count": 111937
+    },
+    "/shafterx2/vectornav/imu_uncompensated": {
+     "type": "sensor_msgs/msg/Imu",
+     "count": 111936
+    },
+    "/shafterx2/vectornav/pressure": {
+     "type": "sensor_msgs/msg/FluidPressure",
+     "count": 111936
+    },
+    "/shafterx2/vectornav/time_startup": {
+     "type": "sensor_msgs/msg/TimeReference",
+     "count": 111936
+    },
+    "/fmu/in/vehicle_visual_odometry": {
+     "type": "px4_msgs/msg/VehicleOdometry",
+     "count": 55967
+    },
+    "/shafterx2/odometry/imu": {
+     "type": "nav_msgs/msg/Odometry",
+     "count": 55908
+    },
+    "/shafterx2/dlio/odom_node/pose": {
+     "type": "geometry_msgs/msg/PoseStamped",
+     "count": 55847
+    },
+    "/fmu/out/sensor_combined": {
+     "type": "px4_msgs/msg/SensorCombined",
+     "count": 55813
+    },
+    "/fmu/out/vehicle_attitude": {
+     "type": "px4_msgs/msg/VehicleAttitude",
+     "count": 55810
+    },
+    "/shafterx2/ouster/imu": {
+     "type": "sensor_msgs/msg/Imu",
+     "count": 55806
+    },
+    "/fmu/in/offboard_control_mode": {
+     "type": "px4_msgs/msg/OffboardControlMode",
+     "count": 54046
+    },
+    "/sbl": {
+     "type": "sensor_msgs/msg/Range",
+     "count": 53337
+    },
+    "/fmu/out/vehicle_odometry": {
+     "type": "px4_msgs/msg/VehicleOdometry",
+     "count": 52975
+    },
+    "/fmu/out/vehicle_local_position": {
+     "type": "px4_msgs/msg/VehicleLocalPosition",
+     "count": 52974
+    },
+    "/fmu/in/vehicle_attitude_setpoint": {
+     "type": "px4_msgs/msg/VehicleAttitudeSetpoint",
+     "count": 48700
+    },
+    "/ref": {
+     "type": "geometry_msgs/msg/PoseStamped",
+     "count": 27064
+    },
+    "/shafterx2/tf": {
+     "type": "tf2_msgs/msg/TFMessage",
+     "count": 14868
+    },
+    "/fmu/out/manual_control_setpoint": {
+     "type": "px4_msgs/msg/ManualControlSetpoint",
+     "count": 12959
+    },
+    "/shafterx2/bt_visualization/transitions": {
+     "type": "bt_msgs/msg/BtTransition",
+     "count": 7271
+    },
+    "/shafterx2/ouster/points": {
+     "type": "sensor_msgs/msg/PointCloud2",
+     "count": 5600
+    },
+    "/shafterx2/dlio/odom_node/path": {
+     "type": "nav_msgs/msg/Path",
+     "count": 5599
+    },
+    "/shafterx2/ouster/scan": {
+     "type": "sensor_msgs/msg/LaserScan",
+     "count": 5596
+    },
+    "/shafterx2/dlio/odom_node/pointcloud/deskewed": {
+     "type": "sensor_msgs/msg/PointCloud2",
+     "count": 5591
+    },
+    "/reduced_points": {
+     "type": "sensor_msgs/msg/PointCloud2",
+     "count": 5577
+    },
+    "/shafterx2/ouster/range_image": {
+     "type": "sensor_msgs/msg/Image",
+     "count": 5554
+    },
+    "/shafterx2/ouster/signal_image": {
+     "type": "sensor_msgs/msg/Image",
+     "count": 5545
+    },
+    "/shafterx2/ouster/reflec_image": {
+     "type": "sensor_msgs/msg/Image",
+     "count": 5539
+    },
+    "/shafterx2/ouster/nearir_image": {
+     "type": "sensor_msgs/msg/Image",
+     "count": 5529
+    },
+    "/rosout": {
+     "type": "rcl_interfaces/msg/Log",
+     "count": 4565
+    },
+    "/shafterx2/command/pose": {
+     "type": "geometry_msgs/msg/PoseStamped",
+     "count": 4448
+    },
+    "/fmu/out/vehicle_control_mode": {
+     "type": "px4_msgs/msg/VehicleControlMode",
+     "count": 1109
+    },
+    "/fmu/out/vehicle_status": {
+     "type": "px4_msgs/msg/VehicleStatus",
+     "count": 1108
+    },
+    "/fmu/out/timesync_status": {
+     "type": "px4_msgs/msg/TimesyncStatus",
+     "count": 1098
+    },
+    "/fmu/out/failsafe_flags": {
+     "type": "px4_msgs/msg/FailsafeFlags",
+     "count": 1027
+    },
+    "/shafterx2/global_planning_graph": {
+     "type": "visualization_msgs/msg/MarkerArray",
+     "count": 849
+    },
+    "/fmu/out/estimator_status_flags": {
+     "type": "px4_msgs/msg/EstimatorStatusFlags",
+     "count": 556
+    },
+    "/shafterx2/surface_pointcloud": {
+     "type": "sensor_msgs/msg/PointCloud2",
+     "count": 555
+    },
+    "/shafterx2/mesh": {
+     "type": "voxblox_msgs/msg/Mesh",
+     "count": 554
+    },
+    "/shafterx2/occupied_nodes": {
+     "type": "visualization_msgs/msg/MarkerArray",
+     "count": 553
+    },
+    "/shafterx2/tsdf_map_out": {
+     "type": "voxblox_msgs/msg/Layer",
+     "count": 553
+    },
+    "/shafterx2/tsdf_pointcloud": {
+     "type": "sensor_msgs/msg/PointCloud2",
+     "count": 550
+    },
+    "/shafterx2/traversability_voxel_map": {
+     "type": "visualization_msgs/msg/MarkerArray",
+     "count": 522
+    },
+    "/shafterx2/pose_graph": {
+     "type": "visualization_msgs/msg/MarkerArray",
+     "count": 387
+    },
+    "/shafterx2/map": {
+     "type": "sensor_msgs/msg/PointCloud2",
+     "count": 287
+    },
+    "/shafterx2/dlio/odom_node/pointcloud/keyframe": {
+     "type": "sensor_msgs/msg/PointCloud2",
+     "count": 282
+    },
+    "/shafterx2/exploration_direction": {
+     "type": "geometry_msgs/msg/PoseStamped",
+     "count": 278
+    },
+    "/shafterx2/dlio/odom_node/keyframes": {
+     "type": "geometry_msgs/msg/PoseArray",
+     "count": 268
+    },
+    "/shafterx2/exploration_path": {
+     "type": "visualization_msgs/msg/Marker",
+     "count": 66
+    },
+    "/shafterx2/execution_complete": {
+     "type": "std_msgs/msg/String",
+     "count": 43
+    },
+    "/shafterx2/raw_path": {
+     "type": "nav_msgs/msg/Path",
+     "count": 34
+    },
+    "/shafterx2/command_path": {
+     "type": "nav_msgs/msg/Path",
+     "count": 28
+    },
+    "/shafterx2/local_planning_graph": {
+     "type": "visualization_msgs/msg/MarkerArray",
+     "count": 28
+    },
+    "/shafterx2/global_dijkstra_paths": {
+     "type": "visualization_msgs/msg/MarkerArray",
+     "count": 28
+    },
+    "/shafterx2/homing_path": {
+     "type": "nav_msgs/msg/Path",
+     "count": 27
+    },
+    "/shafterx2/local_dijkstra_paths": {
+     "type": "visualization_msgs/msg/MarkerArray",
+     "count": 26
+    },
+    "/fmu/in/vehicle_command": {
+     "type": "px4_msgs/msg/VehicleCommand",
+     "count": 10
+    },
+    "/parameter_events": {
+     "type": "rcl_interfaces/msg/ParameterEvent",
+     "count": 9
+    },
+    "/fmu/out/vehicle_command_ack": {
+     "type": "px4_msgs/msg/VehicleCommandAck",
+     "count": 6
+    },
+    "/interactions_control/feedback": {
+     "type": "visualization_msgs/msg/InteractiveMarkerFeedback",
+     "count": 1
+    },
+    "/shafterx2/planner_mode": {
+     "type": "std_msgs/msg/String",
+     "count": 1
+    },
+    "/shafterx2/takeoff": {
+     "type": "std_msgs/msg/String",
+     "count": 1
+    },
+    "/shafterx2/planner_status": {
+     "type": "std_msgs/msg/String",
+     "count": 1
+    },
+    "/waypoint": {
+     "type": "geometry_msgs/msg/PointStamped",
+     "count": 1
+    },
+    "/tf_static": {
+     "type": "tf2_msgs/msg/TFMessage",
+     "count": 1
+    },
+    "/shafterx2/ouster/metadata": {
+     "type": "std_msgs/msg/String",
+     "count": 1
+    },
+    "/shafterx2/command/trajectory": {
+     "type": "trajectory_msgs/msg/MultiDOFJointTrajectory",
+     "count": 0
+    },
+    "/shafterx2/voxel_gain": {
+     "type": "visualization_msgs/msg/MarkerArray",
+     "count": 0
+    },
+    "/shafterx2/stage_pcl_map": {
+     "type": "sensor_msgs/msg/PointCloud2",
+     "count": 0
+    },
+    "/shafterx2/start": {
+     "type": "std_msgs/msg/String",
+     "count": 0
+    },
+    "/shafterx2/dense_graph": {
+     "type": "visualization_msgs/msg/MarkerArray",
+     "count": 0
+    },
+    "/shafterx2/safety_land": {
+     "type": "std_msgs/msg/String",
+     "count": 0
+    },
+    "/shafterx2/sparse_graph": {
+     "type": "visualization_msgs/msg/MarkerArray",
+     "count": 0
+    },
+    "/shafterx2/test_graph": {
+     "type": "visualization_msgs/msg/MarkerArray",
+     "count": 0
+    },
+    "/shafterx2/global_repos_path": {
+     "type": "visualization_msgs/msg/MarkerArray",
+     "count": 0
+    },
+    "/central_graph": {
+     "type": "visualization_msgs/msg/MarkerArray",
+     "count": 0
+    },
+    "/shafterx2/random_nodes": {
+     "type": "visualization_msgs/msg/MarkerArray",
+     "count": 0
+    },
+    "/shafterx2/global_traversability_map": {
+     "type": "grid_map_msgs/msg/GridMap",
+     "count": 0
+    },
+    "/shafterx2/land": {
+     "type": "std_msgs/msg/String",
+     "count": 0
+    },
+    "/initialpose": {
+     "type": "geometry_msgs/msg/PoseWithCovarianceStamped",
+     "count": 0
+    },
+    "/interactions_control/update": {
+     "type": "visualization_msgs/msg/InteractiveMarkerUpdate",
+     "count": 0
+    },
+    "/shafterx2/state": {
+     "type": "std_msgs/msg/String",
+     "count": 0
+    },
+    "/husky/merged/points": {
+     "type": "sensor_msgs/msg/PointCloud2",
+     "count": 0
+    },
+    "/shafterx2/vectornav/raw/gps2": {
+     "type": "vectornav_msgs/msg/GpsGroup",
+     "count": 0
+    },
+    "/clicked_point": {
+     "type": "geometry_msgs/msg/PointStamped",
+     "count": 0
+    },
+    "/shafterx2/ouster/os_driver/transition_event": {
+     "type": "lifecycle_msgs/msg/TransitionEvent",
+     "count": 0
+    },
+    "/shafterx2/vectornav/raw/attitude": {
+     "type": "vectornav_msgs/msg/AttitudeGroup",
+     "count": 0
+    },
+    "/shafterx2/set_mission_time": {
+     "type": "std_msgs/msg/Int32",
+     "count": 0
+    },
+    "/fmu/out/position_setpoint_triplet": {
+     "type": "px4_msgs/msg/PositionSetpointTriplet",
+     "count": 0
+    },
+    "/shafterx2/tf_static": {
+     "type": "tf2_msgs/msg/TFMessage",
+     "count": 0
+    },
+    "/shafterx2/vectornav/raw/time": {
+     "type": "vectornav_msgs/msg/TimeGroup",
+     "count": 0
+    },
+    "/goal_pose": {
+     "type": "geometry_msgs/msg/PoseStamped",
+     "count": 0
+    },
+    "/shafterx2/tsdf_slice": {
+     "type": "sensor_msgs/msg/PointCloud2",
+     "count": 0
+    },
+    "/shafterx2/yaw_error": {
+     "type": "std_msgs/msg/Bool",
+     "count": 0
+    },
+    "/shafterx2/reference": {
+     "type": "geometry_msgs/msg/PoseStamped",
+     "count": 0
+    },
+    "/events/write_split": {
+     "type": "rosbag2_interfaces/msg/WriteSplitEvent",
+     "count": 0
+    },
+    "/fmu/in/trajectory_setpoint": {
+     "type": "px4_msgs/msg/TrajectorySetpoint",
+     "count": 0
+    },
+    "/shafterx2/vectornav/raw/imu": {
+     "type": "vectornav_msgs/msg/ImuGroup",
+     "count": 0
+    }
+   }
+  },
+  "second_long_flight": {
+   "bag": "second_long_flight.db3",
+   "read_span_s": 543.4,
+   "pose": {
+    "n_msgs": 54166,
+    "duration_s": 543.4,
+    "path_length_m": 286.6,
+    "max_dist_from_start_m": 235.21,
+    "max_dist_time_rel_s": 503.3,
+    "closure_first_to_last": {
+     "dx_m": 136.568,
+     "dy_m": 187.98,
+     "dz_m": 16.923,
+     "norm_m": 232.967
+    },
+    "z_min_m": -0.0,
+    "z_max_m": 21.92,
+    "z_range_m": 21.92,
+    "start_xyz": [
+     0.001,
+     -0.0,
+     -0.0
+    ],
+    "end_xyz": [
+     136.569,
+     187.98,
+     16.922
+    ]
+   },
+   "bt_transitions": {
+    "n_total": 4903,
+    "by_node": {
+     "CheckPlannerStatus": 598,
+     "RootSequence": 461,
+     "PlannerStatusFallback": 458,
+     "IfReady": 456,
+     "HealthCheckFallback": 450,
+     "IfExecuting": 446,
+     "HealthSequence": 443,
+     "CheckOdometry": 299,
+     "CheckSensors": 295,
+     "CheckPlannerMode": 128,
+     "PlannerModeSelector": 112,
+     "WaypointNavSequence": 110,
+     "RetryUntilSuccessful": 110,
+     "ExecutePath": 108,
+     "AutoLocalPlanExec": 87,
+     "AutonomousExplorationSequence": 77,
+     "LocalOrGlobalOrHomeFallback": 75,
+     "CheckPlanValidity": 73,
+     "RunLocalPlanner": 59,
+     "WaypointLocalPlanExec": 32,
+     "RunWaypointPlanner": 21,
+     "AutoGlobalPlanExec": 3,
+     "RunGlobalPlanner": 2
+    },
+    "top_transition_kinds": {
+     "CheckPlannerStatus: FAILURE->IDLE": 265,
+     "CheckPlannerStatus: IDLE->FAILURE": 259,
+     "IfExecuting: FAILURE->IDLE": 155,
+     "HealthCheckFallback: SUCCESS->IDLE": 155,
+     "RootSequence: IDLE->RUNNING": 151,
+     "HealthCheckFallback: IDLE->RUNNING": 150,
+     "HealthSequence: IDLE->RUNNING": 150,
+     "CheckOdometry: IDLE->SUCCESS": 150,
+     "CheckSensors: IDLE->SUCCESS": 149,
+     "CheckOdometry: SUCCESS->IDLE": 149,
+     "HealthSequence: SUCCESS->IDLE": 148,
+     "PlannerStatusFallback: IDLE->RUNNING": 148,
+     "IfExecuting: IDLE->RUNNING": 148,
+     "CheckSensors: SUCCESS->IDLE": 146,
+     "IfReady: IDLE->RUNNING": 146,
+     "HealthSequence: RUNNING->SUCCESS": 145,
+     "HealthCheckFallback: RUNNING->SUCCESS": 145,
+     "IfExecuting: RUNNING->FAILURE": 143,
+     "IfReady: RUNNING->FAILURE": 117,
+     "IfReady: FAILURE->IDLE": 117,
+     "PlannerStatusFallback: RUNNING->FAILURE": 117,
+     "PlannerStatusFallback: FAILURE->IDLE": 117,
+     "RootSequence: RUNNING->FAILURE": 117,
+     "RootSequence: FAILURE->IDLE": 117,
+     "RetryUntilSuccessful: IDLE->RUNNING": 40,
+     "PlannerModeSelector: IDLE->RUNNING": 39,
+     "WaypointNavSequence: IDLE->RUNNING": 39,
+     "CheckPlannerMode: IDLE->SUCCESS": 39,
+     "CheckPlanValidity: IDLE->SUCCESS": 39,
+     "ExecutePath: IDLE->RUNNING": 39,
+     "CheckPlannerStatus: SUCCESS->IDLE": 38,
+     "PlannerModeSelector: SUCCESS->IDLE": 38,
+     "IfReady: RUNNING->SUCCESS": 38,
+     "IfReady: SUCCESS->IDLE": 38,
+     "PlannerStatusFallback: RUNNING->SUCCESS": 38,
+     "PlannerStatusFallback: SUCCESS->IDLE": 38,
+     "RootSequence: RUNNING->SUCCESS": 38,
+     "RootSequence: SUCCESS->IDLE": 38,
+     "CheckPlannerStatus: IDLE->SUCCESS": 36,
+     "ExecutePath: SUCCESS->IDLE": 35
+    },
+    "failures_by_node": {
+     "CheckPlannerStatus": 259,
+     "IfExecuting": 143,
+     "IfReady": 117,
+     "PlannerStatusFallback": 117,
+     "RootSequence": 117,
+     "CheckPlannerMode": 27,
+     "WaypointNavSequence": 27,
+     "RunLocalPlanner": 5,
+     "AutoLocalPlanExec": 5,
+     "RetryUntilSuccessful": 1
+    },
+    "first_seen_rel_s": {
+     "CheckPlannerStatus": 1.0,
+     "IfReady": 1.0,
+     "IfExecuting": 1.0,
+     "PlannerStatusFallback": 1.0,
+     "HealthCheckFallback": 1.0,
+     "RootSequence": 1.0,
+     "HealthSequence": 1.1,
+     "CheckSensors": 1.2,
+     "CheckOdometry": 1.2,
+     "PlannerModeSelector": 12.7,
+     "WaypointNavSequence": 12.7,
+     "CheckPlannerMode": 12.7,
+     "RetryUntilSuccessful": 12.7,
+     "WaypointLocalPlanExec": 12.7,
+     "RunWaypointPlanner": 15.8,
+     "CheckPlanValidity": 15.8,
+     "ExecutePath": 15.8,
+     "AutonomousExplorationSequence": 22.6,
+     "LocalOrGlobalOrHomeFallback": 22.6,
+     "AutoLocalPlanExec": 22.6,
+     "RunLocalPlanner": 22.9,
+     "AutoGlobalPlanExec": 23.3,
+     "RunGlobalPlanner": 23.3
+    },
+    "first_running_rel_s": {
+     "RootSequence": 1.2,
+     "HealthCheckFallback": 1.2,
+     "HealthSequence": 1.2,
+     "PlannerStatusFallback": 1.2,
+     "IfExecuting": 1.2,
+     "IfReady": 1.2,
+     "PlannerModeSelector": 12.7,
+     "WaypointNavSequence": 12.7,
+     "RetryUntilSuccessful": 12.7,
+     "WaypointLocalPlanExec": 12.7,
+     "ExecutePath": 15.8,
+     "AutonomousExplorationSequence": 22.6,
+     "LocalOrGlobalOrHomeFallback": 22.6,
+     "AutoLocalPlanExec": 22.6,
+     "AutoGlobalPlanExec": 23.3
+    }
+   },
+   "execution_complete": {
+    "n": 47,
+    "payloads": [
+     [
+      "complete",
+      47
+     ]
+    ],
+    "times_rel_s": [
+     12.6,
+     20.4,
+     20.6,
+     20.7,
+     20.8,
+     20.9,
+     21.0,
+     21.1,
+     21.2,
+     21.3,
+     21.4,
+     21.5,
+     21.6,
+     21.7,
+     21.8,
+     21.9,
+     22.0,
+     22.1,
+     22.2,
+     22.3,
+     22.4,
+     22.5,
+     25.0,
+     46.1,
+     63.2,
+     83.7,
+     105.8,
+     121.7,
+     140.0,
+     156.8,
+     178.8,
+     198.4,
+     221.8,
+     238.1,
+     260.3,
+     282.5,
+     300.6,
+     322.8,
+     341.5,
+     360.8,
+     380.3,
+     399.6,
+     419.3,
+     439.7,
+     459.3,
+     478.3,
+     498.5
+    ]
+   },
+   "homing_path": {
+    "n": 27,
+    "first_rel_s": 22.9,
+    "last_rel_s": 499.0,
+    "times_rel_s": [
+     22.9,
+     23.3,
+     25.4,
+     46.6,
+     63.7,
+     84.2,
+     106.2,
+     122.3,
+     140.4,
+     157.3,
+     179.4,
+     198.9,
+     222.4,
+     238.6,
+     260.7,
+     283.0,
+     301.1,
+     323.5,
+     341.9,
+     361.6,
+     380.8,
+     400.1,
+     419.8,
+     440.7,
+     460.0,
+     478.8,
+     499.0
+    ],
+    "n_waypoints": [
+     6,
+     7,
+     8,
+     22,
+     30,
+     38,
+     47,
+     53,
+     60,
+     68,
+     77,
+     85,
+     95,
+     101,
+     111,
+     119,
+     127,
+     136,
+     144,
+     151,
+     159,
+     168,
+     176,
+     181,
+     188,
+     194,
+     202
+    ]
+   },
+   "small_string_topics": {
+    "/shafterx2/takeoff": [
+     [
+      8.0,
+      "takeoff"
+     ]
+    ],
+    "/shafterx2/planner_status": [
+     [
+      19.1,
+      "ready"
+     ]
+    ],
+    "/shafterx2/planner_mode": [
+     [
+      22.5,
+      "exploration_mode"
+     ]
+    ]
+   },
+   "rosout": {
+    "n_total": 4447,
+    "keyword_hits": {
+     "plan": [
+      [
+       10.0,
+       "rosbag2_recorder",
+       "Subscribed to topic '/shafterx2/local_planning_graph'"
+      ],
+      [
+       10.0,
+       "shafterx2.stage_interface_node",
+       "Planner initialization requested \n"
+      ],
+      [
+       12.6,
+       "shafterx2.stage_interface_node",
+       "[PlannerModeUpdate] Set planner mode to 0"
+      ],
+      [
+       12.6,
+       "shafterx2.stage_interface_node",
+       "[PlannerModeUpdate] Set planner status to 1"
+      ],
+      [
+       12.6,
+       "shafterx2.stage_interface_node",
+       "[RunWaypointPlanner] Received waypoint : 3.01678, 3.34789, 2.97701\n"
+      ],
+      [
+       15.8,
+       "shafterx2.stage_interface_node",
+       "[RunWaypointPlanner] Published plan to waypoint with 3 poses."
+      ],
+      [
+       15.8,
+       "shafterx2.stage_interface_node",
+       "[Planning iter -> 1] BT Exec time :3110 ms"
+      ],
+      [
+       19.1,
+       "shafterx2.stage_interface_node",
+       "Set planner status to 1"
+      ],
+      [
+       22.5,
+       "shafterx2.stage_interface_node",
+       "[PlannerModeUpdate] Set planner mode to 1"
+      ],
+      [
+       22.5,
+       "shafterx2.stage_interface_node",
+       "[PlannerModeUpdate] Set planner status to 1"
+      ],
+      [
+       22.9,
+       "shafterx2.stage_interface_node",
+       "[Planning iter -> 2] BT Exec time :288 ms"
+      ],
+      [
+       23.0,
+       "shafterx2.stage_interface_node",
+       "[RunLocalPlanner] Local planner failed."
+      ],
+      [
+       23.1,
+       "shafterx2.stage_interface_node",
+       "[RunLocalPlanner] Local planner failed."
+      ],
+      [
+       23.2,
+       "shafterx2.stage_interface_node",
+       "[RunLocalPlanner] Local planner failed."
+      ],
+      [
+       23.3,
+       "shafterx2.stage_interface_node",
+       "[RunLocalPlanner] Local planner failed."
+      ],
+      [
+       23.3,
+       "shafterx2.stage_interface_node",
+       "[RunLocalPlanner] Local planner failed."
+      ],
+      [
+       23.3,
+       "shafterx2.stage_interface_node",
+       "[Planning iter -> 3] BT Exec time :365 ms"
+      ],
+      [
+       25.4,
+       "shafterx2.stage_interface_node",
+       "[Planning iter -> 4] BT Exec time :269 ms"
+      ],
+      [
+       46.6,
+       "shafterx2.stage_interface_node",
+       "[Planning iter -> 5] BT Exec time :291 ms"
+      ],
+      [
+       63.7,
+       "shafterx2.stage_interface_node",
+       "[Planning iter -> 6] BT Exec time :294 ms"
+      ],
+      [
+       84.2,
+       "shafterx2.stage_interface_node",
+       "[Planning iter -> 7] BT Exec time :274 ms"
+      ],
+      [
+       106.3,
+       "shafterx2.stage_interface_node",
+       "[Planning iter -> 8] BT Exec time :282 ms"
+      ],
+      [
+       122.3,
+       "shafterx2.stage_interface_node",
+       "[Planning iter -> 9] BT Exec time :288 ms"
+      ],
+      [
+       140.4,
+       "shafterx2.stage_interface_node",
+       "[Planning iter -> 10] BT Exec time :225 ms"
+      ],
+      [
+       157.3,
+       "shafterx2.stage_interface_node",
+       "[Planning iter -> 11] BT Exec time :246 ms"
+      ],
+      [
+       179.4,
+       "shafterx2.stage_interface_node",
+       "[Planning iter -> 12] BT Exec time :299 ms"
+      ],
+      [
+       198.9,
+       "shafterx2.stage_interface_node",
+       "[Planning iter -> 13] BT Exec time :311 ms"
+      ],
+      [
+       222.4,
+       "shafterx2.stage_interface_node",
+       "[Planning iter -> 14] BT Exec time :361 ms"
+      ],
+      [
+       238.6,
+       "shafterx2.stage_interface_node",
+       "[Planning iter -> 15] BT Exec time :305 ms"
+      ],
+      [
+       260.7,
+       "shafterx2.stage_interface_node",
+       "[Planning iter -> 16] BT Exec time :258 ms"
+      ],
+      [
+       283.0,
+       "shafterx2.stage_interface_node",
+       "[Planning iter -> 17] BT Exec time :285 ms"
+      ],
+      [
+       301.1,
+       "shafterx2.stage_interface_node",
+       "[Planning iter -> 18] BT Exec time :319 ms"
+      ],
+      [
+       323.5,
+       "shafterx2.stage_interface_node",
+       "[Planning iter -> 19] BT Exec time :301 ms"
+      ],
+      [
+       341.9,
+       "shafterx2.stage_interface_node",
+       "[Planning iter -> 20] BT Exec time :218 ms"
+      ],
+      [
+       361.6,
+       "shafterx2.stage_interface_node",
+       "[Planning iter -> 21] BT Exec time :339 ms"
+      ],
+      [
+       380.8,
+       "shafterx2.stage_interface_node",
+       "[Planning iter -> 22] BT Exec time :325 ms"
+      ],
+      [
+       400.1,
+       "shafterx2.stage_interface_node",
+       "[Planning iter -> 23] BT Exec time :321 ms"
+      ],
+      [
+       419.8,
+       "shafterx2.stage_interface_node",
+       "[Planning iter -> 24] BT Exec time :308 ms"
+      ],
+      [
+       440.7,
+       "shafterx2.stage_interface_node",
+       "[Planning iter -> 25] BT Exec time :448 ms"
+      ],
+      [
+       460.0,
+       "shafterx2.stage_interface_node",
+       "[Planning iter -> 26] BT Exec time :502 ms"
+      ]
+     ],
+     "fail": [
+      [
+       23.0,
+       "shafterx2.stage_interface_node",
+       "[RunLocalPlanner] Local planner failed."
+      ],
+      [
+       23.1,
+       "shafterx2.stage_interface_node",
+       "[RunLocalPlanner] Local planner failed."
+      ],
+      [
+       23.2,
+       "shafterx2.stage_interface_node",
+       "[RunLocalPlanner] Local planner failed."
+      ],
+      [
+       23.3,
+       "shafterx2.stage_interface_node",
+       "[RunLocalPlanner] Local planner failed."
+      ],
+      [
+       23.3,
+       "shafterx2.stage_interface_node",
+       "[RunLocalPlanner] Local planner failed."
+      ]
+     ],
+     "time": [
+      [
+       15.8,
+       "shafterx2.stage_interface_node",
+       "[Planning iter -> 1] BT Exec time :3110 ms"
+      ],
+      [
+       22.9,
+       "shafterx2.stage_interface_node",
+       "[Planning iter -> 2] BT Exec time :288 ms"
+      ],
+      [
+       23.3,
+       "shafterx2.stage_interface_node",
+       "[Planning iter -> 3] BT Exec time :365 ms"
+      ],
+      [
+       25.4,
+       "shafterx2.stage_interface_node",
+       "[Planning iter -> 4] BT Exec time :269 ms"
+      ],
+      [
+       46.6,
+       "shafterx2.stage_interface_node",
+       "[Planning iter -> 5] BT Exec time :291 ms"
+      ],
+      [
+       63.7,
+       "shafterx2.stage_interface_node",
+       "[Planning iter -> 6] BT Exec time :294 ms"
+      ],
+      [
+       84.2,
+       "shafterx2.stage_interface_node",
+       "[Planning iter -> 7] BT Exec time :274 ms"
+      ],
+      [
+       106.3,
+       "shafterx2.stage_interface_node",
+       "[Planning iter -> 8] BT Exec time :282 ms"
+      ],
+      [
+       122.3,
+       "shafterx2.stage_interface_node",
+       "[Planning iter -> 9] BT Exec time :288 ms"
+      ],
+      [
+       140.4,
+       "shafterx2.stage_interface_node",
+       "[Planning iter -> 10] BT Exec time :225 ms"
+      ],
+      [
+       157.3,
+       "shafterx2.stage_interface_node",
+       "[Planning iter -> 11] BT Exec time :246 ms"
+      ],
+      [
+       179.4,
+       "shafterx2.stage_interface_node",
+       "[Planning iter -> 12] BT Exec time :299 ms"
+      ],
+      [
+       198.9,
+       "shafterx2.stage_interface_node",
+       "[Planning iter -> 13] BT Exec time :311 ms"
+      ],
+      [
+       222.4,
+       "shafterx2.stage_interface_node",
+       "[Planning iter -> 14] BT Exec time :361 ms"
+      ],
+      [
+       238.6,
+       "shafterx2.stage_interface_node",
+       "[Planning iter -> 15] BT Exec time :305 ms"
+      ],
+      [
+       260.7,
+       "shafterx2.stage_interface_node",
+       "[Planning iter -> 16] BT Exec time :258 ms"
+      ],
+      [
+       283.0,
+       "shafterx2.stage_interface_node",
+       "[Planning iter -> 17] BT Exec time :285 ms"
+      ],
+      [
+       301.1,
+       "shafterx2.stage_interface_node",
+       "[Planning iter -> 18] BT Exec time :319 ms"
+      ],
+      [
+       323.5,
+       "shafterx2.stage_interface_node",
+       "[Planning iter -> 19] BT Exec time :301 ms"
+      ],
+      [
+       341.9,
+       "shafterx2.stage_interface_node",
+       "[Planning iter -> 20] BT Exec time :218 ms"
+      ],
+      [
+       361.6,
+       "shafterx2.stage_interface_node",
+       "[Planning iter -> 21] BT Exec time :339 ms"
+      ],
+      [
+       380.8,
+       "shafterx2.stage_interface_node",
+       "[Planning iter -> 22] BT Exec time :325 ms"
+      ],
+      [
+       400.1,
+       "shafterx2.stage_interface_node",
+       "[Planning iter -> 23] BT Exec time :321 ms"
+      ],
+      [
+       419.8,
+       "shafterx2.stage_interface_node",
+       "[Planning iter -> 24] BT Exec time :308 ms"
+      ],
+      [
+       440.7,
+       "shafterx2.stage_interface_node",
+       "[Planning iter -> 25] BT Exec time :448 ms"
+      ],
+      [
+       460.0,
+       "shafterx2.stage_interface_node",
+       "[Planning iter -> 26] BT Exec time :502 ms"
+      ],
+      [
+       478.8,
+       "shafterx2.stage_interface_node",
+       "[Planning iter -> 27] BT Exec time :363 ms"
+      ],
+      [
+       499.0,
+       "shafterx2.stage_interface_node",
+       "[Planning iter -> 28] BT Exec time :337 ms"
+      ]
+     ]
+    }
+   },
+   "bag_path": "/home/aakapatel/rosbags/LavaTube_Iceland/April2025/Iceland_Apr_25/day2/second_long_flight/second_long_flight.db3",
+   "metadata_duration_s": 543.4,
+   "metadata_message_count": 2535951,
+   "topics": {
+    "/shafterx2/tf": {
+     "type": "tf2_msgs/msg/TFMessage",
+     "count": 124683
+    },
+    "/shafterx2/vectornav/time_gps": {
+     "type": "sensor_msgs/msg/TimeReference",
+     "count": 108478
+    },
+    "/shafterx2/vectornav/time_startup": {
+     "type": "sensor_msgs/msg/TimeReference",
+     "count": 108478
+    },
+    "/shafterx2/vectornav/imu_uncompensated": {
+     "type": "sensor_msgs/msg/Imu",
+     "count": 108475
+    },
+    "/shafterx2/vectornav/velocity_body": {
+     "type": "geometry_msgs/msg/TwistWithCovarianceStamped",
+     "count": 108475
+    },
+    "/shafterx2/vectornav/magnetic": {
+     "type": "sensor_msgs/msg/MagneticField",
+     "count": 108475
+    },
+    "/shafterx2/vectornav/temperature": {
+     "type": "sensor_msgs/msg/Temperature",
+     "count": 108475
+    },
+    "/shafterx2/vectornav/pose": {
+     "type": "geometry_msgs/msg/PoseWithCovarianceStamped",
+     "count": 108475
+    },
+    "/shafterx2/vectornav/gnss": {
+     "type": "sensor_msgs/msg/NavSatFix",
+     "count": 108475
+    },
+    "/shafterx2/vectornav/pressure": {
+     "type": "sensor_msgs/msg/FluidPressure",
+     "count": 108474
+    },
+    "/shafterx2/vectornav/time_syncin": {
+     "type": "sensor_msgs/msg/TimeReference",
+     "count": 108474
+    },
+    "/shafterx2/vectornav/imu": {
+     "type": "sensor_msgs/msg/Imu",
+     "count": 108473
+    },
+    "/shafterx2/vectornav/time_pps": {
+     "type": "sensor_msgs/msg/TimeReference",
+     "count": 108470
+    },
+    "/shafterx2/vectornav/raw/gps": {
+     "type": "vectornav_msgs/msg/GpsGroup",
+     "count": 108449
+    },
+    "/shafterx2/vectornav/raw/common": {
+     "type": "vectornav_msgs/msg/CommonGroup",
+     "count": 108446
+    },
+    "/shafterx2/vectornav/raw/ins": {
+     "type": "vectornav_msgs/msg/InsGroup",
+     "count": 108444
+    },
+    "/tf": {
+     "type": "tf2_msgs/msg/TFMessage",
+     "count": 87450
+    },
+    "/shafterx2/odometry/imu": {
+     "type": "nav_msgs/msg/Odometry",
+     "count": 54237
+    },
+    "/fmu/in/vehicle_visual_odometry": {
+     "type": "px4_msgs/msg/VehicleOdometry",
+     "count": 54228
+    },
+    "/shafterx2/ouster/imu": {
+     "type": "sensor_msgs/msg/Imu",
+     "count": 54171
+    },
+    "/shafterx2/dlio/odom_node/pose": {
+     "type": "geometry_msgs/msg/PoseStamped",
+     "count": 54166
+    },
+    "/fmu/out/vehicle_attitude": {
+     "type": "px4_msgs/msg/VehicleAttitude",
+     "count": 54115
+    },
+    "/fmu/out/sensor_combined": {
+     "type": "px4_msgs/msg/SensorCombined",
+     "count": 54115
+    },
+    "/fmu/out/vehicle_local_position": {
+     "type": "px4_msgs/msg/VehicleLocalPosition",
+     "count": 54040
+    },
+    "/fmu/out/vehicle_odometry": {
+     "type": "px4_msgs/msg/VehicleOdometry",
+     "count": 54031
+    },
+    "/fmu/in/offboard_control_mode": {
+     "type": "px4_msgs/msg/OffboardControlMode",
+     "count": 53192
+    },
+    "/sbl": {
+     "type": "sensor_msgs/msg/Range",
+     "count": 51653
+    },
+    "/fmu/in/vehicle_attitude_setpoint": {
+     "type": "px4_msgs/msg/VehicleAttitudeSetpoint",
+     "count": 49050
+    },
+    "/ref": {
+     "type": "geometry_msgs/msg/PoseStamped",
+     "count": 26616
+    },
+    "/fmu/out/manual_control_setpoint": {
+     "type": "px4_msgs/msg/ManualControlSetpoint",
+     "count": 10248
+    },
+    "/shafterx2/ouster/scan": {
+     "type": "sensor_msgs/msg/LaserScan",
+     "count": 5436
+    },
+    "/shafterx2/ouster/points": {
+     "type": "sensor_msgs/msg/PointCloud2",
+     "count": 5434
+    },
+    "/shafterx2/dlio/odom_node/path": {
+     "type": "nav_msgs/msg/Path",
+     "count": 5433
+    },
+    "/shafterx2/dlio/odom_node/pointcloud/deskewed": {
+     "type": "sensor_msgs/msg/PointCloud2",
+     "count": 5415
+    },
+    "/reduced_points": {
+     "type": "sensor_msgs/msg/PointCloud2",
+     "count": 5402
+    },
+    "/shafterx2/ouster/range_image": {
+     "type": "sensor_msgs/msg/Image",
+     "count": 5387
+    },
+    "/shafterx2/ouster/signal_image": {
+     "type": "sensor_msgs/msg/Image",
+     "count": 5370
+    },
+    "/shafterx2/ouster/reflec_image": {
+     "type": "sensor_msgs/msg/Image",
+     "count": 5368
+    },
+    "/shafterx2/ouster/nearir_image": {
+     "type": "sensor_msgs/msg/Image",
+     "count": 5364
+    },
+    "/shafterx2/bt_visualization/transitions": {
+     "type": "bt_msgs/msg/BtTransition",
+     "count": 4903
+    },
+    "/rosout": {
+     "type": "rcl_interfaces/msg/Log",
+     "count": 4447
+    },
+    "/shafterx2/command/pose": {
+     "type": "geometry_msgs/msg/PoseStamped",
+     "count": 4373
+    },
+    "/fmu/out/timesync_status": {
+     "type": "px4_msgs/msg/TimesyncStatus",
+     "count": 1102
+    },
+    "/fmu/out/vehicle_status": {
+     "type": "px4_msgs/msg/VehicleStatus",
+     "count": 1076
+    },
+    "/fmu/out/vehicle_control_mode": {
+     "type": "px4_msgs/msg/VehicleControlMode",
+     "count": 1076
+    },
+    "/fmu/out/failsafe_flags": {
+     "type": "px4_msgs/msg/FailsafeFlags",
+     "count": 993
+    },
+    "/shafterx2/global_planning_graph": {
+     "type": "visualization_msgs/msg/MarkerArray",
+     "count": 826
+    },
+    "/shafterx2/surface_pointcloud": {
+     "type": "sensor_msgs/msg/PointCloud2",
+     "count": 540
+    },
+    "/shafterx2/mesh": {
+     "type": "voxblox_msgs/msg/Mesh",
+     "count": 540
+    },
+    "/fmu/out/estimator_status_flags": {
+     "type": "px4_msgs/msg/EstimatorStatusFlags",
+     "count": 539
+    },
+    "/shafterx2/occupied_nodes": {
+     "type": "visualization_msgs/msg/MarkerArray",
+     "count": 537
+    },
+    "/shafterx2/tsdf_map_out": {
+     "type": "voxblox_msgs/msg/Layer",
+     "count": 537
+    },
+    "/shafterx2/tsdf_pointcloud": {
+     "type": "sensor_msgs/msg/PointCloud2",
+     "count": 534
+    },
+    "/shafterx2/traversability_voxel_map": {
+     "type": "visualization_msgs/msg/MarkerArray",
+     "count": 528
+    },
+    "/shafterx2/pose_graph": {
+     "type": "visualization_msgs/msg/MarkerArray",
+     "count": 375
+    },
+    "/shafterx2/exploration_direction": {
+     "type": "geometry_msgs/msg/PoseStamped",
+     "count": 274
+    },
+    "/shafterx2/map": {
+     "type": "sensor_msgs/msg/PointCloud2",
+     "count": 267
+    },
+    "/shafterx2/dlio/odom_node/pointcloud/keyframe": {
+     "type": "sensor_msgs/msg/PointCloud2",
+     "count": 263
+    },
+    "/shafterx2/dlio/odom_node/keyframes": {
+     "type": "geometry_msgs/msg/PoseArray",
+     "count": 259
+    },
+    "/shafterx2/exploration_path": {
+     "type": "visualization_msgs/msg/Marker",
+     "count": 68
+    },
+    "/shafterx2/execution_complete": {
+     "type": "std_msgs/msg/String",
+     "count": 47
+    },
+    "/shafterx2/command_path": {
+     "type": "nav_msgs/msg/Path",
+     "count": 32
+    },
+    "/shafterx2/raw_path": {
+     "type": "nav_msgs/msg/Path",
+     "count": 29
+    },
+    "/shafterx2/global_dijkstra_paths": {
+     "type": "visualization_msgs/msg/MarkerArray",
+     "count": 28
+    },
+    "/shafterx2/local_planning_graph": {
+     "type": "visualization_msgs/msg/MarkerArray",
+     "count": 28
+    },
+    "/shafterx2/homing_path": {
+     "type": "nav_msgs/msg/Path",
+     "count": 27
+    },
+    "/shafterx2/local_dijkstra_paths": {
+     "type": "visualization_msgs/msg/MarkerArray",
+     "count": 26
+    },
+    "/fmu/in/vehicle_command": {
+     "type": "px4_msgs/msg/VehicleCommand",
+     "count": 11
+    },
+    "/fmu/out/vehicle_command_ack": {
+     "type": "px4_msgs/msg/VehicleCommandAck",
+     "count": 10
+    },
+    "/parameter_events": {
+     "type": "rcl_interfaces/msg/ParameterEvent",
+     "count": 9
+    },
+    "/shafterx2/takeoff": {
+     "type": "std_msgs/msg/String",
+     "count": 1
+    },
+    "/interactions_control/feedback": {
+     "type": "visualization_msgs/msg/InteractiveMarkerFeedback",
+     "count": 1
+    },
+    "/waypoint": {
+     "type": "geometry_msgs/msg/PointStamped",
+     "count": 1
+    },
+    "/tf_static": {
+     "type": "tf2_msgs/msg/TFMessage",
+     "count": 1
+    },
+    "/shafterx2/planner_mode": {
+     "type": "std_msgs/msg/String",
+     "count": 1
+    },
+    "/shafterx2/ouster/metadata": {
+     "type": "std_msgs/msg/String",
+     "count": 1
+    },
+    "/shafterx2/planner_status": {
+     "type": "std_msgs/msg/String",
+     "count": 1
+    },
+    "/interactions_control/update": {
+     "type": "visualization_msgs/msg/InteractiveMarkerUpdate",
+     "count": 0
+    },
+    "/husky/merged/points": {
+     "type": "sensor_msgs/msg/PointCloud2",
+     "count": 0
+    },
+    "/shafterx2/state": {
+     "type": "std_msgs/msg/String",
+     "count": 0
+    },
+    "/shafterx2/tf_static": {
+     "type": "tf2_msgs/msg/TFMessage",
+     "count": 0
+    },
+    "/shafterx2/vectornav/raw/time": {
+     "type": "vectornav_msgs/msg/TimeGroup",
+     "count": 0
+    },
+    "/shafterx2/vectornav/raw/imu": {
+     "type": "vectornav_msgs/msg/ImuGroup",
+     "count": 0
+    },
+    "/shafterx2/land": {
+     "type": "std_msgs/msg/String",
+     "count": 0
+    },
+    "/shafterx2/vectornav/raw/attitude": {
+     "type": "vectornav_msgs/msg/AttitudeGroup",
+     "count": 0
+    },
+    "/shafterx2/set_mission_time": {
+     "type": "std_msgs/msg/Int32",
+     "count": 0
+    },
+    "/shafterx2/voxel_gain": {
+     "type": "visualization_msgs/msg/MarkerArray",
+     "count": 0
+    },
+    "/shafterx2/stage_pcl_map": {
+     "type": "sensor_msgs/msg/PointCloud2",
+     "count": 0
+    },
+    "/shafterx2/command/trajectory": {
+     "type": "trajectory_msgs/msg/MultiDOFJointTrajectory",
+     "count": 0
+    },
+    "/events/write_split": {
+     "type": "rosbag2_interfaces/msg/WriteSplitEvent",
+     "count": 0
+    },
+    "/shafterx2/yaw_error": {
+     "type": "std_msgs/msg/Bool",
+     "count": 0
+    },
+    "/shafterx2/reference": {
+     "type": "geometry_msgs/msg/PoseStamped",
+     "count": 0
+    },
+    "/clicked_point": {
+     "type": "geometry_msgs/msg/PointStamped",
+     "count": 0
+    },
+    "/shafterx2/ouster/os_driver/transition_event": {
+     "type": "lifecycle_msgs/msg/TransitionEvent",
+     "count": 0
+    },
+    "/shafterx2/vectornav/raw/gps2": {
+     "type": "vectornav_msgs/msg/GpsGroup",
+     "count": 0
+    },
+    "/goal_pose": {
+     "type": "geometry_msgs/msg/PoseStamped",
+     "count": 0
+    },
+    "/shafterx2/global_repos_path": {
+     "type": "visualization_msgs/msg/MarkerArray",
+     "count": 0
+    },
+    "/fmu/out/position_setpoint_triplet": {
+     "type": "px4_msgs/msg/PositionSetpointTriplet",
+     "count": 0
+    },
+    "/shafterx2/global_traversability_map": {
+     "type": "grid_map_msgs/msg/GridMap",
+     "count": 0
+    },
+    "/shafterx2/tsdf_slice": {
+     "type": "sensor_msgs/msg/PointCloud2",
+     "count": 0
+    },
+    "/initialpose": {
+     "type": "geometry_msgs/msg/PoseWithCovarianceStamped",
+     "count": 0
+    },
+    "/fmu/in/trajectory_setpoint": {
+     "type": "px4_msgs/msg/TrajectorySetpoint",
+     "count": 0
+    },
+    "/shafterx2/test_graph": {
+     "type": "visualization_msgs/msg/MarkerArray",
+     "count": 0
+    },
+    "/shafterx2/sparse_graph": {
+     "type": "visualization_msgs/msg/MarkerArray",
+     "count": 0
+    },
+    "/central_graph": {
+     "type": "visualization_msgs/msg/MarkerArray",
+     "count": 0
+    },
+    "/shafterx2/random_nodes": {
+     "type": "visualization_msgs/msg/MarkerArray",
+     "count": 0
+    },
+    "/shafterx2/safety_land": {
+     "type": "std_msgs/msg/String",
+     "count": 0
+    },
+    "/shafterx2/dense_graph": {
+     "type": "visualization_msgs/msg/MarkerArray",
+     "count": 0
+    },
+    "/shafterx2/start": {
+     "type": "std_msgs/msg/String",
+     "count": 0
+    }
+   }
+  }
+ },
+ "notes": {
+  "bt_transition_decoding": "bt_msgs/BtTransition decoded manually from CDR; layout verified against exploration_ws/src/bt_logger/bt_msgs/msg/BtTransition.msg (status/prev_status: SUCCESS=0 RUNNING=1 FAILURE=2 IDLE=3 SKIPPED=4).",
+  "homing_path_semantics": "/shafterx2/homing_path is a continuously maintained return route republished at every planning iteration (waypoint count grows monotonically with depth); it is NOT an RTH activation event.",
+  "rth_evidence": "Planner source (STAGE2.0/stage_planner stage_interface.cpp) triggers return-to-home via BT node PlanHoming (inside AutoFallbackHomeSequence / LocalOrGlobalOrHomeFallback) on /return_to_home, measurement-done, or time-budget exhaustion, logging '[RTH] ...' warnings to /rosout. Neither bag contains any PlanHoming or AutoFallbackHomeSequence BT transition, any '[RTH]' rosout line, or a /return_to_home topic: homing never activated in the recorded portion of either flight.",
+  "battery": "No battery topic exists in either bag (no /fmu/out/battery_status; full topic lists included below). PX4 topics present (vehicle_status, failsafe_flags, manual_control_setpoint) are px4_msgs and not deserializable in the container, so only message counts are available.",
+  "flight_end": "Both recordings end with the drone deep inside the tube and still airborne (displacement over final 2 s: 1.09 m first flight, 0.21 m second flight). The first-to-last-pose distance is therefore NOT a landing/closure error; the bags stop before any return leg.",
+  "path_length_method": "DLIO pose stream downsampled to 0.1 m spacing; steps > 2 m rejected as outliers before summing.",
+  "times": "All *_rel_s times are seconds relative to the first DLIO pose message of that bag."
+ }
+}

@@ -1,0 +1,618 @@
+=== v6 pipeline (FAST-LIO chained into Ed frame) Thu Aug 13 12:12:14 PM CEST 2026 ===
+[1/4] loading clouds ...
+  sections cloud: 2813845 pts
+[2/4] L1-medial skeleton ...
+  skeleton: |Q|=60000, |X|=4071
+  h=8.0: 40 iters, last max move 1.6510 m
+  h=12.0: 40 iters, last max move 0.6270 m
+  h=16.0: 40 iters, last max move 1.3249 m
+  polyline: 602 nodes, diameter path 417 nodes, length 348.9 m
+  centreline flipped: s=0 at the entrance/skylight end
+  centreline: 349 stations, 348.0 m
+[3/4] cross-sections ...
+{
+  "total_centreline_m": 348.0,
+  "n_stations": 349,
+  "n_valid_sections": 343,
+  "min_coverage": 0.5,
+  "area_m2": {
+    "min": 5.5,
+    "max": 81.9,
+    "median": 49.8,
+    "q25": 37.6,
+    "q75": 59.5,
+    "p5": 15.5,
+    "p95": 76.2,
+    "mean_boot_ci95": [
+      46.7,
+      50.3
+    ]
+  },
+  "height_m": {
+    "min": 3.56,
+    "median": 8.1,
+    "max": 11.42
+  },
+  "eta": {
+    "median": 1.53,
+    "q25": 1.32,
+    "q75": 1.88
+  },
+  "width_m": {
+    "min": 6.07,
+    "median": 10.57,
+    "max": 31.56
+  },
+  "width_min_m": 6.07,
+  "sinuosity_50m": {
+    "mean": 1.202,
+    "max": 1.413
+  }
+}
+[4/4] renders ...
+done
+DEM loaded from cache
+{
+  "n_stations": 349,
+  "n_intact": 318,
+  "n_skylight": 26,
+  "n_no_dem": 0,
+  "n_low_coverage": 0,
+  "n_multipass": 0,
+  "n_inconsistent": 5,
+  "tau_m": {
+    "min": 0.04,
+    "max": 14.18,
+    "median": 5.88,
+    "q25": 3.14,
+    "q75": 9.01,
+    "median_ci95": [
+      5.63,
+      6.27
+    ],
+    "sigma": 1.49
+  },
+  "kappa_env": 0.0036,
+  "kappa_env_station": {
+    "s": 71.0,
+    "tau": 0.04,
+    "span": 11.48
+  },
+  "shielding_g_cm2": {
+    "median": 1763.0,
+    "min": 12.0,
+    "atmosphere_ratio_median": 1.71
+  },
+  "rho_basalt": 3000.0
+}
+done
+S3 floor-through-skylight residual (aerial minus tube floor):
+{
+  "n": 352,
+  "median_m": 0.8868675231933594,
+  "rms_m": 1.3561264565921034,
+  "p10_m": -1.1876602172851562,
+  "p90_m": 1.342333221435547,
+  "annulus_outside_cone": {
+    "n": 321,
+    "median_m": 0.9071502685546875,
+    "rms_m": 1.3602545239430572,
+    "p10_m": -0.06867218017578125,
+    "p90_m": 1.3718719482421875
+  }
+}
+two-SLAM ceiling agreement: worst zone |mean| 0.23 m, worst std 0.48 m
+sigma_reg_z = 1.46 m (anchor 1.36 + drift 0.53 in quadrature)
+updated budget: sigma_tau = 1.47 m
+DEM loaded from cache
+{
+  "n_stations": 349,
+  "n_intact": 318,
+  "n_skylight": 26,
+  "n_no_dem": 0,
+  "n_low_coverage": 0,
+  "n_multipass": 0,
+  "n_inconsistent": 5,
+  "tau_m": {
+    "min": 0.04,
+    "max": 14.18,
+    "median": 5.88,
+    "q25": 3.14,
+    "q75": 9.01,
+    "median_ci95": [
+      5.63,
+      6.27
+    ],
+    "sigma": 1.47
+  },
+  "kappa_env": 0.0036,
+  "kappa_env_station": {
+    "s": 71.0,
+    "tau": 0.04,
+    "span": 11.48
+  },
+  "shielding_g_cm2": {
+    "median": 1763.0,
+    "min": 12.0,
+    "atmosphere_ratio_median": 1.71
+  },
+  "rho_basalt": 3000.0
+}
+done
+columns: ['body', 'feature_id', 'lat', 'lon_east_0_360', 'aperture_long_axis_m', 'aperture_short_axis_m', 'inner_long_axis_m', 'inner_short_axis_m', 'depth_m', 'depth_is_minimum', 'type', 'source', 'source_detail', 'notes']
+{
+  "kappa_env_earth": 0.0036,
+  "span_scale": {
+    "mars": 1.63,
+    "moon": 2.46
+  },
+  "equivalent_kappa": {
+    "note": "a roof at the terrestrial envelope tau/L supports a span larger by span_scale at the same tau and strength"
+  },
+  "mars": {
+    "n_total": 1062,
+    "n_dimensioned": 131,
+    "aperture_median_m": 120.0,
+    "counts": {
+      "ge_5m": 131,
+      "ge_10m": 131,
+      "ge_20m": 131,
+      "ge_50m": 120,
+      "ge_narrowest": 131
+    }
+  },
+  "moon": {
+    "n_total": 278,
+    "n_dimensioned": 266,
+    "aperture_median_m": 29.0,
+    "counts": {
+      "ge_5m": 266,
+      "ge_10m": 258,
+      "ge_20m": 190,
+      "ge_50m": 63,
+      "ge_narrowest": 265
+    }
+  },
+  "demonstrated_min_span_m": 6.07
+}
+{
+  "reg_mode": "slice_manual_ed",
+  "reg_matches": 3,
+  "reg_rim_rms_m": 1.7331442353132371,
+  "reg_vres_mm": [
+    -5240,
+    -5864,
+    -3582
+  ],
+  "reg_sigma_tau_m": 1.47,
+  "reg_sigma_reg_z_m": 1.46,
+  "vertical_q90_diffs_m": [
+    -0.043,
+    -1.369,
+    0.471
+  ],
+  "scale_ruler_diff_m": [
+    -0.181,
+    2.179,
+    2.425
+  ],
+  "centreline_length_m": 348.0,
+  "n_stations": 349,
+  "n_valid_sections": 343,
+  "area": {
+    "min": 5.5,
+    "max": 81.9,
+    "median": 49.8,
+    "q25": 37.6,
+    "q75": 59.5,
+    "p5": 15.5,
+    "p95": 76.2,
+    "mean_boot_ci95": [
+      46.7,
+      50.3
+    ]
+  },
+  "height": {
+    "min": 3.56,
+    "median": 8.1,
+    "max": 11.42
+  },
+  "eta": {
+    "median": 1.53,
+    "q25": 1.32,
+    "q75": 1.88
+  },
+  "width": {
+    "min": 6.07,
+    "median": 10.57,
+    "max": 31.56
+  },
+  "sinuosity": {
+    "mean": 1.202,
+    "max": 1.413
+  },
+  "tau": {
+    "min": 0.04,
+    "max": 14.18,
+    "median": 5.88,
+    "q25": 3.14,
+    "q75": 9.01,
+    "median_ci95": [
+      5.63,
+      6.27
+    ],
+    "sigma": 1.47
+  },
+  "n_tau_clean": 318,
+  "n_multipass": 0,
+  "n_skylight_stations": 26,
+  "n_no_dem": 0,
+  "tau_s_range_m": [
+    0.0,
+    348.0
+  ],
+  "kappa_env": 0.0036,
+  "kappa_env_station": {
+    "s": 71.0,
+    "tau": 0.04,
+    "span": 11.48
+  },
+  "shielding": {
+    "median": 1763.0,
+    "min": 12.0,
+    "atmosphere_ratio_median": 1.71
+  },
+  "span_scale": {
+    "mars": 1.63,
+    "moon": 2.46
+  },
+  "mars": {
+    "n_total": 1062,
+    "n_dimensioned": 131,
+    "aperture_median_m": 120.0,
+    "counts": {
+      "ge_5m": 131,
+      "ge_10m": 131,
+      "ge_20m": 131,
+      "ge_50m": 120,
+      "ge_narrowest": 131
+    }
+  },
+  "moon": {
+    "n_total": 278,
+    "n_dimensioned": 266,
+    "aperture_median_m": 29.0,
+    "counts": {
+      "ge_5m": 266,
+      "ge_10m": 258,
+      "ge_20m": 190,
+      "ge_50m": 63,
+      "ge_narrowest": 265
+    }
+  },
+  "note": "Tube map = DLIO first_long_flight in the Llewellin slice-based registration (transform_ed_slice.json); cross-checked against the FAST-LIO map chained into the same frame (ceilings agree to 0.1-0.2 m, analysis/chain_flf_to_ed.py). Surface DEM = full_surface_and_subsurface_merged.pcd. tau uses intact stations (tau>0, non-skylight, non-multipass, non-inconsistent)."
+}
+{
+  "terrain": {
+    "variance": {
+      "tau": 16.074462865363316,
+      "z_dem": 11.01649349017048,
+      "z_ceil": 2.870853188254024
+    },
+    "dem_share": 0.685341313264559,
+    "corr_tau_zdem": 0.9100320283607635,
+    "const_ceiling_control": {
+      "r": 0.910032028360764,
+      "r2": 0.8214049717730084,
+      "rms_residual_m": 1.6943491815954848
+    },
+    "skylight_runs": [
+      {
+        "run_s": [
+          32.0,
+          40.0
+        ],
+        "d_zdem": -4.967683054393291,
+        "d_zceil": 0.8005998953974824,
+        "d_tau": -5.7682871338912145
+      },
+      {
+        "run_s": [
+          62.0,
+          65.0
+        ],
+        "d_zdem": -4.759253163139647,
+        "d_zceil": 1.993425484268272,
+        "d_tau": -6.752657373194491
+      },
+      {
+        "run_s": [
+          110.0,
+          122.0
+        ],
+        "d_zdem": -3.041845509893392,
+        "d_zceil": 2.5659463470319395,
+        "d_tau": -5.607796423135465
+      }
+    ],
+    "ceiling_thinning": {
+      "slope_m_per_m": -0.1360967395000659,
+      "ci95": [
+        -0.16719881759848487,
+        -0.11053513750653342
+      ],
+      "n": 125,
+      "note": "z_ceil vs distance to nearest skylight, stations within 40 m"
+    },
+    "tau_hist_2m": {
+      "counts": [
+        56,
+        36,
+        73,
+        49,
+        32,
+        23,
+        46,
+        3
+      ],
+      "edges": [
+        0,
+        2,
+        4,
+        6,
+        8,
+        10,
+        12,
+        14,
+        16
+      ]
+    },
+    "reach_median": {
+      "0-50": 2.161,
+      "50-100": 1.453,
+      "100-150": 3.231,
+      "150-200": 5.72,
+      "200-250": 7.942,
+      "250-300": 8.8875,
+      "300-350": 13.039
+    },
+    "near_skylight_median": {
+      "lt10": 1.227,
+      "10to20": 2.1845,
+      "20to30": 4.343
+    },
+    "zceil_range": 10.655000000000001,
+    "zdem_range": 12.79000000000002,
+    "net_centreline": {
+      "start": 232.39,
+      "end": 234.219
+    }
+  },
+  "stats": {
+    "corr_len_1e_m": 59,
+    "corr_len_zero_m": 114,
+    "n_eff": 3.3253418214797654,
+    "median": 5.875,
+    "ci_iid": [
+      5.629,
+      6.271
+    ],
+    "ci_block": {
+      "20": [
+        3.473,
+        8.212937499999994
+      ],
+      "30": [
+        2.921,
+        8.451
+      ],
+      "50": [
+        2.378,
+        8.804049999999991
+      ]
+    },
+    "sigma_tau_systematic_m": 1.49,
+    "note": "sigma_tau is dominated by the common registration datum term and does not average down"
+  },
+  "shielding": {
+    "2200": {
+      "median_g_cm2": 1292.5,
+      "frac_gt_100": 0.9779874213836478,
+      "frac_gt_500": 0.7924528301886793,
+      "frac_gt_1000": 0.6792452830188679
+    },
+    "2600": {
+      "median_g_cm2": 1527.5,
+      "frac_gt_100": 0.9811320754716981,
+      "frac_gt_500": 0.8270440251572327,
+      "frac_gt_1000": 0.710691823899371
+    },
+    "3000": {
+      "median_g_cm2": 1762.5,
+      "frac_gt_100": 0.9811320754716981,
+      "frac_gt_500": 0.8553459119496856,
+      "frac_gt_1000": 0.7327044025157232
+    }
+  },
+  "envelope": {
+    "beta": 0.5,
+    "rho_mid": 2600.0,
+    "sigma_req_MPa": {
+      "median": 0.24345411392956068,
+      "p95": 1.9730324905468282,
+      "max": 5.310167284992569,
+      "n": 311,
+      "note": "required tensile strength for stability of each intact station under the clamped-strip model; the max is the lower bound the intact roof places on rock-mass strength"
+    },
+    "tau_over_L": {
+      "min": 0.0035714285714285713,
+      "second": 0.006260296540362437,
+      "p5": 0.08506918384339582,
+      "p25": 0.2462538182096536,
+      "median": 0.5375836667794314
+    },
+    "kappa_sensitivity": {
+      "single_min": 0.0035714285714285713,
+      "drop_one": 0.006260296540362437,
+      "p5": 0.08506918384339582,
+      "median": 0.5375836667794314
+    },
+    "Lmax_sqrt_model": {
+      "earth": {
+        "1MPa": {
+          "at_tau_6m": 22.049038962903623,
+          "at_tau_14m": 33.132777038676906
+        },
+        "5MPa": {
+          "at_tau_6m": 49.303149959593966,
+          "at_tau_14m": 74.08714174182575
+        },
+        "10MPa": {
+          "at_tau_6m": 69.7251833405723,
+          "at_tau_14m": 104.77504064874782
+        }
+      },
+      "mars": {
+        "1MPa": {
+          "at_tau_6m": 35.8539669476657,
+          "at_tau_14m": 53.87724584403653
+        },
+        "5MPa": {
+          "at_tau_6m": 80.17190735801114,
+          "at_tau_14m": 120.47318414773372
+        },
+        "10MPa": {
+          "at_tau_6m": 113.38019870701869,
+          "at_tau_14m": 170.3748109239964
+        }
+      },
+      "moon": {
+        "1MPa": {
+          "at_tau_6m": 54.25835982257736,
+          "at_tau_14m": 81.53326507837141
+        },
+        "5MPa": {
+          "at_tau_6m": 121.32538091092641,
+          "at_tau_14m": 182.31392314274822
+        },
+        "10MPa": {
+          "at_tau_6m": 171.57999914431394,
+          "at_tau_14m": 257.8308227179206
+        }
+      }
+    },
+    "span_scale": {
+      "mars": 1.6261011197806923,
+      "moon": 2.4608038433722332
+    }
+  },
+  "moon_pits": {
+    "by_type": {
+      "pit (mare)": {
+        "n": 16,
+        "n_outer": 15,
+        "n_inner": 13,
+        "outer_median": 175.0,
+        "inner_median": 100.0,
+        "inner_min": 14.0,
+        "inner_max": 175.0,
+        "depth_median": 40.0,
+        "inner_ge_narrowest": 13
+      },
+      "pit (impact melt)": {
+        "n": 257,
+        "n_outer": 246,
+        "n_inner": 248,
+        "outer_median": 26.5,
+        "inner_median": 15.5,
+        "inner_min": 4.0,
+        "inner_max": 385.0,
+        "depth_median": 9.0,
+        "inner_ge_narrowest": 237
+      },
+      "pit (highland)": {
+        "n": 5,
+        "n_outer": 5,
+        "n_inner": 5,
+        "outer_median": 63.0,
+        "inner_median": 37.0,
+        "inner_min": 19.0,
+        "inner_max": 45.0,
+        "depth_median": 27.0,
+        "inner_ge_narrowest": 5
+      }
+    },
+    "all_inner": {
+      "n": 266,
+      "median": 16.0,
+      "frac_lt_narrowest": 0.041353383458646614,
+      "frac_lt_10": 0.20676691729323307
+    },
+    "narrowest_section_m": 5.87
+  },
+  "mars_pits": {
+    "n_total": 1062,
+    "n_apc": 132,
+    "n_sky_type": 354,
+    "n_apc_dimensioned": 131,
+    "apc_median": 120.0,
+    "note": "'sky' candidates (n=354) carry no published dimensions; the dimensioned set is APCs only"
+  },
+  "scale_ruler": {
+    "aerial": {
+      "S1S2": 22.44303252543745,
+      "S1S3": 57.0158232316613,
+      "S2S3": 34.72537768761215
+    },
+    "dlio_map": {
+      "S1S2": 22.262242449736465,
+      "S1S3": 59.19512886471778,
+      "S2S3": 37.149960414064104
+    },
+    "flf_map": {
+      "S1S2": 22.566634742691296,
+      "S1S3": 57.25951107980929,
+      "S2S3": 34.96859623453815
+    },
+    "dlio_minus_aerial": {
+      "S1S2": -0.18079007570098327,
+      "S1S3": 2.1793056330564795,
+      "S2S3": 2.424582726451952
+    },
+    "flf_minus_aerial": {
+      "S1S2": 0.1236022172538469,
+      "S1S3": 0.24368784814799227,
+      "S2S3": 0.24321854692599487
+    },
+    "dlio_minus_flf": {
+      "S1S2": -0.30439229295483017,
+      "S1S3": 1.9356177849084872,
+      "S2S3": 2.181364179525957
+    },
+    "hole_semi_major": {
+      "aerial": [
+        2.2791297913328066,
+        1.4142135623730951,
+        4.668308414005641
+      ],
+      "dlio": [
+        2.5625738852291935,
+        2.449489742783178,
+        7.6375067096266385
+      ],
+      "flf": [
+        2.1838568563966754,
+        2.0976176963403033,
+        5.167915807619661
+      ]
+    },
+    "note": "inter-hole distances are rigid-transform invariant; agreement between the two independent SLAM maps against a common offset to the aerial model implicates the rim-centroid definition (S3 is a 9-15 m elongated opening seen from opposite sides), not map scale"
+  },
+  "volume": {
+    "total_m3": 16757.1779,
+    "per_m": 48.01483638968481,
+    "n_sections": 349,
+    "note": "enclosed cross-section area integrated at 1 m stations; floor bounded by top of breakdown, so a lower bound on the void volume"
+  }
+}
+=== DONE Thu Aug 13 12:17:02 PM CEST 2026 ===

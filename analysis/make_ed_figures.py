@@ -183,7 +183,7 @@ def fig_registration():
         return np.vstack(parts)
 
     aer = load_near(MAPS / "aerial_10cm.pcd")
-    tub = load_near(MAPS / "tube_10cm_ed.pcd")
+    tub = load_near(SECT_PCD)
     surf = np.percentile(aer[:, 2], 90)
     a_in = aer[aer[:, 2] < surf - 3.0]
     txy = cKDTree(tub[:, :2])

@@ -1,0 +1,39 @@
+{
+  "total_centreline_m": 348.0,
+  "n_stations": 349,
+  "n_valid_sections": 343,
+  "min_coverage": 0.5,
+  "area_m2": {
+    "min": 5.5,
+    "max": 81.9,
+    "median": 49.8,
+    "q25": 37.6,
+    "q75": 59.5,
+    "p5": 15.5,
+    "p95": 76.2,
+    "mean_boot_ci95": [
+      46.7,
+      50.3
+    ]
+  },
+  "height_m": {
+    "min": 3.56,
+    "median": 8.1,
+    "max": 11.42
+  },
+  "eta": {
+    "median": 1.53,
+    "q25": 1.32,
+    "q75": 1.88
+  },
+  "width_m": {
+    "min": 6.07,
+    "median": 10.57,
+    "max": 31.56
+  },
+  "width_min_m": 6.07,
+  "sinuosity_50m": {
+    "mean": 1.202,
+    "max": 1.413
+  }
+}

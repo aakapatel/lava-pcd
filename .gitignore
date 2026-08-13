@@ -5,3 +5,4 @@ __pycache__/
 .pytest_cache/
 .DS_Store
 analysis_out_ed/dem_grid_*.npz
+analysis_out_v6/dem_grid_*.npz

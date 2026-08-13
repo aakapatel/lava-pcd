@@ -156,7 +156,8 @@ def fig_morphometry():
     ax.set_ylabel("centreline z (m)")
     ax.set_xlabel("$s$ (m)")
     desc = np.percentile(P[:, 2], 99) - np.percentile(P[:, 2], 1)
-    ax.set_title(f"g  Elevation profile ({desc:.0f} m descent)", loc="left")
+    ax.set_title(f"g  Elevation profile ({desc:.0f} m relief, no net descent)",
+                 loc="left")
 
     fig.savefig(FIGS / "morphometry_panel.pdf", bbox_inches="tight")
     plt.close(fig)
@@ -177,8 +178,14 @@ def fig_roof():
     ax = fig.add_subplot(gs[0, :])   # (a) tau profile
     for lo, hi in bands:
         ax.axvspan(lo, hi, color=C["skylight"], alpha=0.15, lw=0)
-    ax.errorbar(s[it], tau[it], yerr=sig, fmt="o", ms=2.5, lw=0,
-                elinewidth=0.5, color=C["intact"], label="intact roof")
+    # sigma_tau is dominated by the common registration datum, a systematic
+    # band shared by every station, not independent per-station noise.
+    o = np.argsort(s[it])
+    ax.fill_between(s[it][o], tau[it][o] - sig, tau[it][o] + sig,
+                    color=C["intact"], alpha=0.18, lw=0,
+                    label=rf"systematic datum band ($\pm{sig:.1f}$ m)")
+    ax.plot(s[it][o], tau[it][o], "o", ms=2.2, color=C["intact"],
+            label="intact roof")
     if mp.any():
         ax.plot(s[mp], np.zeros(mp.sum()) - 0.6, "|", ms=6, color=C["flagged"],
                 label="excluded by consistency screen")
@@ -201,20 +208,25 @@ def fig_roof():
     ax2.set_xlim(np.array(ax.get_xlim()) * 300.0 / 1000.0)
     ax2.set_xlabel(r"areal shielding mass (10$^3$ g cm$^{-2}$)", fontsize=7)
 
-    ax = fig.add_subplot(gs[1, 1])   # (c) tau/L envelope
-    r_it = tau[it] / span[it]
-    kappa = float(json.loads((OUT / "roof_summary.json").read_text())["kappa_env"])
+    ax = fig.add_subplot(gs[1, 1])   # (c) tau-L with plate-model iso-strength
     ax.scatter(span[it], tau[it], s=10, color=C["intact"], label="intact roof")
     sky_mask = klass == "skylight"
     ax.scatter(span[sky_mask], np.zeros(sky_mask.sum()), s=14, marker="v",
-               color=C["skylight"], label=r"skylights ($\tau\to0$)")
-    Ls = np.linspace(4, 27, 50)
-    ax.plot(Ls, kappa * Ls, "k--", lw=1,
-            label=rf"$\tau/L={kappa:.3f}$ (min.)")
+               color=C["skylight"], label=r"skylights (failed, $\tau\to0$)")
+    # minimum thickness for stability under the clamped-strip plate model,
+    # tau_min = beta rho g L^2 / sigma_t, at rock-mass tensile strengths
+    beta, rho = 0.5, 2600.0
+    Ls = np.linspace(4, 28, 80)
+    for st_mpa, ls in ((1.0, "--"), (5.0, "-."), (10.0, ":")):
+        ax.plot(Ls, beta * rho * 9.81 * Ls ** 2 / (st_mpa * 1e6), "k",
+                ls=ls, lw=0.9,
+                label=rf"$\sigma_t={st_mpa:.0f}$ MPa")
+    ax.set_ylim(-0.8, 16.5)
     ax.set_xlabel("local span $L$ (m)")
     ax.set_ylabel(r"$\tau$ (m)")
-    ax.set_title("c  Thickness against span", loc="left")
-    ax.legend(frameon=False, loc="center right")
+    ax.set_title("c  Thickness against span, with the plate-model\n"
+                 "stability limit", loc="left")
+    ax.legend(frameon=False, loc="upper left", fontsize=6.2)
 
     fig.savefig(FIGS / "roof_panel.pdf", bbox_inches="tight")
     plt.close(fig)
@@ -222,46 +234,75 @@ def fig_roof():
 
 
 def fig_planetary():
+    """a: aperture ECDFs split by feature type, inner apertures for lunar
+    pits (the opening into the void, not the funnel rim). b: plate-model
+    stable span, L_max = sqrt(sigma_t tau / (beta rho g)), as a sensitivity
+    band over rock-mass tensile strength, scaled to Mars and the Moon."""
     cat = list(csv.DictReader(open(OUT / "planetary_catalogue.csv")))
-    mars = np.array([float(r["aperture_long_axis_m"]) for r in cat
-                     if r["body"] == "mars" and r["aperture_long_axis_m"]])
-    moon = np.array([float(r["aperture_long_axis_m"]) for r in cat
-                     if r["body"] == "moon" and r["aperture_long_axis_m"]])
+
+    def vals(rows, key):
+        out = []
+        for r in rows:
+            v = (r.get(key) or "").strip()
+            if v:
+                out.append(float(v))
+        return np.array(out)
+
+    mars_apc = vals([r for r in cat if r["body"] == "mars"
+                     and r["type"] == "APC"], "aperture_long_axis_m")
+    moon_melt = vals([r for r in cat if r["body"] == "moon"
+                      and r["type"] == "pit (impact melt)"], "inner_long_axis_m")
+    moon_mare = vals([r for r in cat if r["body"] == "moon"
+                      and r["type"] in ("pit (mare)", "pit (highland)")],
+                     "inner_long_axis_m")
     sky = json.loads((OUT / "aerial_holes.json").read_text())
     ours = [2 * h["semi_major"] for h in sky["holes"][:3]]
-    pla = json.loads((OUT / "planetary_summary.json").read_text())
+
+    rev = json.loads((OUT / "review_stats.json").read_text())
+    env = rev["envelope"]
+    beta, rho = env["beta"], env["rho_mid"]
 
     fig = plt.figure(figsize=(7.1, 3.2))
     gs = fig.add_gridspec(1, 2, wspace=0.34)
 
-    ax = fig.add_subplot(gs[0, 0])   # (a) aperture ECDFs
-    for arr, key, name in ((mars, "mars", f"Mars APCs (n={len(mars)})"),
-                           (moon, "moon", f"lunar pits (n={len(moon)})")):
+    ax = fig.add_subplot(gs[0, 0])   # (a) aperture ECDFs by type
+    for arr, col, ls, name in (
+            (mars_apc, C["mars"], "-",
+             f"Mars APCs, outer (n={len(mars_apc)})"),
+            (moon_melt, C["moon"], "--",
+             f"lunar impact-melt pits, inner (n={len(moon_melt)})"),
+            (moon_mare, C["moon"], "-",
+             f"lunar mare+highland pits, inner (n={len(moon_mare)})")):
         xs = np.sort(arr)
         ax.step(xs, np.arange(1, len(xs) + 1) / len(xs), where="post",
-                color=C[key], label=name)
+                color=col, ls=ls, label=name)
     for i, d in enumerate(sorted(ours)):
         ax.axvline(d, color=C["earth"], lw=1.2, ls=":",
                    label="Raufarhólshellir skylights" if i == 0 else None)
     ax.set_xscale("log")
     ax.set_xlabel("aperture long axis (m)")
     ax.set_ylabel("cumulative fraction")
-    ax.set_title("a  Aperture catalogues vs. skylights", loc="left")
-    ax.legend(frameon=False, loc="upper left")
+    ax.set_title("a  Catalogued apertures by feature type", loc="left")
+    ax.legend(frameon=False, loc="upper left", fontsize=6.2)
 
-    ax = fig.add_subplot(gs[0, 1])   # (b) gravity-scaled stable span
-    kappa = pla["kappa_env_earth"]
-    taus = np.linspace(0, 14, 100)
-    for body, g_scale, key in (("Earth", 1.0, "earth"),
-                               ("Mars", pla["span_scale"]["mars"], "mars"),
-                               ("Moon", pla["span_scale"]["moon"], "moon")):
-        ax.plot(taus, g_scale * taus / kappa, color=C[key], lw=1.4,
-                label=f"{body} (x{g_scale:.2f})" if body != "Earth"
-                else "Earth (measured)")
-    ax.fill_between(taus, 0, taus / kappa, color=C["earth"], alpha=0.07, lw=0)
+    ax = fig.add_subplot(gs[0, 1])   # (b) plate-model stable span band
+    taus = np.linspace(0.5, 15, 120)
+    g_body = dict(Earth=9.81, Mars=3.71, Moon=1.62)
+    for (body, g), key in zip(g_body.items(), ("earth", "mars", "moon")):
+        lo = np.sqrt(1e6 * taus / (beta * rho * g))     # sigma_t = 1 MPa
+        hi = np.sqrt(10e6 * taus / (beta * rho * g))    # sigma_t = 10 MPa
+        ax.fill_between(taus, lo, hi, color=C[key], alpha=0.18, lw=0)
+        ax.plot(taus, np.sqrt(5e6 * taus / (beta * rho * g)), color=C[key],
+                lw=1.3, label=f"{body}")
+    it_tau = rev["stats"]["median"]
+    ax.plot([it_tau], [np.sqrt(5e6 * it_tau / (beta * rho * 9.81))], "o",
+            ms=4, color="k")
+    ax.annotate("median roof,\nthis survey", (it_tau, 45), fontsize=6.5,
+                ha="left", xytext=(it_tau + 0.6, 20))
     ax.set_xlabel(r"roof thickness $\tau$ (m)")
-    ax.set_ylabel("max. span at the observed envelope (m)")
-    ax.set_title(r"b  Stable span scaled by $g^{-1/2}$", loc="left")
+    ax.set_ylabel(r"$L_{\max}=\sqrt{\sigma_t\,\tau/(\beta\rho g)}$ (m)")
+    ax.set_title(r"b  Plate-model stable span "
+                 r"($\sigma_t$ = 1--10 MPa)", loc="left")
     ax.legend(frameon=False, loc="upper left")
 
     fig.savefig(FIGS / "planetary_panel.pdf", bbox_inches="tight")

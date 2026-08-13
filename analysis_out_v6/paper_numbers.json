@@ -1,0 +1,117 @@
+{
+  "reg_mode": "slice_manual_ed",
+  "reg_matches": 3,
+  "reg_rim_rms_m": 1.7331442353132371,
+  "reg_vres_mm": [
+    -5240,
+    -5864,
+    -3582
+  ],
+  "reg_sigma_tau_m": 1.47,
+  "reg_sigma_reg_z_m": 1.46,
+  "vertical_q90_diffs_m": [
+    -0.043,
+    -1.369,
+    0.471
+  ],
+  "scale_ruler_diff_m": [
+    -0.181,
+    2.179,
+    2.425
+  ],
+  "centreline_length_m": 348.0,
+  "n_stations": 349,
+  "n_valid_sections": 343,
+  "area": {
+    "min": 5.5,
+    "max": 81.9,
+    "median": 49.8,
+    "q25": 37.6,
+    "q75": 59.5,
+    "p5": 15.5,
+    "p95": 76.2,
+    "mean_boot_ci95": [
+      46.7,
+      50.3
+    ]
+  },
+  "height": {
+    "min": 3.56,
+    "median": 8.1,
+    "max": 11.42
+  },
+  "eta": {
+    "median": 1.53,
+    "q25": 1.32,
+    "q75": 1.88
+  },
+  "width": {
+    "min": 6.07,
+    "median": 10.57,
+    "max": 31.56
+  },
+  "sinuosity": {
+    "mean": 1.202,
+    "max": 1.413
+  },
+  "tau": {
+    "min": 0.04,
+    "max": 14.18,
+    "median": 5.88,
+    "q25": 3.14,
+    "q75": 9.01,
+    "median_ci95": [
+      5.63,
+      6.27
+    ],
+    "sigma": 1.47
+  },
+  "n_tau_clean": 318,
+  "n_multipass": 0,
+  "n_skylight_stations": 26,
+  "n_no_dem": 0,
+  "tau_s_range_m": [
+    0.0,
+    348.0
+  ],
+  "kappa_env": 0.0036,
+  "kappa_env_station": {
+    "s": 71.0,
+    "tau": 0.04,
+    "span": 11.48
+  },
+  "shielding": {
+    "median": 1763.0,
+    "min": 12.0,
+    "atmosphere_ratio_median": 1.71
+  },
+  "span_scale": {
+    "mars": 1.63,
+    "moon": 2.46
+  },
+  "mars": {
+    "n_total": 1062,
+    "n_dimensioned": 131,
+    "aperture_median_m": 120.0,
+    "counts": {
+      "ge_5m": 131,
+      "ge_10m": 131,
+      "ge_20m": 131,
+      "ge_50m": 120,
+      "ge_narrowest": 131
+    }
+  },
+  "moon": {
+    "n_total": 278,
+    "n_dimensioned": 266,
+    "aperture_median_m": 29.0,
+    "counts": {
+      "ge_5m": 266,
+      "ge_10m": 258,
+      "ge_20m": 190,
+      "ge_50m": 63,
+      "ge_narrowest": 265
+    }
+  },
+  "note": "Tube map = offline FAST-LIO2 first_long_flight carried into the Llewellin slice-registered frame by map-to-map GICP (transform_flf_ed_chain.json); onboard DLIO map processed identically as cross-check (analysis_out_ed, basis_comparison). Surface DEM = full_surface_and_subsurface_merged.pcd. tau uses intact stations (tau>0, non-skylight, non-multipass, non-inconsistent)."
+}
