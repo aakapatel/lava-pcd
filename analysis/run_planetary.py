@@ -24,11 +24,13 @@ from __future__ import annotations
 
 import csv
 import json
+import os
 from pathlib import Path
 
 import numpy as np
 
-OUT = Path(__file__).resolve().parents[1] / "analysis_out"
+OUT = Path(os.environ.get("ANALYSIS_OUT",
+                          str(Path(__file__).resolve().parents[1] / "analysis_out")))
 
 G = dict(earth=9.81, mars=3.71, moon=1.62)
 

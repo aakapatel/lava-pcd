@@ -1,0 +1,11 @@
+{
+  "sigma_reg_z_m": 1.09,
+  "sigma_reg_z_basis": "PROVISIONAL for the Ed slice registration: kept at the previous 1.09 m pending Ed's per-slice residuals. His stated expectation is that SLAM/photogrammetry drift now dominates the residual.",
+  "sigma_lidar_z_m": 0.1,
+  "sigma_lidar_basis": "Ouster range precision (~3 cm) plus aggregated-map surface thickness (~10 cm at the 10 cm voxel working copy).",
+  "sigma_dem_z_m": 0.15,
+  "sigma_dem_basis": "ASSUMED photogrammetric DEM vertical accuracy ~2x GSD; UPDATE when Birgir supplies survey metadata (gate G1).",
+  "sigma_tau_m": 1.1,
+  "horizontal_rim_rms_m": 1.093,
+  "final_transform": "transform_ed_slice.json (E. Llewellin, slice-based manual fine alignment on the DLIO-frame cloud)"
+}

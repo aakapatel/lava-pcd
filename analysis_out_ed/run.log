@@ -1,0 +1,247 @@
+=== Ed-frame pipeline run Thu Aug 13 11:13:59 AM CEST 2026 ===
+--- morphometry (tube_30cm_ed / tube_10cm_ed) ---
+/home/aakapatel/Nature Journal Article Autonomous lava tube mapping/lavatube_maps_data_analysis/analysis/run_morphometry.py:240: RuntimeWarning: All-NaN slice encountered
+  vceil = np.nanmax(np.where(up_bins, zmax_in, np.nan))
+[1/4] loading clouds ...
+  sections cloud: 2415466 pts
+[2/4] L1-medial skeleton ...
+  skeleton: |Q|=60000, |X|=3655
+  h=8.0: 40 iters, last max move 1.2991 m
+  h=12.0: 40 iters, last max move 1.4934 m
+  h=16.0: 40 iters, last max move 0.4838 m
+  polyline: 674 nodes, diameter path 444 nodes, length 356.1 m
+  centreline: 357 stations, 356.0 m
+[3/4] cross-sections ...
+{
+  "total_centreline_m": 356.0,
+  "n_stations": 357,
+  "n_valid_sections": 351,
+  "min_coverage": 0.5,
+  "area_m2": {
+    "min": 2.4,
+    "max": 81.3,
+    "median": 48.9,
+    "q25": 38.3,
+    "q75": 59.0,
+    "p5": 12.1,
+    "p95": 76.5,
+    "mean_boot_ci95": [
+      46.0,
+      49.7
+    ]
+  },
+  "height_m": {
+    "min": 2.96,
+    "median": 8.05,
+    "max": 11.69
+  },
+  "eta": {
+    "median": 1.52,
+    "q25": 1.27,
+    "q75": 1.84
+  },
+  "width_m": {
+    "min": 5.87,
+    "median": 10.46,
+    "max": 28.07
+  },
+  "width_min_m": 5.87,
+  "sinuosity_50m": {
+    "mean": 1.217,
+    "max": 1.421
+  }
+}
+[4/4] renders ...
+done
+--- roof (tube_10cm_ed, full merged DEM) ---
+DEM loaded from cache
+{
+  "n_stations": 357,
+  "n_intact": 328,
+  "n_skylight": 28,
+  "n_no_dem": 0,
+  "n_low_coverage": 0,
+  "n_multipass": 0,
+  "n_inconsistent": 1,
+  "tau_m": {
+    "min": 0.05,
+    "max": 15.26,
+    "median": 6.21,
+    "q25": 3.32,
+    "q75": 10.45,
+    "median_ci95": [
+      5.86,
+      6.96
+    ],
+    "sigma": 1.1
+  },
+  "kappa_env": 0.0037,
+  "kappa_env_station": {
+    "s": 64.0,
+    "tau": 0.05,
+    "span": 12.13
+  },
+  "shielding_g_cm2": {
+    "median": 1864.0,
+    "min": 14.0,
+    "atmosphere_ratio_median": 1.8
+  },
+  "rho_basalt": 3000.0
+}
+done
+--- planetary ---
+columns: ['body', 'feature_id', 'lat', 'lon_east_0_360', 'aperture_long_axis_m', 'aperture_short_axis_m', 'inner_long_axis_m', 'inner_short_axis_m', 'depth_m', 'depth_is_minimum', 'type', 'source', 'source_detail', 'notes']
+{
+  "kappa_env_earth": 0.0037,
+  "span_scale": {
+    "mars": 1.63,
+    "moon": 2.46
+  },
+  "equivalent_kappa": {
+    "note": "a roof at the terrestrial envelope tau/L supports a span larger by span_scale at the same tau and strength"
+  },
+  "mars": {
+    "n_total": 1062,
+    "n_dimensioned": 131,
+    "aperture_median_m": 120.0,
+    "counts": {
+      "ge_5m": 131,
+      "ge_10m": 131,
+      "ge_20m": 131,
+      "ge_50m": 120,
+      "ge_narrowest": 131
+    }
+  },
+  "moon": {
+    "n_total": 278,
+    "n_dimensioned": 266,
+    "aperture_median_m": 29.0,
+    "counts": {
+      "ge_5m": 266,
+      "ge_10m": 258,
+      "ge_20m": 190,
+      "ge_50m": 63,
+      "ge_narrowest": 266
+    }
+  },
+  "demonstrated_min_span_m": 5.87
+}
+--- collect paper numbers ---
+{
+  "reg_mode": "slice_manual_ed",
+  "reg_matches": 3,
+  "reg_rim_rms_m": 1.7331442353132371,
+  "reg_vres_mm": [
+    -5240,
+    -5864,
+    -3582
+  ],
+  "reg_sigma_tau_m": 1.1,
+  "reg_sigma_reg_z_m": 1.09,
+  "vertical_q90_diffs_m": [
+    -0.043,
+    -1.369,
+    0.471
+  ],
+  "scale_ruler_diff_m": [
+    -0.181,
+    2.179,
+    2.425
+  ],
+  "centreline_length_m": 356.0,
+  "n_stations": 357,
+  "n_valid_sections": 351,
+  "area": {
+    "min": 2.4,
+    "max": 81.3,
+    "median": 48.9,
+    "q25": 38.3,
+    "q75": 59.0,
+    "p5": 12.1,
+    "p95": 76.5,
+    "mean_boot_ci95": [
+      46.0,
+      49.7
+    ]
+  },
+  "height": {
+    "min": 2.96,
+    "median": 8.05,
+    "max": 11.69
+  },
+  "eta": {
+    "median": 1.52,
+    "q25": 1.27,
+    "q75": 1.84
+  },
+  "width": {
+    "min": 5.87,
+    "median": 10.46,
+    "max": 28.07
+  },
+  "sinuosity": {
+    "mean": 1.217,
+    "max": 1.421
+  },
+  "tau": {
+    "min": 0.05,
+    "max": 15.26,
+    "median": 6.21,
+    "q25": 3.32,
+    "q75": 10.45,
+    "median_ci95": [
+      5.86,
+      6.96
+    ],
+    "sigma": 1.1
+  },
+  "n_tau_clean": 328,
+  "n_multipass": 0,
+  "n_skylight_stations": 28,
+  "n_no_dem": 0,
+  "tau_s_range_m": [
+    0.0,
+    356.0
+  ],
+  "kappa_env": 0.0037,
+  "kappa_env_station": {
+    "s": 64.0,
+    "tau": 0.05,
+    "span": 12.13
+  },
+  "shielding": {
+    "median": 1864.0,
+    "min": 14.0,
+    "atmosphere_ratio_median": 1.8
+  },
+  "span_scale": {
+    "mars": 1.63,
+    "moon": 2.46
+  },
+  "mars": {
+    "n_total": 1062,
+    "n_dimensioned": 131,
+    "aperture_median_m": 120.0,
+    "counts": {
+      "ge_5m": 131,
+      "ge_10m": 131,
+      "ge_20m": 131,
+      "ge_50m": 120,
+      "ge_narrowest": 131
+    }
+  },
+  "moon": {
+    "n_total": 278,
+    "n_dimensioned": 266,
+    "aperture_median_m": 29.0,
+    "counts": {
+      "ge_5m": 266,
+      "ge_10m": 258,
+      "ge_20m": 190,
+      "ge_50m": 63,
+      "ge_narrowest": 266
+    }
+  },
+  "note": "Tube map = offline FAST-LIO first_long_flight (flf_*_aerial), gravity-preserving 4dof skylight registration. Replaces the Mac DLIO map, which carried ~60 m of vertical drift that inflated the deep roof (see analysis/dlio_vs_fastlio_drift.py). Surface DEM = full_surface_and_subsurface_merged.pcd. tau uses intact stations (tau>0, non-skylight, non-multipass, non-inconsistent)."
+}
+=== DONE Thu Aug 13 11:17:58 AM CEST 2026 ===

@@ -1,0 +1,61 @@
+{
+  "per_skylight": [
+    {
+      "skylight": 0,
+      "n_aerial": 6532,
+      "n_tube": 13150,
+      "q50_aerial": 235.9,
+      "q50_tube": 235.289,
+      "q50_diff": -0.611,
+      "q75_aerial": 236.17,
+      "q75_tube": 235.911,
+      "q75_diff": -0.259,
+      "q90_aerial": 236.33,
+      "q90_tube": 236.287,
+      "q90_diff": -0.043,
+      "q95_aerial": 236.41,
+      "q95_tube": 236.459,
+      "q95_diff": 0.049
+    },
+    {
+      "skylight": 1,
+      "n_aerial": 1322,
+      "n_tube": 2508,
+      "q50_aerial": 236.16,
+      "q50_tube": 234.115,
+      "q50_diff": -2.045,
+      "q75_aerial": 236.28,
+      "q75_tube": 234.63,
+      "q75_diff": -1.65,
+      "q90_aerial": 236.39,
+      "q90_tube": 235.021,
+      "q90_diff": -1.369,
+      "q95_aerial": 236.43,
+      "q95_tube": 235.135,
+      "q95_diff": -1.295
+    },
+    {
+      "skylight": 2,
+      "n_aerial": 17965,
+      "n_tube": 19491,
+      "q50_aerial": 237.24,
+      "q50_tube": 236.811,
+      "q50_diff": -0.429,
+      "q75_aerial": 237.95,
+      "q75_tube": 237.53,
+      "q75_diff": -0.42,
+      "q90_aerial": 238.14,
+      "q90_tube": 238.611,
+      "q90_diff": 0.471,
+      "q95_aerial": 238.2,
+      "q95_tube": 239.167,
+      "q95_diff": 0.967
+    }
+  ],
+  "q90_diff_mean": -0.314,
+  "q90_diff_std": 0.775,
+  "q90_diff_max_abs": 1.369,
+  "band_m": 3.0,
+  "inflate": 1.6,
+  "note": "tube-minus-aerial rim-lip elevation; overlap surface is the lip, so upper quantiles are the comparable statistic"
+}

@@ -8,11 +8,13 @@ from __future__ import annotations
 
 import csv
 import json
+import os
 from pathlib import Path
 
 import numpy as np
 
-OUT = Path(__file__).resolve().parents[1] / "analysis_out"
+OUT = Path(os.environ.get("ANALYSIS_OUT",
+                          str(Path(__file__).resolve().parents[1] / "analysis_out")))
 
 
 def main() -> None:
@@ -59,12 +61,20 @@ def main() -> None:
         span_scale=pla["span_scale"],
         mars=pla["mars"], moon=pla["moon"],
         # --- provenance ---
-        note="Tube map = offline FAST-LIO first_long_flight (flf_*_aerial), "
-             "gravity-preserving 4dof skylight registration. Replaces the Mac "
-             "DLIO map, which carried ~60 m of vertical drift that inflated the "
-             "deep roof (see analysis/dlio_vs_fastlio_drift.py). Surface DEM = "
-             "full_surface_and_subsurface_merged.pcd. tau uses intact stations "
-             "(tau>0, non-skylight, non-multipass, non-inconsistent).",
+        note=(
+            "Tube map = DLIO first_long_flight in the Llewellin slice-based "
+            "registration (transform_ed_slice.json); cross-checked against the "
+            "FAST-LIO map chained into the same frame (ceilings agree to "
+            "0.1-0.2 m, analysis/chain_flf_to_ed.py). Surface DEM = "
+            "full_surface_and_subsurface_merged.pcd. tau uses intact stations "
+            "(tau>0, non-skylight, non-multipass, non-inconsistent)."
+            if reg["landmark"]["mode"] == "slice_manual_ed" else
+            "Tube map = offline FAST-LIO first_long_flight (flf_*_aerial), "
+            "gravity-preserving 4dof skylight registration. Replaces the Mac "
+            "DLIO map, which carried ~60 m of vertical drift that inflated the "
+            "deep roof (see analysis/dlio_vs_fastlio_drift.py). Surface DEM = "
+            "full_surface_and_subsurface_merged.pcd. tau uses intact stations "
+            "(tau>0, non-skylight, non-multipass, non-inconsistent)."),
     )
     (OUT / "paper_numbers.json").write_text(json.dumps(n, indent=2))
     print(json.dumps(n, indent=2))

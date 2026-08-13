@@ -41,7 +41,9 @@ from lava_pcd.io.pcd_reader import BinaryPcdReader
 import os
 
 ROOT = Path(__file__).resolve().parents[1]
-OUT = ROOT / "analysis_out"
+# Output directory selectable so an alternative registration can be evaluated
+# side by side without clobbering the committed baseline (default analysis_out).
+OUT = Path(os.environ.get("ANALYSIS_OUT", str(ROOT / "analysis_out")))
 RNG = np.random.default_rng(7)
 
 # Tube map selectable so the pipeline can be re-run on a different reconstruction

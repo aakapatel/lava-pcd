@@ -36,7 +36,10 @@ from lava_pcd.holes import HoleSet
 from lava_pcd.io.pcd_reader import BinaryPcdReader
 
 ROOT = Path(__file__).resolve().parents[1]
-OUT = ROOT / "analysis_out"
+# Output directory selectable so an alternative registration can be evaluated
+# side by side without clobbering the committed baseline (default analysis_out).
+import os
+OUT = Path(os.environ.get("ANALYSIS_OUT", str(ROOT / "analysis_out")))
 # DEM source. Default is the cropped aerial surface (aerial_crop.pcd), which
 # only covers ~half the surveyed centreline. Set ROOF_DEM_PCD to the
 # full-extent surface (e.g. full_surface_and_subsurface_merged.pcd, whose

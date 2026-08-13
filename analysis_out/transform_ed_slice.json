@@ -1,0 +1,69 @@
+{
+  "matrix": [
+    [
+      0.222039143686,
+      -0.975032541024,
+      -0.003187863146,
+      1376.516695668483
+    ],
+    [
+      0.974929141414,
+      0.222062022362,
+      -0.014199547681,
+      601.797969112199
+    ],
+    [
+      0.014552924401,
+      4.4914729e-05,
+      0.999894099847,
+      225.886650880168
+    ],
+    [
+      0.0,
+      0.0,
+      0.0,
+      1.0
+    ]
+  ],
+  "inliers": [
+    [
+      0,
+      0
+    ],
+    [
+      1,
+      1
+    ],
+    [
+      2,
+      2
+    ]
+  ],
+  "rms": 1.72,
+  "mode": "slice_manual_ed",
+  "aerial_origin": [
+    479158.0,
+    7089826.0,
+    0.0
+  ],
+  "tube_origin": [
+    0.0,
+    0.0,
+    0.0
+  ],
+  "n_inliers": 3,
+  "margin": 0,
+  "shape_score": 0.0,
+  "aerial_up": [
+    0.0,
+    0.0,
+    1.0
+  ],
+  "anchors": [],
+  "anchor_axes": [],
+  "warnings": [
+    "External registration by E. Llewellin (slice-based manual fine alignment, iterated 4x); applies to the DLIO-frame cloud (tube_*cm.pcd), NOT the FAST-LIO flf_* maps.",
+    "det(R)=1.000000000, tilt of z-axis 0.834 deg (real along-tube grade), no scale.",
+    "rms field = horizontal skylight rim-centroid check on our side; replace with Ed's slice residuals when supplied."
+  ]
+}
