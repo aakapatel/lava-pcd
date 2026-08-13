@@ -143,12 +143,20 @@
   "envelope": {
     "beta": 0.5,
     "rho_mid": 2600.0,
+    "tau_threshold_m": 1.47,
     "sigma_req_MPa": {
-      "median": 0.24345411392956068,
-      "p95": 1.9730324905468282,
-      "max": 5.310167284992569,
-      "n": 311,
-      "note": "required tensile strength for stability of each intact station under the clamped-strip model; the max is the lower bound the intact roof places on rock-mass strength"
+      "median": 0.22301574863354523,
+      "p90": 0.8119871114847302,
+      "p95": 1.6481720002175864,
+      "max": 2.295153840458015,
+      "drop_one": 2.036557886538462,
+      "n": 282,
+      "sensitivity_tau_gt_0p5": {
+        "n": 311,
+        "max": 5.310167284992569,
+        "drop_one": 3.689879808333333
+      },
+      "note": "required tensile strength per intact station under the clamped-strip model, covers thinner than sigma_tau excluded; quote the p95, not the max (single-station tail)"
     },
     "tau_over_L": {
       "min": 0.0035714285714285713,

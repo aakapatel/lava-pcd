@@ -52,7 +52,7 @@ DEM_CACHE = OUT / (f"dem_grid_{AERIAL.stem}.npz"
                    if os.environ.get("ROOF_DEM_PCD") else "dem_grid.npz")
 
 DEM_RES = 0.5
-RHO_BASALT = 3000.0          # kg/m^3
+RHO_BASALT = 2600.0          # kg/m^3 (assumed bulk, vesicular crust+soil; range 2200-3000)
 ATMOSPHERE_G_CM2 = 1033.0    # terrestrial atmospheric column
 SKYLIGHT_INFLATE = 1.6
 MIN_COVERAGE = 0.5

@@ -74,16 +74,16 @@
     0.0,
     348.0
   ],
-  "kappa_env": 0.0036,
-  "kappa_env_station": {
+  "min_tau_over_L_retired": 0.0036,
+  "min_tau_over_L_station": {
     "s": 71.0,
     "tau": 0.04,
     "span": 11.48
   },
   "shielding": {
-    "median": 1763.0,
-    "min": 12.0,
-    "atmosphere_ratio_median": 1.71
+    "median": 1528.0,
+    "min": 11.0,
+    "atmosphere_ratio_median": 1.48
   },
   "span_scale": {
     "mars": 1.63,

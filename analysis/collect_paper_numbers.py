@@ -54,8 +54,11 @@ def main() -> None:
         n_skylight_stations=roof["n_skylight"],
         n_no_dem=roof["n_no_dem"],
         tau_s_range_m=[min(s_clean), max(s_clean)] if s_clean else None,
-        kappa_env=roof["kappa_env"],
-        kappa_env_station=roof["kappa_env_station"],
+        # minimum tau/L retained for provenance only; the manuscript's
+        # stability analysis is the per-station strength inversion in
+        # review_stats.json (the single-station minimum was retired in v6)
+        min_tau_over_L_retired=roof["kappa_env"],
+        min_tau_over_L_station=roof["kappa_env_station"],
         shielding=roof["shielding_g_cm2"],
         # --- planetary ---
         span_scale=pla["span_scale"],

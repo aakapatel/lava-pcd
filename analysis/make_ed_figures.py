@@ -351,9 +351,9 @@ def fig_centreline():
     ax.set_ylim(P[:, 2].min() - 15, P[:, 2].max() + 15)
     ax.set_xlabel("along principal axis (m)")
     ax.set_ylabel("elevation (m)")
-    ax.set_title("b  Side view: the conduit descends about "
-                 f"{P[:,2].max()-P[:,2].min():.0f} m over {s.max():.0f} m",
-                 loc="left")
+    rel = np.percentile(P[:, 2], 99) - np.percentile(P[:, 2], 1)
+    ax.set_title(f"b  Side view: close to horizontal, {rel:.0f} m relief, "
+                 "no net descent", loc="left")
 
     # (c-h) cross-section gallery from the 10 cm map
     cloud = load_xyz(SECT_PCD)

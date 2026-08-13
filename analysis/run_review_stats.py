@@ -176,20 +176,34 @@ def main() -> None:
     out["shielding"] = shield
 
     # ---------------- A1: strength inversion + envelope ----------------
-    ok = taui > 0.5   # exclude sub-uncertainty roofs from the strength stats
+    # Exclusion rule as stated in the Methods: covers thinner than the
+    # per-station measurement uncertainty cannot support a demand estimate.
+    sigma_tau = float(json.loads(
+        (OUT / "uncertainty_budget.json").read_text())["sigma_tau_m"])
+    ok = taui > sigma_tau
     sig_req = BETA * RHO_MID * 9.81 * Li[ok] ** 2 / taui[ok]  # Pa
+    srt = np.sort(sig_req)[::-1]
+    # sensitivity of the upper tail: threshold choice and drop-one
+    ok05 = taui > 0.5
+    sr05 = np.sort(BETA * RHO_MID * 9.81 * Li[ok05] ** 2 / taui[ok05])[::-1]
     ratio = taui / Li
     kappa_sorted = np.sort(ratio)
     out["envelope"] = dict(
-        beta=BETA, rho_mid=RHO_MID,
+        beta=BETA, rho_mid=RHO_MID, tau_threshold_m=sigma_tau,
         sigma_req_MPa=dict(median=float(np.median(sig_req) / 1e6),
+                           p90=float(np.percentile(sig_req, 90) / 1e6),
                            p95=float(np.percentile(sig_req, 95) / 1e6),
-                           max=float(sig_req.max() / 1e6),
+                           max=float(srt[0] / 1e6),
+                           drop_one=float(srt[1] / 1e6),
                            n=int(ok.sum()),
-                           note="required tensile strength for stability of "
-                                "each intact station under the clamped-strip "
-                                "model; the max is the lower bound the intact "
-                                "roof places on rock-mass strength"),
+                           sensitivity_tau_gt_0p5=dict(
+                               n=int(ok05.sum()),
+                               max=float(sr05[0] / 1e6),
+                               drop_one=float(sr05[1] / 1e6)),
+                           note="required tensile strength per intact station "
+                                "under the clamped-strip model, covers "
+                                "thinner than sigma_tau excluded; quote the "
+                                "p95, not the max (single-station tail)"),
         tau_over_L=dict(min=float(kappa_sorted[0]),
                         second=float(kappa_sorted[1]),
                         p5=float(np.percentile(ratio, 5)),

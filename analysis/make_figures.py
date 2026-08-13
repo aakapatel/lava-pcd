@@ -217,10 +217,10 @@ def fig_roof():
     # tau_min = beta rho g L^2 / sigma_t, at rock-mass tensile strengths
     beta, rho = 0.5, 2600.0
     Ls = np.linspace(4, 28, 80)
-    for st_mpa, ls in ((1.0, "--"), (5.0, "-."), (10.0, ":")):
+    for st_mpa, ls in ((0.5, "--"), (1.0, "-."), (2.5, ":")):
         ax.plot(Ls, beta * rho * 9.81 * Ls ** 2 / (st_mpa * 1e6), "k",
                 ls=ls, lw=0.9,
-                label=rf"$\sigma_t={st_mpa:.0f}$ MPa")
+                label=rf"$\sigma_t={st_mpa:g}$ MPa")
     ax.set_ylim(-0.8, 16.5)
     ax.set_xlabel("local span $L$ (m)")
     ax.set_ylabel(r"$\tau$ (m)")
@@ -289,20 +289,20 @@ def fig_planetary():
     taus = np.linspace(0.5, 15, 120)
     g_body = dict(Earth=9.81, Mars=3.71, Moon=1.62)
     for (body, g), key in zip(g_body.items(), ("earth", "mars", "moon")):
-        lo = np.sqrt(1e6 * taus / (beta * rho * g))     # sigma_t = 1 MPa
-        hi = np.sqrt(10e6 * taus / (beta * rho * g))    # sigma_t = 10 MPa
+        lo = np.sqrt(0.5e6 * taus / (beta * rho * g))   # sigma_t = 0.5 MPa
+        hi = np.sqrt(2.5e6 * taus / (beta * rho * g))   # sigma_t = 2.5 MPa
         ax.fill_between(taus, lo, hi, color=C[key], alpha=0.18, lw=0)
-        ax.plot(taus, np.sqrt(5e6 * taus / (beta * rho * g)), color=C[key],
+        ax.plot(taus, np.sqrt(1e6 * taus / (beta * rho * g)), color=C[key],
                 lw=1.3, label=f"{body}")
     it_tau = rev["stats"]["median"]
-    ax.plot([it_tau], [np.sqrt(5e6 * it_tau / (beta * rho * 9.81))], "o",
+    ax.plot([it_tau], [np.sqrt(1e6 * it_tau / (beta * rho * 9.81))], "o",
             ms=4, color="k")
-    ax.annotate("median roof,\nthis survey", (it_tau, 45), fontsize=6.5,
-                ha="left", xytext=(it_tau + 0.6, 20))
+    ax.annotate("median cover,\nthis survey", (it_tau, 30), fontsize=6.5,
+                ha="left", xytext=(it_tau + 0.6, 8))
     ax.set_xlabel(r"roof thickness $\tau$ (m)")
     ax.set_ylabel(r"$L_{\max}=\sqrt{\sigma_t\,\tau/(\beta\rho g)}$ (m)")
     ax.set_title(r"b  Plate-model stable span "
-                 r"($\sigma_t$ = 1--10 MPa)", loc="left")
+                 r"(rock-mass $\sigma_t$ = 0.5--2.5 MPa)", loc="left")
     ax.legend(frameon=False, loc="upper left")
 
     fig.savefig(FIGS / "planetary_panel.pdf", bbox_inches="tight")
