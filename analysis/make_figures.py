@@ -155,7 +155,8 @@ def fig_morphometry():
         ax.axvspan(lo, hi, color=C["skylight"], alpha=0.15, lw=0)
     ax.set_ylabel("centreline z (m)")
     ax.set_xlabel("$s$ (m)")
-    ax.set_title("g  Elevation profile (65 m descent)", loc="left")
+    desc = np.percentile(P[:, 2], 99) - np.percentile(P[:, 2], 1)
+    ax.set_title(f"g  Elevation profile ({desc:.0f} m descent)", loc="left")
 
     fig.savefig(FIGS / "morphometry_panel.pdf", bbox_inches="tight")
     plt.close(fig)
@@ -166,7 +167,7 @@ def fig_roof():
     rows, s, x, y, tau, span, klass = load_roof()
     sig = float(rows[0]["sigma_tau"])
     it = klass == "intact"
-    mp = klass == "multipass"
+    mp = np.isin(klass, ["multipass", "inconsistent", "low_coverage", "no_dem"])
     bands = skylight_bands(s, klass)
 
     fig = plt.figure(figsize=(7.1, 6.4))
@@ -178,14 +179,15 @@ def fig_roof():
         ax.axvspan(lo, hi, color=C["skylight"], alpha=0.15, lw=0)
     ax.errorbar(s[it], tau[it], yerr=sig, fmt="o", ms=2.5, lw=0,
                 elinewidth=0.5, color=C["intact"], label="intact roof")
-    ax.plot(s[mp], np.zeros(mp.sum()) - 0.6, "|", ms=6, color=C["flagged"],
-            label="excluded (multipass artefact)")
+    if mp.any():
+        ax.plot(s[mp], np.zeros(mp.sum()) - 0.6, "|", ms=6, color=C["flagged"],
+                label="excluded by consistency screen")
     ax.axhline(0, color="k", lw=0.6)
-    ax.set_xlim(-5, 180)
+    ax.set_xlim(-5, s.max() + 5)
     ax.set_xlabel("distance along tube $s$ (m)")
     ax.set_ylabel(r"roof thickness $\tau$ (m)")
-    ax.set_title("a  Roof thickness where the surface model overlaps the "
-                 "survey (orange bands: skylights)", loc="left")
+    ax.set_title("a  Roof thickness along the surveyed length "
+                 "(orange bands: skylights)", loc="left")
     ax.legend(frameon=False, loc="upper left")
 
     ax = fig.add_subplot(gs[1, 0])   # (b) histogram
