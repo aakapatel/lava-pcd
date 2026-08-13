@@ -262,8 +262,11 @@ def fig_planetary():
     env = rev["envelope"]
     beta, rho = env["beta"], env["rho_mid"]
 
-    fig = plt.figure(figsize=(7.1, 3.2))
-    gs = fig.add_gridspec(1, 2, wspace=0.34)
+    orb = json.loads((OUT / "orbital_dem_test.json").read_text())
+
+    fig = plt.figure(figsize=(7.1, 5.8))
+    gs = fig.add_gridspec(2, 2, wspace=0.34, hspace=0.42,
+                          height_ratios=[1, 0.85])
 
     ax = fig.add_subplot(gs[0, 0])   # (a) aperture ECDFs by type
     for arr, col, ls, name in (
@@ -304,6 +307,35 @@ def fig_planetary():
     ax.set_title(r"b  Plate-model stable span "
                  r"(rock-mass $\sigma_t$ = 0.5--2.5 MPa)", loc="left")
     ax.legend(frameon=False, loc="upper left")
+
+    # (c) orbital transfer test: overburden error and structure survival when
+    # the drone surface model is replaced by a DTM of planetary stereo quality
+    ax = fig.add_subplot(gs[1, :])
+    keep = ["HiRISE-like 1 m / 0.3 m", "HiRISE-like 2 m / 0.5 m",
+            "LROC-NAC-like 5 m / 1 m", "LROC-NAC-like 5 m / 2 m",
+            "CTX-like 20 m / 3 m", "doming 2 m (0.5 m grid)"]
+    rows = [r for k in keep for r in orb["configs"] if r["config"] == k]
+    labels = [r["config"].replace("-like", "").replace(" (0.5 m grid)", "")
+              for r in rows]
+    ypos = np.arange(len(rows))[::-1]
+    rms = [r["per_station_rms_m"]["mean"] for r in rows]
+    ax.barh(ypos, rms, height=0.55, color=C["tube"], alpha=0.9,
+            label="per-station overburden error (RMS)")
+    ax.axvline(1.5, color="k", ls="--", lw=1)
+    ax.annotate("stated uncertainty\n$\\sigma_\\tau$ = 1.5 m", (1.52, ypos[-1] - 0.42),
+                fontsize=6.5, color="0.25")
+    base = orb["baseline"]["thick_thin_contrast_m"]
+    for yp, r in zip(ypos, rows):
+        c_frac = 100 * r["thick_thin_contrast_m"]["mean"] / base
+        ax.annotate(f"contrast {c_frac:.0f}%", (max(rms) * 1.06, yp),
+                    va="center", fontsize=6.5, color=C["intact"])
+    ax.set_yticks(ypos)
+    ax.set_yticklabels(labels, fontsize=7)
+    ax.set_xlim(0, max(rms) * 1.45)
+    ax.set_xlabel("per-station overburden error, RMS (m)")
+    ax.set_title("c  Survival of the profile under orbital DTM quality "
+                 "(right: thick-thin contrast retained)", loc="left")
+    ax.legend(frameon=False, loc="lower right", fontsize=6.5)
 
     fig.savefig(FIGS / "planetary_panel.pdf", bbox_inches="tight")
     plt.close(fig)

@@ -7,7 +7,7 @@
     -5864,
     -3582
   ],
-  "reg_sigma_tau_m": 1.47,
+  "reg_sigma_tau_m": 1.49,
   "reg_sigma_reg_z_m": 1.46,
   "vertical_q90_diffs_m": [
     -0.043,
@@ -64,7 +64,7 @@
       5.63,
       6.27
     ],
-    "sigma": 1.47
+    "sigma": 1.49
   },
   "n_tau_clean": 318,
   "n_multipass": 0,
