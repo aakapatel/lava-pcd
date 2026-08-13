@@ -42,5 +42,43 @@
     "drift_rss_m": 0.5317848268821412
   },
   "sigma_reg_z_m": 1.46,
-  "note": "sigma_reg = quadrature(anchor floor RMS at S3, worst-zone two-SLAM RSS). PROVISIONAL until Ed's per-slice residuals arrive; validated against measurements the registration was not fitted to on our side."
+  "note": "sigma_reg = quadrature(anchor floor RMS at S3, worst-zone two-SLAM RSS). PROVISIONAL until Ed's per-slice residuals arrive; validated against measurements the registration was not fitted to on our side.",
+  "rim_lip_q90_final_registration": {
+    "per_skylight": {
+      "S1": {
+        "q90_aerial": 236.83,
+        "q90_tube": 234.9,
+        "diff_tube_minus_aerial": -1.93,
+        "n_aerial": 6331,
+        "n_tube": 28172
+      },
+      "S2": {
+        "q90_aerial": 236.74,
+        "q90_tube": 235.62,
+        "diff_tube_minus_aerial": -1.11,
+        "n_aerial": 4048,
+        "n_tube": 17953
+      },
+      "S3": {
+        "q90_aerial": 238.55,
+        "q90_tube": 236.93,
+        "diff_tube_minus_aerial": -1.62,
+        "n_aerial": 5768,
+        "n_tube": 26288
+      }
+    },
+    "note": "q90 elevation of the 2 m annulus outside each aperture footprint, tube (flf chained) minus aerial, under the final slice registration; closes review item R1.8d"
+  },
+  "ceiling_estimator_sensitivity": {
+    "n": 159,
+    "ceil_max_minus_p95": {
+      "median": 0.345672607421875,
+      "p90": 1.2205184936523554
+    },
+    "ceil_max_minus_p99": {
+      "median": 0.138916015625,
+      "p90": 0.8855069274902354
+    },
+    "note": "sensitivity of the per-station ceiling to the max-vs-quantile choice, top-quartile ceiling band in 1.5 m columns of the primary map; quantifies the Methods assertion that the ceiling-max bias is bounded well below the registration term"
+  }
 }

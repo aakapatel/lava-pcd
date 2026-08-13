@@ -1,0 +1,263 @@
+{
+  "note": "Internal E47 test: interior map and registration held fixed; only z_DEM degraded. Doming is applied to the whole footprint (pessimistic for the along-tube trend). Not a manuscript input.",
+  "corr_len_m": 25.0,
+  "n_intact": 318,
+  "baseline": {
+    "median": 5.875,
+    "thick_thin_contrast_m": 9.777000000000001
+  },
+  "configs": [
+    {
+      "config": "control 0.5 m / 0 m",
+      "grid_m": 0.5,
+      "sigma_m": 0.0,
+      "dome_m": 0.0,
+      "n_seeds": 1,
+      "median_shift_m": {
+        "mean": 6.103515630684342e-07,
+        "worst": 6.103515630684342e-07
+      },
+      "per_station_rms_m": {
+        "mean": 0.0001765651962329872,
+        "worst": 0.0001765651962329872
+      },
+      "frac_error_gt_1p5": {
+        "mean": 0.0,
+        "worst": 0.0
+      },
+      "frac_false_negative_roof": 0.0,
+      "thick_thin_contrast_m": {
+        "baseline": 9.777000000000001,
+        "mean": 9.776993896484385,
+        "worst": 9.776993896484385
+      }
+    },
+    {
+      "config": "HiRISE-like 1 m / 0.3 m",
+      "grid_m": 1.0,
+      "sigma_m": 0.3,
+      "dome_m": 0.0,
+      "n_seeds": 20,
+      "median_shift_m": {
+        "mean": 0.0909941753730557,
+        "worst": 0.5012889909135083
+      },
+      "per_station_rms_m": {
+        "mean": 0.29071800258605623,
+        "worst": 0.41248912858085607
+      },
+      "frac_error_gt_1p5": {
+        "mean": 0.0,
+        "worst": 0.0
+      },
+      "frac_false_negative_roof": 0.025157232704402517,
+      "thick_thin_contrast_m": {
+        "baseline": 9.777000000000001,
+        "mean": 9.87001785315823,
+        "worst": 9.179596993054105
+      }
+    },
+    {
+      "config": "HiRISE-like 2 m / 0.5 m",
+      "grid_m": 2.0,
+      "sigma_m": 0.5,
+      "dome_m": 0.0,
+      "n_seeds": 20,
+      "median_shift_m": {
+        "mean": 0.13673327638362806,
+        "worst": 0.7792824105935949
+      },
+      "per_station_rms_m": {
+        "mean": 0.4865139776009874,
+        "worst": 0.6900684067214962
+      },
+      "frac_error_gt_1p5": {
+        "mean": 0.0015723270440251573,
+        "worst": 0.018867924528301886
+      },
+      "frac_false_negative_roof": 0.040880503144654086,
+      "thick_thin_contrast_m": {
+        "baseline": 9.777000000000001,
+        "mean": 9.904737090051288,
+        "worst": 8.704598359886575
+      }
+    },
+    {
+      "config": "LROC-NAC-like 5 m / 1 m",
+      "grid_m": 5.0,
+      "sigma_m": 1.0,
+      "dome_m": 0.0,
+      "n_seeds": 20,
+      "median_shift_m": {
+        "mean": 0.25180616000688116,
+        "worst": 1.6667691778014984
+      },
+      "per_station_rms_m": {
+        "mean": 0.9758382835801752,
+        "worst": 1.3907578026783625
+      },
+      "frac_error_gt_1p5": {
+        "mean": 0.14402515723270443,
+        "worst": 0.3553459119496855
+      },
+      "frac_false_negative_roof": 0.16666666666666666,
+      "thick_thin_contrast_m": {
+        "baseline": 9.777000000000001,
+        "mean": 10.006251215573325,
+        "worst": 7.539740479295489
+      }
+    },
+    {
+      "config": "LROC-NAC-like 5 m / 2 m",
+      "grid_m": 5.0,
+      "sigma_m": 2.0,
+      "dome_m": 0.0,
+      "n_seeds": 20,
+      "median_shift_m": {
+        "mean": 0.4800780980982033,
+        "worst": 2.8540756481795455
+      },
+      "per_station_rms_m": {
+        "mean": 1.9333829399824787,
+        "worst": 2.76438342429478
+      },
+      "frac_error_gt_1p5": {
+        "mean": 0.4669811320754717,
+        "worst": 0.8144654088050315
+      },
+      "frac_false_negative_roof": 0.2672955974842767,
+      "thick_thin_contrast_m": {
+        "baseline": 9.777000000000001,
+        "mean": 9.802708781993157,
+        "worst": 4.866251295863663
+      }
+    },
+    {
+      "config": "CTX-like 20 m / 3 m",
+      "grid_m": 20.0,
+      "sigma_m": 3.0,
+      "dome_m": 0.0,
+      "n_seeds": 20,
+      "median_shift_m": {
+        "mean": 0.6139725899090344,
+        "worst": 4.003254966056431
+      },
+      "per_station_rms_m": {
+        "mean": 2.932593981240135,
+        "worst": 4.158581942330475
+      },
+      "frac_error_gt_1p5": {
+        "mean": 0.6077044025157233,
+        "worst": 0.8930817610062893
+      },
+      "frac_false_negative_roof": 0.29559748427672955,
+      "thick_thin_contrast_m": {
+        "baseline": 9.777000000000001,
+        "mean": 9.264606237626934,
+        "worst": 2.244222039909289
+      }
+    },
+    {
+      "config": "doming 1 m (0.5 m grid)",
+      "grid_m": 0.5,
+      "sigma_m": 0.0,
+      "dome_m": 1.0,
+      "n_seeds": 1,
+      "median_shift_m": {
+        "mean": -0.44427932259422676,
+        "worst": 0.44427932259422676
+      },
+      "per_station_rms_m": {
+        "mean": 0.4030384097267018,
+        "worst": 0.4030384097267018
+      },
+      "frac_error_gt_1p5": {
+        "mean": 0.0,
+        "worst": 0.0
+      },
+      "frac_false_negative_roof": 0.0220125786163522,
+      "thick_thin_contrast_m": {
+        "baseline": 9.777000000000001,
+        "mean": 10.014655810200594,
+        "worst": 10.014655810200594
+      }
+    },
+    {
+      "config": "doming 2 m (0.5 m grid)",
+      "grid_m": 0.5,
+      "sigma_m": 0.0,
+      "dome_m": 2.0,
+      "n_seeds": 1,
+      "median_shift_m": {
+        "mean": -0.9041718305292221,
+        "worst": 0.9041718305292221
+      },
+      "per_station_rms_m": {
+        "mean": 0.8060697665022409,
+        "worst": 0.8060697665022409
+      },
+      "frac_error_gt_1p5": {
+        "mean": 0.0,
+        "worst": 0.0
+      },
+      "frac_false_negative_roof": 0.0440251572327044,
+      "thick_thin_contrast_m": {
+        "baseline": 9.777000000000001,
+        "mean": 10.205439503805081,
+        "worst": 10.205439503805081
+      }
+    },
+    {
+      "config": "LROC-NAC-like 5 m / 1 m + doming 2 m",
+      "grid_m": 5.0,
+      "sigma_m": 1.0,
+      "dome_m": 2.0,
+      "n_seeds": 20,
+      "median_shift_m": {
+        "mean": -0.6494408494541005,
+        "worst": 1.7368479717306968
+      },
+      "per_station_rms_m": {
+        "mean": 1.218042786562467,
+        "worst": 1.9364612899365667
+      },
+      "frac_error_gt_1p5": {
+        "mean": 0.24198113207547173,
+        "worst": 0.60062893081761
+      },
+      "frac_false_negative_roof": 0.22955974842767296,
+      "thick_thin_contrast_m": {
+        "baseline": 9.777000000000001,
+        "mean": 10.44983510652597,
+        "worst": 8.04997745232427
+      }
+    }
+  ],
+  "skylight_anchor_resolvable_3post": {
+    "1.0": {
+      "S1": false,
+      "S2": true,
+      "S3": true
+    },
+    "2.0": {
+      "S1": false,
+      "S2": false,
+      "S3": true
+    },
+    "5.0": {
+      "S1": false,
+      "S2": false,
+      "S3": false
+    },
+    "20.0": {
+      "S1": false,
+      "S2": false,
+      "S3": false
+    }
+  },
+  "planetary_aperture_context": {
+    "mare_pit_inner_median_m": 100.0,
+    "apc_outer_median_m": 120.0,
+    "note": "catalogued planetary anchors are 10-40x larger than the terrestrial skylights used here, so anchor detectability at orbital posting is easier at the targets than at the analogue"
+  }
+}

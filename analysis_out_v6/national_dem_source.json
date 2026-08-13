@@ -1,0 +1,48 @@
+{
+  "file": "national_dem_site.tif",
+  "site": {
+    "lat": 63.933,
+    "lon": -21.394,
+    "epsg3413_xy": [
+      1149892.3,
+      -2631248.5
+    ],
+    "epsg3057_xy": [
+      382594.9,
+      383272.7
+    ],
+    "sampled_elevation_m": 210.33
+  },
+  "product": "ArcticDEM Mosaic, Version 4.1, 2 m (Polar Geospatial Center, University of Minnesota)",
+  "why_not_islandsdem_2m": "IslandsDEM v1.0 exists at 2 m but the public download endpoints (ftp.lmi.is / ftp.natt.is, GeoNetwork record e6712430-a63c-4ae5-9158-c89d16da6361, ogc.gis.is WCS) only serve 10/20/50 m GeoTIFFs; the 2 m version is exposed only as WMS/WMTS renders and Cesium mesh tiles. Per the agreed preference order the ArcticDEM v4.1 2 m mosaic is used as primary; an IslandsDEM v1.0 10 m crop of the same box is saved alongside as islandsdem10m_site.tif.",
+  "tiles": [
+    "14_52_2_1_2m_v4.1",
+    "14_52_2_2_2m_v4.1"
+  ],
+  "urls": [
+    "https://pgc-opendata-dems.s3.us-west-2.amazonaws.com/arcticdem/mosaics/v4.1/2m/14_52/14_52_2_1_2m_v4.1_dem.tif",
+    "https://pgc-opendata-dems.s3.us-west-2.amazonaws.com/arcticdem/mosaics/v4.1/2m/14_52/14_52_2_2_2m_v4.1_dem.tif",
+    "https://stac.pgc.umn.edu/api/v1/ (tile lookup)"
+  ],
+  "crs": "EPSG:3413 (WGS84 / NSIDC Sea Ice Polar Stereographic North)",
+  "resolution_m": 2.0,
+  "extent": "3.4 x 3.4 km centred on the site (1700 x 1700 px)",
+  "vertical_datum": "WGS84 ellipsoid (ellipsoidal heights, metres). NOT geoid. Constant offset vs Icelandic orthometric heights at this site: ArcticDEM - IslandsDEM = +65.98 m (std 0.238 m over the crop), i.e. local geoid undulation.",
+  "stated_vertical_accuracy": "PGC states no single accuracy number for the v4.1 mosaic; tiles are 'independently vertically adjusted to the Copernicus DEM' (pgc.umn.edu/data/arcticdem). Empirical check here: after removing the constant 65.98 m offset, agreement with IslandsDEM v1.0 (validated Z accuracy better than 0.5 m per LMI record) has std 0.238 m over the 3.4 km crop and residual tilt <0.2 m/km.",
+  "acquisition_epoch": "Mosaic aggregates 2007-2024 WorldView/GeoEye stereo; at the site pixel, mindate/maxdate rasters give 2013-03-15 to 2020-10-18.",
+  "licence": "Free and open. Cite: Porter, Claire, et al., 2023, 'ArcticDEM, Version 4.1', https://doi.org/10.7910/DVN/3VDC4W, Harvard Dataverse, V1. Use requires acknowledgement per PGC Acknowledgement Policy (DEMs created from DigitalGlobe/Maxar imagery, funded by NSF).",
+  "secondary_product": {
+    "file": "islandsdem10m_site.tif",
+    "product": "IslandsDEM v1.0, 10 x 10 m, ISN93, z = metres above sea level (Landmaelingar Islands / Natturufraedistofnun)",
+    "url": "https://ftp.lmi.is/gisdata/raster/IslandsDEMv1.0_10x10m_isn93_zmasl.tif (2.7 GB countrywide file, cropped locally)",
+    "crs": "EPSG:3057 (ISN93 / Lambert 1993)",
+    "resolution_m": 10.0,
+    "vertical_datum": "Orthometric, metres above sea level (Icelandic national height system)",
+    "stated_vertical_accuracy": "Positional accuracy better than 2 m (XY) and better than 0.5 m (Z), validated against Svarmi drone lidar at 5 sites (GeoNetwork record e6712430-a63c-4ae5-9158-c89d16da6361, gatt.lmi.is)",
+    "acquisition_epoch": "Built from ArcticDEM/WorldView stereo strips (~2010-2020) plus airborne lidar; file dated 2021-08-30 on the FTP server",
+    "licence": "CC BY 4.0 (per GeoNetwork record)",
+    "sampled_elevation_m_asl": 144.5,
+    "caveat": "IslandsDEM is itself largely derived from ArcticDEM strips, so the two rasters are not independent of each other; both are independent of the drone photogrammetry."
+  },
+  "created": "2026-08-13"
+}

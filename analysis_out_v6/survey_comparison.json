@@ -1,0 +1,48 @@
+{
+  "note": "Verified literature values for the tube-survey comparison (review items E1, R1.1, R1.12). Every number was read in a fetched source by the extraction agent on 2026-08-13; locators in the session report plan/09_ORBITAL_DEM_AND_STRENGTHENING.md. Internal reference; wording for any manuscript use must be re-checked against the sources.",
+  "this_work": {
+    "site": "Raufarholshellir, Iceland",
+    "surveyed_m": 348,
+    "method": "autonomous aerial lidar, single sortie, no personnel inside",
+    "overburden_m": "0-14.2, continuous at 1 m stations (n=318)",
+    "width_m": "6.1-32, median 10.6",
+    "height_m": "median 8.1",
+    "accuracy": "flight-to-flight ceiling repeatability 0.37 m RMS over 348 m (~0.1% of traverse); inter-skylight scale agreement with the independent surface model 0.12-0.24 m over 57 m (0.4%)"
+  },
+  "tubex_lava_beds": {
+    "source": "Esmaeili et al. 2020, JGR Planets 125, e2019JE006138 (NTRS accepted manuscript 20205000768)",
+    "method": "100 MHz GPR transects (pulseEKKO 100), ~8.4 km total, calibrated against tripod lidar of interiors",
+    "lbnm_overburden_general": "< 1 m to a few tens of m (citing Larson & Larson 1990); cave floor depths to 45 m",
+    "skull_cave": "a few metres of overburden; diameter ~10-20 m; height 15-18 m central; lower-level floor ~45 m below surface",
+    "valentine_cave": "roof thin (<~5 m); GPR-resolved pillar ceiling at 2.5 m depth",
+    "hercules_leg_indian_well": "surveyed; no per-cave numbers published",
+    "contrast_with_this_work": "transect samples vs continuous per-metre profile; personnel on the surface walking lines; radar wavelength ~3 m"
+  },
+  "sauro_morphometry": {
+    "source": "Sauro et al. 2020, Earth-Science Reviews 209, 103288 (Bologna IRIS accepted manuscript)",
+    "kazumura": "chain length 32.1 km analysed; intact tube width mean 10.5 m (sd 4.7); height mean 8.1 m; 29 skylights; 97% intact",
+    "corona": "6.5 km subaerial, TLS+mobile mapping at ~6 mm spacing; tube width 7-27 m (mean 13.7); height mean 9.7 m; 73-74% intact",
+    "undara": "41 km; width 15-20 m; height mean 6.5 m; 73-74% intact",
+    "planetary": "Mars/Moon tubes 1-3 orders of magnitude more voluminous; Earth max collapse widths 20-30 m vs Mars 40-400 m, Moon 500-900 m",
+    "caution": "do not cite Sauro for a 65.5 km Kazumura length (not in text); their 0.5-30 m width/height range is descriptive",
+    "contrast_with_this_work": "Raufarholshellir width median 10.6 m and height 8.1 m sit squarely in the Kazumura/Corona range; our 32 m max width is at the terrestrial upper end"
+  },
+  "handheld_slam": {
+    "source": "Zlot & Bosse 2014, J. Cave & Karst Studies 76(3), 191-206 (journal PDF)",
+    "system": "Zebedee (Hokuyo UTM-30LX on a spring), ~35 m range in caves, 1-3 cm range precision",
+    "coverage": "17.1 km of cave traverse at Jenolan in ~15.5 h; Koonalda ~300M points in <3 h",
+    "accuracy": "RMS drift grows linearly at 2-5% of distance travelled (operator trajectory; ~0.7% for the laser trajectory); heading error dominant",
+    "contrast_with_this_work": "2-5% of 348 m is 7-17 m (0.7% is 2.3 m), versus 0.37 m flight-to-flight and 0.25 m external scale agreement here; and a handheld operator cannot enter a void whose only access is a roof aperture, walks under unsupported roof, and skips the collapse-dominated segments"
+  },
+  "lofthellir": {
+    "source": "Lee et al. 2019, LPSC 50, abstract 3118 (LPI Contrib. 2132)",
+    "coverage": "~50 m NW + ~120 m SE of the skylight; average width ~10 m; 1 m constriction",
+    "platform": "Astrobotic 0.7 m hexacopter, AstroNav (stereo+lidar), Oct 2018",
+    "accuracy": "no numerical accuracy stated",
+    "caution": "flight mode (manual vs autonomous) not stated in the abstract; do not describe the flights as manual"
+  },
+  "chwala_2025": {
+    "source": "Chwala, Bodlak & Whelley 2025, JGR Planets 130(8), e2025JE009109; full text inaccessible (paywalled); model data at Zenodo doi 10.5281/zenodo.15690775",
+    "content": "finite-element limit analysis (OptumG2) of Skull and Valentine cross-sections; key point: roof-thickness variations can have minimal or significant stability effects depending on collapse mechanism; no numbers accessible"
+  }
+}
