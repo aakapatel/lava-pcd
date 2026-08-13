@@ -22,8 +22,10 @@ matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 import numpy as np
 
+import os
+
 ROOT = Path(__file__).resolve().parents[1]
-OUT = ROOT / "analysis_out"
+OUT = Path(os.environ.get("ANALYSIS_OUT", str(ROOT / "analysis_out")))
 FIGS = (ROOT.parent / "_Nature__Autonomous_aerial_reconnaissance_of_a_basaltic_"
         "lava_tube_reveals_interior_morphology_and_roof_thickness_distribution_"
         "for_planetary_subsurface" / "figures")

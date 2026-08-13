@@ -32,12 +32,12 @@ from scipy.spatial import cKDTree
 from lava_pcd.io.pcd_reader import BinaryPcdReader
 
 ROOT = Path(__file__).resolve().parents[1]
-OUT = ROOT / "analysis_out"
+OUT = Path(os.environ.get("ANALYSIS_OUT", str(ROOT / "analysis_out")))
 REN = OUT / "renders"
 REN.mkdir(exist_ok=True)
 
 SURFACE = ROOT / "maps/merged_surface_10cm.pcd"
-TUBE = ROOT / "maps/flf_10cm_aerial.pcd"
+TUBE = Path(os.environ.get("SHOWCASE_TUBE_PCD", str(ROOT / "maps/flf_10cm_aerial.pcd")))
 W, H = 3840, 2160
 CMAP = os.environ.get("SHOWCASE_CMAP", "inferno")
 DEPTH_MAX = float(os.environ.get("SHOWCASE_DEPTH_MAX", "14"))  # m, colour scale

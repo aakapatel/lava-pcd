@@ -21,7 +21,9 @@ import matplotlib.pyplot as plt
 from lava_pcd.io.pcd_reader import BinaryPcdReader
 
 ROOT = Path(__file__).resolve().parents[1]
-OUT = ROOT / "analysis_out"
+import os
+OUT = Path(os.environ.get("ANALYSIS_OUT", str(ROOT / "analysis_out")))
+TUBE_PCD = Path(os.environ.get("SKEL3D_TUBE_PCD", str(ROOT / "maps/flf_10cm_aerial.pcd")))
 REN = OUT / "renders"
 FIGS = (ROOT.parent / "_Nature__Autonomous_aerial_reconnaissance_of_a_basaltic_"
         "lava_tube_reveals_interior_morphology_and_roof_thickness_distribution_"
@@ -37,7 +39,7 @@ T = np.array([[float(r["tx"]), float(r["ty"]), float(r["tz"])] for r in rows])
 A = np.array([float(r["area"]) for r in rows])
 
 xyz_parts = []
-with BinaryPcdReader(ROOT / "maps/flf_10cm_aerial.pcd") as r:
+with BinaryPcdReader(TUBE_PCD) as r:
     for chunk in r.chunks():
         xyz_parts.append(chunk[:, :3].astype(np.float64))
 xyz = np.vstack(xyz_parts)

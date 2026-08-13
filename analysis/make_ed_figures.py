@@ -32,9 +32,16 @@ from matplotlib.patches import Ellipse
 
 from lava_pcd.io.pcd_reader import BinaryPcdReader
 
+import os
+
 ROOT = Path(__file__).resolve().parents[1]
-OUT = ROOT / "analysis_out"
+OUT = Path(os.environ.get("ANALYSIS_OUT", str(ROOT / "analysis_out")))
+OUT_BASE = ROOT / "analysis_out"
 MAPS = ROOT / "maps"
+# Tube working copies for the shell/section panels (Ed-frame by default when
+# ANALYSIS_OUT points at the Ed run).
+SHELL_PCD = Path(os.environ.get("EDFIG_SHELL_PCD", str(MAPS / "flf_30cm_aerial.pcd")))
+SECT_PCD = Path(os.environ.get("EDFIG_SECT_PCD", str(MAPS / "flf_10cm_aerial.pcd")))
 FIGS = (ROOT.parent / "_Nature__Autonomous_aerial_reconnaissance_of_a_basaltic_"
         "lava_tube_reveals_interior_morphology_and_roof_thickness_distribution_"
         "for_planetary_subsurface" / "figures")
@@ -98,22 +105,20 @@ def principal_frame(xy: np.ndarray):
 
 # ----------------------------------------------------------------------
 def fig_registration():
-    rep = json.load(open(OUT / "flf_registration_report.json"))
-    tf = json.load(open(OUT / "flf_transform_landmark.json"))
-    T = np.array(tf["matrix"])
-    drift = [r for r in csv.DictReader(open(OUT / "dlio_vs_fastlio_drift.csv"))
-             if r["z_ceil_dlio"] and r["z_ceil_fastlio"]]
-    ds = np.array([float(r["s"]) for r in drift])
-    zd = np.array([float(r["z_ceil_dlio"]) for r in drift])
-    zf = np.array([float(r["z_ceil_fastlio"]) for r in drift])
+    """Slice-based registration: match, anchor validation, datum correction,
+    and the two-SLAM drift bound."""
+    rep = json.load(open(OUT / "registration_report.json"))
+    T = np.array(json.load(open(OUT_BASE / "transform_ed_slice.json"))["matrix"])
+    val = json.load(open(OUT / "registration_validation.json"))
+    chain = json.load(open(OUT_BASE / "transform_flf_ed_chain.json"))
 
     fig = plt.figure(figsize=(7.1, 7.0))
     gs = fig.add_gridspec(3, 2, height_ratios=[1.35, 1, 1], hspace=0.55,
                           wspace=0.30, width_ratios=[1.6, 1])
 
-    # (a) constellation match in the surface frame. The constellation is
-    # elongated ~south-north, so northing runs along the panel x-axis;
-    # the rejected fourth detection ~100 m away is shown in an inset.
+    # (a) skylight openings in the surface frame with the registered interior
+    # rim centroids. Constellation is elongated ~south-north, so northing runs
+    # along the panel x-axis; the consensus-rejected fourth detection is inset.
     ax = fig.add_subplot(gs[0, 0])
     matched_aer = {p[1] for p in rep["landmark"]["inliers"]}
     cluster = []
@@ -143,10 +148,10 @@ def fig_registration():
     ax.set_aspect("equal")
     ax.set_xlabel("northing (m, local frame)")
     ax.set_ylabel("easting (m)")
-    ax.set_title("a  Skylight constellation match", loc="left")
+    ax.set_title("a  Skylight openings and registered rim centroids",
+                 loc="left")
     ax.legend(frameon=False, loc="lower left", fontsize=6.5, ncols=1,
               handletextpad=0.4)
-    # inset: full extent with the consensus-rejected detection
     axi = ax.inset_axes([0.74, 0.04, 0.24, 0.34])
     rej = [h for h in rep["aerial_holes"] if h["id"] not in matched_aer]
     axi.scatter(cl[:, 0], cl[:, 1], s=8, color=C["surface"], lw=0)
@@ -158,40 +163,91 @@ def fig_registration():
     axi.set_xticks([]); axi.set_yticks([])
     axi.set_title("rejected 4th detection", fontsize=6, color="0.4")
 
-    # (b) per-skylight vertical rim residuals of the gravity-preserving fit
+    # (b) anchor validation: signed offset between the through-skylight floor
+    # seen by the photogrammetry at S3 and the lidar floor, recomputed here
+    # for the histogram (stats cached in registration_validation.json).
     ax = fig.add_subplot(gs[0, 1])
-    vres = rep["landmark"]["vertical_residuals_m"]
-    order = np.arange(1, len(vres) + 1)
-    ax.bar([f"S{i}" for i in order], vres, width=0.55, color=C["tube"],
-           alpha=0.9)
-    rms = float(np.sqrt(np.mean(np.square(vres))))
-    ax.axhline(0, color="k", lw=0.8)
-    for yy in (rms, -rms):
-        ax.axhline(yy, color="0.4", lw=0.8, ls="--")
-    ax.annotate(f"RMS {rms:.2f} m", (0.98, 0.04), xycoords="axes fraction",
-                ha="right", fontsize=7, color="0.25")
-    ax.set_ylabel("vertical rim residual (m)")
-    ax.set_title("b  Vertical rim residuals", loc="left")
+    from scipy.spatial import cKDTree
+    aer_holes = json.load(open(OUT_BASE / "aerial_holes.json"))
+    s3 = np.array(aer_holes["holes"][2]["centroid"])
 
-    # (c) the two registration variants of the same flight
-    ax = fig.add_subplot(gs[1, :])
-    ax.plot(ds, zf, lw=1.1, color=C["tube"],
-            label="gravity-preserving 4-DOF (offline map)")
-    ax.plot(ds, zd, lw=1.1, color=C["dlio"],
-            label="6-DOF fit to skylight centroids alone")
-    ax.set_ylabel("ceiling elevation (m)")
-    ax.set_title("c  Interior ceiling under the two registration variants",
+    def near_s3(q):
+        return np.hypot(q[:, 0] - s3[0], q[:, 1] - s3[1]) < 5.0
+
+    def load_near(p):
+        parts = []
+        with BinaryPcdReader(p) as r:
+            for c in r.chunks():
+                q = c[:, :3].astype(np.float64)
+                parts.append(q[near_s3(q)])
+        return np.vstack(parts)
+
+    aer = load_near(MAPS / "aerial_10cm.pcd")
+    tub = load_near(MAPS / "tube_10cm_ed.pcd")
+    surf = np.percentile(aer[:, 2], 90)
+    a_in = aer[aer[:, 2] < surf - 3.0]
+    txy = cKDTree(tub[:, :2])
+    dz = []
+    for p in a_in:
+        idx = txy.query_ball_point(p[:2], 0.5)
+        if len(idx) < 5:
+            continue
+        z = tub[idx, 2]
+        dz.append(p[2] - np.median(z[z < np.percentile(z, 30)]))
+    dz = np.array(dz)
+    ax.hist(dz, bins=25, color=C["tube"], alpha=0.85)
+    st = val["floor_through_skylight_s3"]
+    ax.axvline(0, color="k", lw=0.8)
+    ax.axvline(st["median_m"], color=C["skylight"], lw=1.1, ls="--")
+    ax.annotate(f"median {st['median_m']:.2f} m\nRMS {st['rms_m']:.2f} m",
+                (0.97, 0.95), xycoords="axes fraction", ha="right", va="top",
+                fontsize=7, color="0.25")
+    ax.set_xlabel("floor offset at S3 (m)")
+    ax.set_ylabel("points")
+    ax.set_title("b  Floor seen through S3\nvs interior lidar floor",
                  loc="left")
-    ax.legend(frameon=False, loc="lower left")
 
-    # (d) their difference: the roll ambiguity about the skylight line
+    # (c) the datum correction: interior ceiling under the rim-centroid
+    # solution and under the slice registration, matched horizontally.
+    base_rows = list(csv.DictReader(open(OUT_BASE / "roof_thickness.csv")))
+    ed_rows = list(csv.DictReader(open(OUT / "roof_thickness.csv")))
+    g = lambda rows, k: np.array([float(r[k]) if r[k] else np.nan
+                                  for r in rows])
+    bx, by, bz = g(base_rows, "x"), g(base_rows, "y"), g(base_rows, "z_ceil")
+    es, ex, ey = g(ed_rows, "s"), g(ed_rows, "x"), g(ed_rows, "y")
+    ez, ed_dem = g(ed_rows, "z_ceil"), g(ed_rows, "z_dem")
+    t = cKDTree(np.c_[bx, by])
+    dist, idx = t.query(np.c_[ex, ey])
+    bz_m = np.where(dist < 2.0, bz[idx], np.nan)
+
+    ax = fig.add_subplot(gs[1, :])
+    ax.plot(es, ed_dem, lw=1.1, color=C["surface"], label="surface DEM")
+    ax.plot(es, bz_m, lw=1.1, color=C["dlio"],
+            label="ceiling, rim-centroid solve (4-DOF)")
+    ax.plot(es, ez, lw=1.1, color=C["tube"],
+            label="ceiling, slice registration")
+    ax.set_ylabel("elevation (m)")
+    ax.set_title("c  Interior ceiling against the surface under the two "
+                 "registrations", loc="left")
+    ax.legend(frameon=False, loc="lower left", ncols=3, fontsize=6.5)
+
+    # (d) two-SLAM consistency in the slice-registered frame (drift bound).
+    zones = chain["ceiling_offset_validation"]
     ax = fig.add_subplot(gs[2, :])
-    ax.plot(ds, zd - zf, lw=1.1, color=C["envelope"])
+    mids, means, stds, labels = [], [], [], []
+    for k, v in zones.items():
+        lo, hi = k[1:].split("-")
+        mids.append((float(lo) + float(hi)) / 2)
+        means.append(v["mean"]); stds.append(v["std"])
+        labels.append(f"{lo}-{hi} m")
+    ax.errorbar(mids, means, yerr=stds, fmt="o", ms=4, lw=1.1, capsize=3,
+                color=C["envelope"])
     ax.axhline(0, color="0.5", lw=0.8, ls="--")
+    ax.set_ylim(-1.5, 1.5)
     ax.set_xlabel("distance along tube $s$ (m)")
-    ax.set_ylabel(r"$\Delta z$ (m)")
-    ax.set_title("d  Divergence of the 6-DOF variant (rotation about the "
-                 "near-collinear skylight line)", loc="left")
+    ax.set_ylabel(r"ceiling offset (m)")
+    ax.set_title("d  Ceiling agreement between the two independent SLAM "
+                 "solutions in the registered frame", loc="left")
 
     fig.savefig(FIGS / "ed_registration_panel.pdf", bbox_inches="tight")
     plt.close(fig)
@@ -259,7 +315,7 @@ def fig_consistency():
 def fig_centreline():
     s, P, Tn = load_centreline()
     _, _, _, _, _, _, _, klass = load_roof()
-    shell = load_xyz(MAPS / "flf_30cm_aerial.pcd", keep=350_000)
+    shell = load_xyz(SHELL_PCD, keep=350_000)
 
     fig = plt.figure(figsize=(7.1, 8.2))
     gs = fig.add_gridspec(4, 3, height_ratios=[1.55, 0.95, 1, 1],
@@ -300,7 +356,7 @@ def fig_centreline():
                  loc="left")
 
     # (c-h) cross-section gallery from the 10 cm map
-    cloud = load_xyz(MAPS / "flf_10cm_aerial.pcd")
+    cloud = load_xyz(SECT_PCD)
     from scipy.spatial import cKDTree
     tree = cKDTree(cloud)
     stations = [28, 84, 140, 196, 252, 308]

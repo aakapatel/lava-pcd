@@ -35,7 +35,9 @@ from scipy.spatial import cKDTree
 from lava_pcd.io.pcd_reader import BinaryPcdReader
 
 ROOT = Path(__file__).resolve().parents[1]
-OUT = ROOT / "analysis_out"
+import os
+OUT = Path(os.environ.get("ANALYSIS_OUT", str(ROOT / "analysis_out")))
+TUBE_PCD = Path(os.environ.get("SHOWCASE_TUBE_PCD", str(ROOT / "maps/flf_10cm_aerial.pcd")))
 FIGS = (ROOT.parent / "_Nature__Autonomous_aerial_reconnaissance_of_a_basaltic_"
         "lava_tube_reveals_interior_morphology_and_roof_thickness_distribution_"
         "for_planetary_subsurface" / "figures")
@@ -124,7 +126,7 @@ def panel_b(ax):
               extent=[gx[0], gx[-1], gy[0], gy[-1]], interpolation="bilinear")
 
     # per-cell roof thickness from the FAST-LIO tube ceiling under the DEM
-    txyz, _ = load_xyz_rgb(ROOT / "maps/flf_10cm_aerial.pcd")
+    txyz, _ = load_xyz_rgb(TUBE_PCD)
     tzdem = dem_at(txyz[:, 0], txyz[:, 1])
     below = txyz[:, 2] < tzdem - 0.3
     txyz = txyz[below]
@@ -254,7 +256,7 @@ def panel_d(ax):
     # keep only the surface skin (the split leaves stray deep points near DEM gaps)
     skin = sxyz[:, 2] > dem_at(sxyz[:, 0], sxyz[:, 1]) - 2.0
     su, sz, sc = slab(sxyz[skin], 2.5, srgb[skin])
-    txyz, _ = load_xyz_rgb(ROOT / "maps/flf_10cm_aerial.pcd")
+    txyz, _ = load_xyz_rgb(TUBE_PCD)
     tu, tz, _ = slab(txyz, 1.5)
     ax.scatter(su, sz, s=1.6, c=np.clip(sc * 1.05, 0, 1), lw=0, rasterized=True)
     ax.scatter(tu, tz, s=1.6, color="#0072B2", lw=0, rasterized=True)
