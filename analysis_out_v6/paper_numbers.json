@@ -19,71 +19,337 @@
     2.179,
     2.425
   ],
-  "centreline_length_m": 348.0,
-  "n_stations": 349,
-  "n_valid_sections": 343,
+  "centreline_length_m": 301.0,
+  "n_stations": 302,
+  "n_valid_sections": 296,
   "area": {
-    "min": 5.5,
-    "max": 81.9,
-    "median": 49.8,
-    "q25": 37.6,
-    "q75": 59.5,
-    "p5": 15.5,
-    "p95": 76.2,
+    "min": 5.1,
+    "max": 81.4,
+    "median": 48.0,
+    "q25": 36.0,
+    "q75": 59.2,
+    "p5": 13.4,
+    "p95": 75.8,
     "mean_boot_ci95": [
-      46.7,
-      50.3
+      45.2,
+      49.2
     ]
   },
   "height": {
-    "min": 3.56,
-    "median": 8.1,
-    "max": 11.42
+    "min": 3.53,
+    "median": 8.09,
+    "max": 11.41
   },
   "eta": {
     "median": 1.53,
-    "q25": 1.32,
-    "q75": 1.88
+    "q25": 1.31,
+    "q75": 1.84
   },
   "width": {
     "min": 6.07,
-    "median": 10.57,
-    "max": 31.56
+    "median": 10.53,
+    "max": 31.6
   },
   "sinuosity": {
-    "mean": 1.202,
-    "max": 1.413
+    "mean": 1.032,
+    "max": 1.079
   },
   "tau": {
     "min": 0.04,
-    "max": 14.18,
-    "median": 5.88,
-    "q25": 3.14,
+    "max": 14.15,
+    "median": 6.03,
+    "q25": 3.24,
     "q75": 9.01,
     "median_ci95": [
-      5.63,
-      6.27
+      5.74,
+      6.4
     ],
     "sigma": 1.49
   },
-  "n_tau_clean": 318,
+  "n_tau_clean": 276,
   "n_multipass": 0,
-  "n_skylight_stations": 26,
+  "n_skylight_stations": 22,
   "n_no_dem": 0,
   "tau_s_range_m": [
     0.0,
-    348.0
+    301.0
   ],
-  "min_tau_over_L_retired": 0.0036,
+  "min_tau_over_L_retired": 0.0034,
   "min_tau_over_L_station": {
-    "s": 71.0,
+    "s": 51.0,
     "tau": 0.04,
-    "span": 11.48
+    "span": 12.21
   },
   "shielding": {
-    "median": 1528.0,
+    "median": 1567.0,
     "min": 11.0,
-    "atmosphere_ratio_median": 1.48
+    "atmosphere_ratio_median": 1.52
+  },
+  "stats": {
+    "corr_len_1e_m": 50,
+    "corr_len_zero_m": 102,
+    "n_eff": 3.3673174606338883,
+    "median": 6.025499999999999,
+    "ci_iid": [
+      5.7305,
+      6.4015
+    ],
+    "ci_block": {
+      "20": [
+        3.51,
+        8.326
+      ],
+      "30": [
+        3.14,
+        8.6555
+      ],
+      "50": [
+        2.439,
+        8.9805
+      ]
+    },
+    "sigma_tau_systematic_m": 1.49,
+    "note": "sigma_tau is dominated by the common registration datum term and does not average down"
+  },
+  "terrain": {
+    "variance": {
+      "tau": 15.576335034485929,
+      "z_dem": 10.977115658475103,
+      "z_ceil": 2.8741734459147246
+    },
+    "dem_share": 0.704730325469491,
+    "corr_tau_zdem": 0.9054436757855369,
+    "const_ceiling_control": {
+      "r": 0.9054436757855368,
+      "r2": 0.8154773306946987,
+      "rms_residual_m": 1.6953427141899735
+    },
+    "skylight_runs": [
+      {
+        "run_s": [
+          29.0,
+          36.0
+        ],
+        "d_zdem": -5.204760291818673,
+        "d_zceil": 0.3956722251172664,
+        "d_tau": -5.60040125065138
+      },
+      {
+        "run_s": [
+          54.0,
+          56.0
+        ],
+        "d_zdem": -4.978557347670261,
+        "d_zceil": 2.260360215053794,
+        "d_tau": -7.238945340501794
+      },
+      {
+        "run_s": [
+          89.0,
+          99.0
+        ],
+        "d_zdem": -3.610059808612533,
+        "d_zceil": 2.224367523923405,
+        "d_tau": -5.834465011961724
+      }
+    ],
+    "ceiling_thinning": {
+      "slope_m_per_m": -0.13450967100605574,
+      "ci95": [
+        -0.169879848859671,
+        -0.10926285931154604
+      ],
+      "n": 108,
+      "note": "z_ceil vs distance to nearest skylight, stations within 40 m"
+    },
+    "tau_hist_2m": {
+      "counts": [
+        47,
+        30,
+        59,
+        44,
+        34,
+        22,
+        38,
+        2
+      ],
+      "edges": [
+        0,
+        2,
+        4,
+        6,
+        8,
+        10,
+        12,
+        14,
+        16
+      ]
+    },
+    "reach_median": {
+      "0-50": 1.8355000000000001,
+      "50-100": 1.544,
+      "100-150": 4.686,
+      "150-200": 6.475,
+      "200-250": 7.991,
+      "250-300": 12.942499999999999
+    },
+    "near_skylight_median": {
+      "lt10": 1.3559999999999999,
+      "10to20": 2.24,
+      "20to30": 4.63
+    },
+    "zceil_range": 10.558999999999997,
+    "zdem_range": 12.659999999999997,
+    "net_centreline": {
+      "start": 232.597,
+      "end": 234.219
+    }
+  },
+  "envelope": {
+    "beta": 0.5,
+    "rho_mid": 2600.0,
+    "tau_threshold_m": 1.49,
+    "sigma_req_MPa": {
+      "median": 0.21396552056049317,
+      "p90": 0.7709753896806971,
+      "p95": 1.564736533929792,
+      "max": 2.046197514422284,
+      "drop_one": 1.953881379310345,
+      "n": 248,
+      "sensitivity_tau_gt_0p5": {
+        "n": 270,
+        "max": 3.7041471999999995,
+        "drop_one": 3.057099754293893
+      },
+      "note": "required tensile strength per intact station under the clamped-strip model, covers thinner than sigma_tau excluded; quote the p95, not the max (single-station tail)"
+    },
+    "tau_over_L": {
+      "min": 0.0034398034398034397,
+      "second": 0.007980456026058633,
+      "p5": 0.08811822191921215,
+      "p25": 0.2973923997004063,
+      "median": 0.5455172659005576
+    },
+    "kappa_sensitivity": {
+      "single_min": 0.0034398034398034397,
+      "drop_one": 0.007980456026058633,
+      "p5": 0.08811822191921215,
+      "median": 0.5455172659005576
+    },
+    "Lmax_sqrt_model": {
+      "earth": {
+        "1MPa": {
+          "at_tau_6m": 22.049038962903623,
+          "at_tau_14m": 33.132777038676906
+        },
+        "5MPa": {
+          "at_tau_6m": 49.303149959593966,
+          "at_tau_14m": 74.08714174182575
+        },
+        "10MPa": {
+          "at_tau_6m": 69.7251833405723,
+          "at_tau_14m": 104.77504064874782
+        }
+      },
+      "mars": {
+        "1MPa": {
+          "at_tau_6m": 35.8539669476657,
+          "at_tau_14m": 53.87724584403653
+        },
+        "5MPa": {
+          "at_tau_6m": 80.17190735801114,
+          "at_tau_14m": 120.47318414773372
+        },
+        "10MPa": {
+          "at_tau_6m": 113.38019870701869,
+          "at_tau_14m": 170.3748109239964
+        }
+      },
+      "moon": {
+        "1MPa": {
+          "at_tau_6m": 54.25835982257736,
+          "at_tau_14m": 81.53326507837141
+        },
+        "5MPa": {
+          "at_tau_6m": 121.32538091092641,
+          "at_tau_14m": 182.31392314274822
+        },
+        "10MPa": {
+          "at_tau_6m": 171.57999914431394,
+          "at_tau_14m": 257.8308227179206
+        }
+      }
+    },
+    "span_scale": {
+      "mars": 1.6261011197806923,
+      "moon": 2.4608038433722332
+    }
+  },
+  "shielding_sensitivity": {
+    "2200": {
+      "median_g_cm2": 1325.61,
+      "frac_gt_100": 0.9818840579710145,
+      "frac_gt_500": 0.8043478260869565,
+      "frac_gt_1000": 0.6884057971014492
+    },
+    "2600": {
+      "median_g_cm2": 1566.63,
+      "frac_gt_100": 0.9855072463768116,
+      "frac_gt_500": 0.8369565217391305,
+      "frac_gt_1000": 0.7210144927536232
+    },
+    "3000": {
+      "median_g_cm2": 1807.65,
+      "frac_gt_100": 0.9855072463768116,
+      "frac_gt_500": 0.8659420289855072,
+      "frac_gt_1000": 0.7427536231884058
+    }
+  },
+  "registration_validation": {
+    "floor_through_skylight_s3": {
+      "n": 352,
+      "median_m": 0.8868675231933594,
+      "rms_m": 1.3561264565921034,
+      "p10_m": -1.1876602172851562,
+      "p90_m": 1.342333221435547,
+      "annulus_outside_cone": {
+        "n": 321,
+        "median_m": 0.9071502685546875,
+        "rms_m": 1.3602545239430572,
+        "p10_m": -0.06867218017578125,
+        "p90_m": 1.3718719482421875
+      }
+    },
+    "rim_horizontal_rms_m": 1.7331442353132371,
+    "two_slam_zones": {
+      "s0-80": {
+        "mean": -0.23240130147375915,
+        "std": 0.32202807834612057,
+        "n": 80
+      },
+      "s80-160": {
+        "mean": -0.13521942607767237,
+        "std": 0.12814573299629534,
+        "n": 80
+      },
+      "s160-240": {
+        "mean": -0.16641896855827198,
+        "std": 0.47831447518904535,
+        "n": 80
+      },
+      "s240-340": {
+        "mean": -0.10124656946424919,
+        "std": 0.12767163126176653,
+        "n": 99
+      }
+    },
+    "n_negative_tau_stations": 4,
+    "sigma_reg_components": {
+      "anchor_floor_rms_m": 1.3561264565921034,
+      "drift_rss_m": 0.5317848268821412
+    },
+    "sigma_reg_z_m": 1.46,
+    "note": "sigma_reg = quadrature(anchor floor RMS at S3, worst-zone two-SLAM RSS). PROVISIONAL until Ed's per-slice residuals arrive; validated against measurements the registration was not fitted to on our side."
   },
   "span_scale": {
     "mars": 1.63,

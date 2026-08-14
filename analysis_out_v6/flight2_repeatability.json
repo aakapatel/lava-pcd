@@ -1,12 +1,12 @@
 {
-  "n_stations": 349,
+  "n_stations": 302,
   "s_range": [
     0.0,
-    348.0
+    301.0
   ],
-  "median": 0.08199453059324924,
-  "rms": 0.36528624199819054,
-  "p5": -0.20464734425656272,
-  "p95": 0.7229994221384852,
+  "median": 0.0808979659532838,
+  "rms": 0.3706576312425478,
+  "p5": -0.20595284344515646,
+  "p95": 0.7124815641329856,
   "note": "flight1 minus flight2 p99 ceiling in 2.5 m columns along the v6 centreline, both flights in the registered frame; coverage limited to the reach flight 2 mapped"
 }

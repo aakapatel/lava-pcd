@@ -25,6 +25,10 @@ def main() -> None:
     pla = json.loads((OUT / "planetary_summary.json").read_text())
     vert = json.loads((OUT / "vertical_check.json").read_text())
 
+    rev = json.loads((OUT / "review_stats.json").read_text()) \
+        if (OUT / "review_stats.json").exists() else None
+    val = json.loads((OUT / "registration_validation.json").read_text()) \
+        if (OUT / "registration_validation.json").exists() else None
     rows = list(csv.DictReader(open(OUT / "roof_thickness.csv")))
     clean = [r for r in rows if r["class"] == "intact"]
     s_clean = [float(r["s"]) for r in clean]
@@ -60,6 +64,12 @@ def main() -> None:
         min_tau_over_L_retired=roof["kappa_env"],
         min_tau_over_L_station=roof["kappa_env_station"],
         shielding=roof["shielding_g_cm2"],
+        # --- review statistics (block bootstrap, terrain, strength) ---
+        stats=rev["stats"] if rev else None,
+        terrain=rev["terrain"] if rev else None,
+        envelope=rev["envelope"] if rev else None,
+        shielding_sensitivity=rev["shielding"] if rev else None,
+        registration_validation=val,
         # --- planetary ---
         span_scale=pla["span_scale"],
         mars=pla["mars"], moon=pla["moon"],

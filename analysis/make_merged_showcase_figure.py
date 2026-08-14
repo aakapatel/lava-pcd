@@ -171,7 +171,7 @@ def panel_b(ax):
         ax.annotate(f"S{j+1}", (hxr[0], hyr[0]), textcoords="offset points",
                     xytext=(8, 9), color=SKY_C, fontsize=8, fontweight="bold")
     # arc-length ticks every 50 m
-    for sk in range(0, 351, 50):
+    for sk in range(0, int(cs.max()) + 1, 50):
         i = np.argmin(np.abs(cs - sk))
         ax.annotate(f"{sk}", (crx[i], cry[i]), textcoords="offset points",
                     xytext=(0, -11), fontsize=6, color="0.25", ha="center")
@@ -186,7 +186,7 @@ def panel_b(ax):
         sp.set_visible(False)
     cb = plt.colorbar(im, ax=ax, fraction=0.033, pad=0.01, aspect=14,
                       ticks=[0, 4, 8, 12, 16])
-    cb.set_label("roof thickness $\\tau$ (m)", fontsize=7)
+    cb.set_label("overburden $\\tau$ (m)", fontsize=7)
     cb.ax.tick_params(labelsize=6.5)
     return gx, gy
 
@@ -238,7 +238,7 @@ def panel_d(ax):
     surface and the lidar ceiling is exactly tau."""
     # thickest intact roof away from the survey end (end stations have a
     # partially observed ring)
-    intact = (rclass == "intact") & (rs >= 280) & (rs <= 325)
+    intact = (rclass == "intact") & (rs >= 240) & (rs <= 295)
     i_r = int(np.argmax(np.where(intact, rtau, -np.inf)))
     i = np.argmin(np.abs(cs - rs[i_r]))
     p0 = np.array([cx[i], cy[i]])

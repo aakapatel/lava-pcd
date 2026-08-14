@@ -155,14 +155,27 @@ def order_polyline(X: np.ndarray) -> np.ndarray:
 
 
 def smooth_resample(poly: np.ndarray) -> tuple[np.ndarray, np.ndarray]:
-    """Cubic smoothing spline through the polyline, resampled at 1 m."""
+    """Cubic smoothing spline through the polyline, resampled at 1 m of the
+    SMOOTHED curve's own arc length.
+
+    The spline parameter is the cumulative chord length of the raw skeleton
+    polyline; smoothing shortens the curve, so equal steps in that parameter
+    are NOT equal metres on the spline (verification finding, 2026-08-14:
+    the earlier version produced 0.86 m stations labelled as 1 m and a 16%
+    stretched s axis). The spline is therefore reparameterised by its own
+    arc length before sampling.
+    """
     seg = np.linalg.norm(np.diff(poly, axis=0), axis=1)
     u = np.concatenate([[0.0], np.cumsum(seg)])
     tck, _ = interpolate.splprep(poly.T, u=u, s=len(poly) * 0.5, k=3)
-    total = u[-1]
-    s = np.arange(0.0, total, STATION)
-    pts = np.array(interpolate.splev(s, tck)).T
-    tang = np.array(interpolate.splev(s, tck, der=1)).T
+    uu = np.linspace(0.0, u[-1], int(u[-1] / 0.05) + 2)
+    dense = np.array(interpolate.splev(uu, tck)).T
+    arc = np.concatenate(
+        [[0.0], np.cumsum(np.linalg.norm(np.diff(dense, axis=0), axis=1))])
+    s = np.arange(0.0, arc[-1], STATION)
+    us = np.interp(s, arc, uu)
+    pts = np.array(interpolate.splev(us, tck)).T
+    tang = np.array(interpolate.splev(us, tck, der=1)).T
     tang /= np.linalg.norm(tang, axis=1, keepdims=True)
     return pts, tang
 
@@ -298,15 +311,20 @@ def main() -> None:
         for k, (sk, tk) in enumerate(zip(stations, tangents)):
             w.writerow([k * STATION, *[f"{v:.4f}" for v in (*sk, *tk)]])
 
-    # Sinuosity over 50 m windows.
+    # Sinuosity over 50 m windows: measured path length over chord, both from
+    # the station geometry itself (a nominal station-count numerator inflated
+    # this by the station-spacing error; verification finding, 2026-08-14).
+    # Truncated end windows (< the full 50 m) are excluded from statistics.
     W = 50
+    seglen = np.linalg.norm(np.diff(stations, axis=0), axis=1)
+    cum = np.concatenate([[0.0], np.cumsum(seglen)])
     sin_vals = []
     for k in range(len(stations)):
         lo, hi = max(0, k - W // 2), min(len(stations) - 1, k + W // 2)
-        if hi - lo < W // 2:
+        if cum[hi] - cum[lo] < 0.9 * W:
             sin_vals.append(np.nan)
             continue
-        pathlen = STATION * (hi - lo)
+        pathlen = float(cum[hi] - cum[lo])
         chord = float(np.linalg.norm(stations[hi] - stations[lo]))
         sin_vals.append(pathlen / max(chord, 1e-6))
     sin_vals = np.array(sin_vals)

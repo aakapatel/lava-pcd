@@ -5,7 +5,7 @@ a) Difference map, photogrammetric DEM minus ArcticDEM v4.1 (2 m), constant
    datum removed: shows the absence of doming or tilt at the decimetre level.
 b) Distribution of the difference with the measured bounds annotated.
 c) The overburden profile recomputed with the surface degraded to HiRISE-like
-   and LROC-NAC-like DTM quality (single realizations), against the baseline
+   and LROC-NAC-like DTM quality (single realisations), against the baseline
    and its systematic band: the profile a planetary mission would recover.
 
 Same style contract as make_figures.py.
@@ -83,7 +83,7 @@ def main() -> None:
     ax.set_ylabel("y (m)")
     ax.set_title("a  Photogrammetric surface minus ArcticDEM\n"
                  "(constant datum removed)", loc="left")
-    plt.colorbar(sc, ax=ax, label=r"$\Delta z$ (m)", shrink=0.85)
+    plt.colorbar(sc, ax=ax, label=r"$\Delta z$ (m)", shrink=0.75, pad=0.02)
 
     ax = fig.add_subplot(gs[0, 1])   # (b) histogram
     ax.hist(d0, bins=np.arange(-1.5, 1.55, 0.1), color=C["tube"], alpha=0.9)
@@ -123,7 +123,7 @@ def main() -> None:
     ax.set_xlabel("distance along tube $s$ (m)")
     ax.set_ylabel(r"overburden $\tau$ (m)")
     ax.set_title("c  The same profile measured against surfaces of orbital "
-                 "DTM quality (single realizations)", loc="left")
+                 "DTM quality (single realisations)", loc="left")
     ax.legend(frameon=False, ncols=2, fontsize=6.5, loc="upper left")
 
     FIGS.mkdir(exist_ok=True)

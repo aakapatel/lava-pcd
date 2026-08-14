@@ -160,7 +160,9 @@ def main() -> None:
     out["stats"] = dict(corr_len_1e_m=e_len, corr_len_zero_m=zero_len,
                         n_eff=float(n_eff), median=float(np.median(taui)),
                         ci_iid=iid, ci_block={str(k): v for k, v in blocks.items()},
-                        sigma_tau_systematic_m=1.49,
+                        sigma_tau_systematic_m=float(json.loads(
+                            (OUT / "uncertainty_budget.json").read_text())
+                            ["sigma_tau_m"]),
                         note="sigma_tau is dominated by the common registration "
                              "datum term and does not average down")
 
@@ -225,7 +227,8 @@ def main() -> None:
 
     # ---------------- A4: pit catalogue by type + inner apertures ----------------
     rows = list(csv.DictReader(open(OUT / "planetary_catalogue.csv")))
-    narrowest = 5.87
+    narrowest = float(json.loads(
+        (OUT / "morphometry_summary.json").read_text())["width_m"]["min"])
     moon = [r for r in rows if r["body"] == "moon"]
     def f(r, k):
         v = (r.get(k) or "").strip()

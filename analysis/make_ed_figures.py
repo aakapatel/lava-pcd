@@ -161,7 +161,8 @@ def fig_registration():
     axi.set_aspect("equal")
     axi.margins(0.3)
     axi.set_xticks([]); axi.set_yticks([])
-    axi.set_title("rejected 4th detection", fontsize=6, color="0.4")
+    axi.set_title("rejected 4th detection\n(111 m off axis)", fontsize=6,
+                  color="0.4")
 
     # (b) anchor validation: signed offset between the through-skylight floor
     # seen by the photogrammetry at S3 and the lidar floor, recomputed here
@@ -352,14 +353,17 @@ def fig_centreline():
     ax.set_xlabel("along principal axis (m)")
     ax.set_ylabel("elevation (m)")
     rel = np.percentile(P[:, 2], 99) - np.percentile(P[:, 2], 1)
+    net = P[-1, 2] - P[0, 2]
+    trend = ("no net descent" if abs(net) < 3
+             else ("net descent" if net < 0 else "net rise"))
     ax.set_title(f"b  Side view: close to horizontal, {rel:.0f} m relief, "
-                 "no net descent", loc="left")
+                 f"{trend}", loc="left")
 
     # (c-h) cross-section gallery from the 10 cm map
     cloud = load_xyz(SECT_PCD)
     from scipy.spatial import cKDTree
     tree = cKDTree(cloud)
-    stations = [28, 84, 140, 196, 252, 308]
+    stations = [25, 75, 125, 175, 225, 275]
     letters = "cdefgh"
     morpho = {float(r["s"]): r for r in
               csv.DictReader(open(OUT / "morphometry.csv"))}

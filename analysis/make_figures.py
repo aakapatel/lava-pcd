@@ -124,9 +124,11 @@ def fig_morphometry():
         if i == 2:
             ax.set_xlabel("distance along tube $s$ (m)")
 
-    ax = fig.add_subplot(gs[1, 1])   # (e) area histogram
-    ax.hist(A, bins=24, color=C["tube"], alpha=0.85)
-    med, q25, q75 = np.median(A), *np.percentile(A, [25, 75])
+    ax = fig.add_subplot(gs[1, 1])   # (e) area histogram (trimmed valid set,
+    # matching the reported statistics: ends trimmed, coverage screened)
+    Av = A[3:-3]
+    ax.hist(Av, bins=24, color=C["tube"], alpha=0.85)
+    med, q25, q75 = np.median(Av), *np.percentile(Av, [25, 75])
     ax.axvline(med, color="k", lw=1)
     ax.axvspan(q25, q75, color="k", alpha=0.08, lw=0)
     ax.set_xlabel(r"$A$ (m$^2$)")
@@ -137,11 +139,13 @@ def fig_morphometry():
     cl = list(csv.DictReader(open(OUT / "centreline.csv")))
     P = np.array([[float(r["x"]), float(r["y"]), float(r["z"])] for r in cl])
     Wn = 50
+    seg = np.linalg.norm(np.diff(P, axis=0), axis=1)
+    cum = np.concatenate([[0.0], np.cumsum(seg)])
     sv = np.full(len(P), np.nan)
     for k in range(len(P)):
         lo, hi = max(0, k - Wn // 2), min(len(P) - 1, k + Wn // 2)
-        if hi - lo >= Wn // 2:
-            sv[k] = (hi - lo) / max(np.linalg.norm(P[hi] - P[lo]), 1e-6)
+        if cum[hi] - cum[lo] >= 0.9 * Wn:
+            sv[k] = (cum[hi] - cum[lo]) / max(np.linalg.norm(P[hi] - P[lo]), 1e-6)
     ax.plot(np.arange(len(P)), sv, lw=0.9, color=C["tube"])
     for lo, hi in bands:
         ax.axvspan(lo, hi, color=C["skylight"], alpha=0.15, lw=0)
@@ -156,7 +160,10 @@ def fig_morphometry():
     ax.set_ylabel("centreline z (m)")
     ax.set_xlabel("$s$ (m)")
     desc = np.percentile(P[:, 2], 99) - np.percentile(P[:, 2], 1)
-    ax.set_title(f"g  Elevation profile ({desc:.0f} m relief, no net descent)",
+    net = P[-1, 2] - P[0, 2]
+    trend = ("no net descent" if abs(net) < 3
+             else ("net descent" if net < 0 else "net rise"))
+    ax.set_title(f"g  Elevation profile ({desc:.0f} m relief, {trend})",
                  loc="left")
 
     fig.savefig(FIGS / "morphometry_panel.pdf", bbox_inches="tight")
@@ -192,8 +199,8 @@ def fig_roof():
     ax.axhline(0, color="k", lw=0.6)
     ax.set_xlim(-5, s.max() + 5)
     ax.set_xlabel("distance along tube $s$ (m)")
-    ax.set_ylabel(r"roof thickness $\tau$ (m)")
-    ax.set_title("a  Roof thickness along the surveyed length "
+    ax.set_ylabel(r"overburden $\tau$ (m)")
+    ax.set_title("a  Overburden along the surveyed length "
                  "(orange bands: skylights)", loc="left")
     ax.legend(frameon=False, loc="upper left")
 
@@ -302,7 +309,7 @@ def fig_planetary():
             ms=4, color="k")
     ax.annotate("median cover,\nthis survey", (it_tau, 30), fontsize=6.5,
                 ha="left", xytext=(it_tau + 0.6, 8))
-    ax.set_xlabel(r"roof thickness $\tau$ (m)")
+    ax.set_xlabel(r"overburden $\tau$ (m)")
     ax.set_ylabel(r"$L_{\max}=\sqrt{\sigma_t\,\tau/(\beta\rho g)}$ (m)")
     ax.set_title(r"b  Plate-model stable span "
                  r"(rock-mass $\sigma_t$ = 0.5--2.5 MPa)", loc="left")
@@ -333,9 +340,10 @@ def fig_planetary():
     ax.set_yticklabels(labels, fontsize=7)
     ax.set_xlim(0, max(rms) * 1.45)
     ax.set_xlabel("per-station overburden error, RMS (m)")
-    ax.set_title("c  Survival of the profile under orbital DTM quality "
+    ax.set_title("c  Survival of the profile under orbital DTM quality, "
+                 "mean of 20 noise realisations "
                  "(right: thick-thin contrast retained)", loc="left")
-    ax.legend(frameon=False, loc="lower right", fontsize=6.5)
+    ax.legend(frameon=False, loc="center right", fontsize=6.5)
 
     fig.savefig(FIGS / "planetary_panel.pdf", bbox_inches="tight")
     plt.close(fig)
