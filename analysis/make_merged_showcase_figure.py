@@ -86,7 +86,7 @@ holes = json.load(open(OUT / "aerial_holes.json"))["holes"][:3]
 
 dem = np.load(OUT / "dem_grid_full_surface_and_subsurface_merged.npz")
 DEMZ, XMIN, YMIN, RES = dem["z"], float(dem["xmin"]), float(dem["ymin"]), float(dem["res"])
-NY, NX = DEMZ.shape
+NX, NY = DEMZ.shape   # DEM cache is x-major: DEMZ[ix, iy]
 
 # principal axis of the centreline -> rotate the map so the tube runs left-right
 d0 = np.stack([cx, cy], 1) - [cx.mean(), cy.mean()]
@@ -105,7 +105,7 @@ def rot(x, y):
 def dem_at(x, y):
     ix = np.clip(((x - XMIN) / RES).astype(np.int64), 0, NX - 1)
     iy = np.clip(((y - YMIN) / RES).astype(np.int64), 0, NY - 1)
-    return DEMZ[iy, ix]
+    return DEMZ[ix, iy]
 
 
 # ------------------------------------------------------------------- panel b

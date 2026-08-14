@@ -44,7 +44,7 @@ DEPTH_MAX = float(os.environ.get("SHOWCASE_DEPTH_MAX", "14"))  # m, colour scale
 
 dem = np.load(OUT / "dem_grid_full_surface_and_subsurface_merged.npz")
 DEMZ, XMIN, YMIN, RES = dem["z"], float(dem["xmin"]), float(dem["ymin"]), float(dem["res"])
-NY, NX = DEMZ.shape
+NX, NY = DEMZ.shape   # DEM cache is x-major: DEMZ[ix, iy]
 # fill DEM gaps by nearest valid cell so depth-below-surface never goes NaN
 from scipy.ndimage import distance_transform_edt
 _nan = ~np.isfinite(DEMZ)
@@ -56,7 +56,7 @@ if _nan.any():
 def dem_at(xy: np.ndarray) -> np.ndarray:
     ix = np.clip(((xy[:, 0] - XMIN) / RES).astype(np.int64), 0, NX - 1)
     iy = np.clip(((xy[:, 1] - YMIN) / RES).astype(np.int64), 0, NY - 1)
-    return DEMZ[iy, ix]
+    return DEMZ[ix, iy]
 
 
 def load_xyz_rgb(path: Path) -> tuple[np.ndarray, np.ndarray | None]:
