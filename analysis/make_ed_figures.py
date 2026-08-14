@@ -150,19 +150,24 @@ def fig_registration():
     ax.set_ylabel("easting (m)")
     ax.set_title("a  Skylight openings and registered rim centroids",
                  loc="left")
-    ax.legend(frameon=False, loc="lower left", fontsize=6.5, ncols=1,
-              handletextpad=0.4)
-    axi = ax.inset_axes([0.74, 0.04, 0.24, 0.34])
+    ax.legend(frameon=False, loc="upper left", fontsize=6.5, ncols=1,
+              handletextpad=0.4, borderaxespad=0.3)
+    # location inset, boxed, in the empty lower-right corner: the three
+    # accepted openings plus the consensus-rejected fourth detection
+    axi = ax.inset_axes([0.70, 0.05, 0.28, 0.30])
     rej = [h for h in rep["aerial_holes"] if h["id"] not in matched_aer]
     axi.scatter(cl[:, 0], cl[:, 1], s=8, color=C["surface"], lw=0)
     for h in rej:
         axi.plot([h["centroid"][1]], [h["centroid"][0]], "x", ms=5,
                  color=C["flagged"])
     axi.set_aspect("equal")
-    axi.margins(0.3)
+    axi.margins(0.35)
     axi.set_xticks([]); axi.set_yticks([])
-    axi.set_title("rejected 4th detection\n(111 m off axis)", fontsize=6,
-                  color="0.4")
+    for sp in axi.spines.values():
+        sp.set_visible(True); sp.set_color("0.6"); sp.set_linewidth(0.6)
+    axi.text(0.5, 0.86, "rejected 4th detection ($\\times$)",
+             transform=axi.transAxes, fontsize=5.6, color="0.35",
+             ha="center")
 
     # (b) anchor validation: signed offset between the through-skylight floor
     # seen by the photogrammetry at S3 and the lidar floor, recomputed here
@@ -228,9 +233,12 @@ def fig_registration():
     ax.plot(es, ez, lw=1.1, color=C["tube"],
             label="ceiling, slice registration")
     ax.set_ylabel("elevation (m)")
+    ymax = np.nanmax(ed_dem)
+    ax.set_ylim(None, ymax + 5.5)
     ax.set_title("c  Interior ceiling against the surface under the two "
                  "registrations", loc="left")
-    ax.legend(frameon=False, loc="lower left", ncols=3, fontsize=6.5)
+    ax.legend(frameon=False, loc="upper left", ncols=3, fontsize=6.5,
+              handlelength=1.6, columnspacing=1.0, borderaxespad=0.2)
 
     # (d) two-SLAM consistency in the slice-registered frame (drift bound).
     zones = chain["ceiling_offset_validation"]
@@ -298,7 +306,9 @@ def fig_consistency():
     for tick in range(0, int(s.max()) + 1, 50):
         j = int(np.argmin(np.abs(s - tick)))
         ax.annotate(f"{tick} m", (u[j], v[j]), fontsize=6, color="0.35",
-                    xytext=(0, 7), textcoords="offset points", ha="center")
+                    xytext=(2 if tick == 0 else 0, 7),
+                    textcoords="offset points",
+                    ha="left" if tick == 0 else "center")
     ax.set_aspect("equal")
     ax.margins(x=0.02, y=0.3)
     ax.set_xlabel("along principal axis (m)")
@@ -335,7 +345,9 @@ def fig_centreline():
     for tick in range(0, int(s.max()) + 1, 50):
         j = int(np.argmin(np.abs(s - tick)))
         ax.annotate(f"{tick} m", (cu[j], cv[j]), fontsize=6, color="0.35",
-                    xytext=(0, 8), textcoords="offset points", ha="center")
+                    xytext=(2 if tick == 0 else 0, 8),
+                    textcoords="offset points",
+                    ha="left" if tick == 0 else "center")
     ax.set_aspect("equal")
     ax.set_xlim(cu.min() - 25, cu.max() + 25)
     ax.set_ylim(cv.min() - 30, cv.max() + 30)

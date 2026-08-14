@@ -97,12 +97,14 @@ def fig_morphometry():
     for tick in range(0, int(s.max()) + 1, 50):
         j = np.argmin(np.abs(s_all - tick))
         ax.annotate(f"{tick} m", (u[j], v[j]), fontsize=6, color="0.35",
-                    xytext=(0, 6), textcoords="offset points", ha="center")
+                    xytext=(2 if tick == 0 else 0, 6),
+                    textcoords="offset points",
+                    ha="left" if tick == 0 else "center")
     ax.set_aspect("equal")
     ax.margins(x=0.02, y=0.25)
     ax.set_xlabel("along principal axis (m, local frame)")
     ax.set_ylabel("across (m)")
-    ax.set_title("a  Plan view of the surveyed centreline (stations every 50 m)",
+    ax.set_title("a  Plan view of the surveyed centreline (ticks every 50 m)",
                  loc="left")
     ax.legend(frameon=False, loc="lower right")
 
@@ -220,20 +222,32 @@ def fig_roof():
     sky_mask = klass == "skylight"
     ax.scatter(span[sky_mask], np.zeros(sky_mask.sum()), s=14, marker="v",
                color=C["skylight"], label=r"skylights (failed, $\tau\to0$)")
-    # minimum thickness for stability under the clamped-strip plate model,
-    # tau_min = beta rho g L^2 / sigma_t, at rock-mass tensile strengths
+    # minimum thickness for stability under the clamped-strip model,
+    # tau_min = beta rho g L^2 / sigma_t; curves labelled inline at their
+    # right/upper ends so no legend sits on the data
     beta, rho = 0.5, 2600.0
     Ls = np.linspace(4, 28, 80)
     for st_mpa, ls in ((0.5, "--"), (1.0, "-."), (2.5, ":")):
-        ax.plot(Ls, beta * rho * 9.81 * Ls ** 2 / (st_mpa * 1e6), "k",
-                ls=ls, lw=0.9,
-                label=rf"$\sigma_t={st_mpa:g}$ MPa")
+        yy = beta * rho * 9.81 * Ls ** 2 / (st_mpa * 1e6)
+        ax.plot(Ls, yy, "k", ls=ls, lw=0.9)
+        m_in = yy <= 15.4
+        xe, ye = Ls[m_in][-1], yy[m_in][-1]
+        if xe > 27.0:
+            ax.annotate(rf"$\sigma_t$={st_mpa:g} MPa", (28.2, ye),
+                        fontsize=6.2, va="center", ha="left", color="0.2")
+        else:
+            # label along the curve flank at tau = 12, clear of legend and data
+            xl = float(np.sqrt(12.0 * st_mpa * 1e6 / (beta * rho * 9.81)))
+            ax.annotate(rf"$\sigma_t$={st_mpa:g} MPa", (xl + 0.4, 11.8),
+                        fontsize=6.2, ha="left", va="top", color="0.2")
+    ax.set_xlim(1, 33.5)
     ax.set_ylim(-0.8, 16.5)
     ax.set_xlabel("local span $L$ (m)")
     ax.set_ylabel(r"$\tau$ (m)")
-    ax.set_title("c  Thickness against span, with the plate-model\n"
+    ax.set_title("c  Thickness against span, with the clamped-strip\n"
                  "stability limit", loc="left")
-    ax.legend(frameon=False, loc="upper left", fontsize=6.2)
+    ax.legend(frameon=False, loc="upper right", fontsize=6.2,
+              handletextpad=0.3, borderaxespad=0.1)
 
     fig.savefig(FIGS / "roof_panel.pdf", bbox_inches="tight")
     plt.close(fig)
@@ -287,13 +301,18 @@ def fig_planetary():
         ax.step(xs, np.arange(1, len(xs) + 1) / len(xs), where="post",
                 color=col, ls=ls, label=name)
     for i, d in enumerate(sorted(ours)):
-        ax.axvline(d, color=C["earth"], lw=1.2, ls=":",
+        # partial height keeps the upper-left corner free for the legend
+        ax.axvline(d, color=C["earth"], lw=1.2, ls=":", ymax=0.66,
                    label="Raufarhólshellir skylights" if i == 0 else None)
     ax.set_xscale("log")
+    ax.set_ylim(-0.04, 1.04)
     ax.set_xlabel("aperture long axis (m)")
     ax.set_ylabel("cumulative fraction")
     ax.set_title("a  Catalogued apertures by feature type", loc="left")
-    ax.legend(frameon=False, loc="upper left", fontsize=6.2)
+    leg = ax.legend(frameon=True, loc="upper left", fontsize=6.2,
+                    handlelength=1.6, handletextpad=0.4, borderaxespad=0.2,
+                    facecolor="white", edgecolor="none", framealpha=0.9)
+    leg.set_zorder(5)
 
     ax = fig.add_subplot(gs[0, 1])   # (b) plate-model stable span band
     taus = np.linspace(0.5, 15, 120)
@@ -326,24 +345,23 @@ def fig_planetary():
               for r in rows]
     ypos = np.arange(len(rows))[::-1]
     rms = [r["per_station_rms_m"]["mean"] for r in rows]
-    ax.barh(ypos, rms, height=0.55, color=C["tube"], alpha=0.9,
-            label="per-station overburden error (RMS)")
+    ax.barh(ypos, rms, height=0.55, color=C["tube"], alpha=0.9)
     ax.axvline(1.5, color="k", ls="--", lw=1)
-    ax.annotate("stated uncertainty\n$\\sigma_\\tau$ = 1.5 m", (1.52, ypos[-1] - 0.42),
-                fontsize=6.5, color="0.25")
+    ax.annotate(r"stated uncertainty $\sigma_\tau$ = 1.5 m", (1.5, len(rows) - 0.35),
+                fontsize=6.5, color="0.25", ha="center", va="bottom")
     base = orb["baseline"]["thick_thin_contrast_m"]
-    for yp, r in zip(ypos, rows):
+    for yp, r, v in zip(ypos, rows, rms):
         c_frac = 100 * r["thick_thin_contrast_m"]["mean"] / base
-        ax.annotate(f"contrast {c_frac:.0f}%", (max(rms) * 1.06, yp),
-                    va="center", fontsize=6.5, color=C["intact"])
+        ax.annotate(f"contrast {c_frac:.0f}%", (v + 0.06, yp),
+                    va="center", ha="left", fontsize=6.5, color=C["intact"])
     ax.set_yticks(ypos)
     ax.set_yticklabels(labels, fontsize=7)
-    ax.set_xlim(0, max(rms) * 1.45)
-    ax.set_xlabel("per-station overburden error, RMS (m)")
+    ax.set_xlim(0, max(rms) * 1.30)
+    ax.set_ylim(-0.7, len(rows) + 0.35)
+    ax.set_xlabel("per-station overburden error, RMS (m, blue bars)")
     ax.set_title("c  Survival of the profile under orbital DTM quality, "
-                 "mean of 20 noise realisations "
-                 "(right: thick-thin contrast retained)", loc="left")
-    ax.legend(frameon=False, loc="center right", fontsize=6.5)
+                 "mean of 20 noise realisations\n(green: fraction of the "
+                 "thick-thin contrast retained)", loc="left")
 
     fig.savefig(FIGS / "planetary_panel.pdf", bbox_inches="tight")
     plt.close(fig)
