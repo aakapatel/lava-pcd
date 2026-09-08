@@ -1,8 +1,8 @@
 {
   "n_stations": 302,
   "n_intact": 276,
-  "n_skylight": 18,
-  "n_no_dem": 4,
+  "n_skylight": 22,
+  "n_no_dem": 0,
   "n_low_coverage": 0,
   "n_multipass": 0,
   "n_inconsistent": 4,

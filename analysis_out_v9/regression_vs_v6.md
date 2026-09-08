@@ -3,7 +3,7 @@
 Applied vertical translation dz = -66.0000 m (ortho_translation.json).
 Verdicts: identical | rounding-safe (below half the paper's quoted unit) | datum (dz) (absolute elevation, moved by exactly dz) | datum-derived (offsets against products still in the old datum) | CHANGED (investigate).
 
-Summary: datum (dz): 4, datum-derived: 4, explained: 1 cm quantisation of the delivered cloud: 34, explained: S3 floor check on new voxel copy: 30, explained: aperture bookkeeping: 52, explained: in-aperture cells removed: 10, identical: 427, rounding-safe: 163
+Summary: datum (dz): 4, datum-derived: 4, explained: 1 cm quantisation of the delivered cloud: 38, explained: S3 floor check on new voxel copy: 30, explained: in-aperture cells removed: 10, identical: 441, rounding-safe: 187
 
 ## Paper headline numbers at the paper's rounding
 
@@ -51,10 +51,9 @@ Summary: datum (dz): 4, datum-derived: 4, explained: 1 cm quantisation of the de
 
 ## Explained differences (cause traced during the v9 run)
 
-- **aperture bookkeeping** (52 fields, pattern `n_skylight|n_no_dem|skylight_runs|near_skylight_median|ceiling_thinning`): stations s=31..34 lie inside the S1 opening (2.3 x 1.6 m); the surface-only orthometric crop has no return there, so run_roof classes them 'no_dem' instead of 'skylight' (the v6 DEM had values in those cells only because the merged July cloud carried tube points from the superseded 4-DOF registration inside the hole). The geometric aperture count is unchanged (18 + 4 = 22), the 276 intact stations are unchanged, and the run-based terrain diagnostics regroup (S1 splits into two runs).
 - **S3 floor check on new voxel copy** (30 fields, pattern `sigma_reg|sigma_tau|tau_threshold|floor_through_skylight|anchor_floor`): the 10 cm working copy is re-voxelised from the new cloud; the 5 mm horizontal ISN2016/WGS84 difference changes voxel membership near S3 (360 vs 352 matched points), RMS 1.347 vs 1.356 m, so sigma_reg 1.45 vs 1.46 and sigma_tau 1.48 vs 1.49 m; the paper quotes both as 1.5 m.
 - **in-aperture cells removed** (10 fields, pattern `national_dem_check`): 165 cells inside the skylights had DEM values only in v6 (tube points 4-5 m below the rim); they are absent in the surface-only crop, which lowers the ArcticDEM shape std from 0.293 to 0.281 m (paper: 0.29 m, an upper bound) and the tilt 0.42 -> 0.43 m/km. Datum offsets carry the -66.00 m shift.
-- **1 cm quantisation of the delivered cloud** (34 fields, pattern `stats\.median|orbital_dem_test|basis_comparison|shielding|kappa_sensitivity|tau_over_L\.second|sensitivity_tau_gt_0p5`): the new cloud is stored at 1 cm; per-cell maxima come out 0.5-1 cm lower than old minus 66.00 (median -66.01), so tau is lower by 0.0075 m in the mean (median 6.0255 -> 6.0155 m, shielding 1567 -> 1564 g/cm2, 1.52 -> 1.51x). Paper roundings (6.0 m, about 1,500 g/cm2, 1.5x) unchanged; the smallest tau/L moves because a 0.10 m cover became 0.09 m.
+- **1 cm quantisation of the delivered cloud** (38 fields, pattern `stats\.median|orbital_dem_test|basis_comparison|shielding|kappa_sensitivity|tau_over_L\.second|sensitivity_tau_gt_0p5|skylight_runs`): the new cloud is stored at 1 cm; per-cell maxima come out 0.5-1 cm lower than old minus 66.00 (median -66.01), so tau is lower by 0.0075 m in the mean (median 6.0255 -> 6.0155 m, shielding 1567 -> 1564 g/cm2, 1.52 -> 1.51x). Paper roundings (6.0 m, about 1,500 g/cm2, 1.5x) unchanged; the smallest tau/L moves because a 0.10 m cover became 0.09 m.
 
 ## Fields flagged CHANGED (unexplained)
 
@@ -142,8 +141,8 @@ none
 | paper_numbers.moon.n_dimensioned | 266 | 266 | 0 | identical |
 | paper_numbers.moon.n_total | 278 | 278 | 0 | identical |
 | paper_numbers.n_multipass | 0 | 0 | 0 | identical |
-| paper_numbers.n_no_dem | 0 | 4 | 4 | explained: aperture bookkeeping |
-| paper_numbers.n_skylight_stations | 22 | 18 | -4 | explained: aperture bookkeeping |
+| paper_numbers.n_no_dem | 0 | 0 | 0 | identical |
+| paper_numbers.n_skylight_stations | 22 | 22 | 0 | identical |
 | paper_numbers.n_stations | 302 | 302 | 0 | identical |
 | paper_numbers.n_tau_clean | 276 | 276 | 0 | identical |
 | paper_numbers.n_valid_sections | 296 | 296 | 0 | identical |
@@ -226,17 +225,17 @@ none
 | paper_numbers.tau.sigma | 1.4900 | 1.4800 | -0.0100 | rounding-safe |
 | paper_numbers.tau_s_range_m[0] | 0.0000 | 0.0000 | 0.0000 | identical |
 | paper_numbers.tau_s_range_m[1] | 301.0000 | 301.0000 | 0.0000 | identical |
-| paper_numbers.terrain.ceiling_thinning.ci95[0] | -0.1699 | -0.1490 | 0.0209 | explained: aperture bookkeeping |
-| paper_numbers.terrain.ceiling_thinning.ci95[1] | -0.1093 | -0.0933 | 0.0159 | explained: aperture bookkeeping |
+| paper_numbers.terrain.ceiling_thinning.ci95[0] | -0.1699 | -0.1699 | 0.0000 | rounding-safe |
+| paper_numbers.terrain.ceiling_thinning.ci95[1] | -0.1093 | -0.1093 | 0.0000 | rounding-safe |
 | paper_numbers.terrain.ceiling_thinning.n | 108 | 108 | 0 | identical |
-| paper_numbers.terrain.ceiling_thinning.slope_m_per_m | -0.1345 | -0.1164 | 0.0181 | explained: aperture bookkeeping |
+| paper_numbers.terrain.ceiling_thinning.slope_m_per_m | -0.1345 | -0.1345 | -0.0000 | rounding-safe |
 | paper_numbers.terrain.const_ceiling_control.r | 0.9054 | 0.9053 | -0.0001 | rounding-safe |
 | paper_numbers.terrain.const_ceiling_control.r2 | 0.8155 | 0.8153 | -0.0002 | rounding-safe |
 | paper_numbers.terrain.const_ceiling_control.rms_residual_m | 1.6953 | 1.6953 | -0.0000 | rounding-safe |
 | paper_numbers.terrain.corr_tau_zdem | 0.9054 | 0.9053 | -0.0001 | rounding-safe |
 | paper_numbers.terrain.dem_share | 0.7047 | 0.7045 | -0.0002 | rounding-safe |
-| paper_numbers.terrain.near_skylight_median.10to20 | 2.2400 | 2.6655 | 0.4255 | explained: aperture bookkeeping |
-| paper_numbers.terrain.near_skylight_median.20to30 | 4.6300 | 4.1080 | -0.5220 | explained: aperture bookkeeping |
+| paper_numbers.terrain.near_skylight_median.10to20 | 2.2400 | 2.2300 | -0.0100 | rounding-safe |
+| paper_numbers.terrain.near_skylight_median.20to30 | 4.6300 | 4.6250 | -0.0050 | rounding-safe |
 | paper_numbers.terrain.near_skylight_median.lt10 | 1.3560 | 1.3560 | 0.0000 | identical |
 | paper_numbers.terrain.net_centreline.end | 234.2190 | 168.2190 | -66.0000 | datum (dz) |
 | paper_numbers.terrain.net_centreline.start | 232.5970 | 166.5970 | -66.0000 | datum (dz) |
@@ -246,26 +245,21 @@ none
 | paper_numbers.terrain.reach_median.200-250 | 7.9910 | 7.9810 | -0.0100 | rounding-safe |
 | paper_numbers.terrain.reach_median.250-300 | 12.9425 | 12.9325 | -0.0100 | rounding-safe |
 | paper_numbers.terrain.reach_median.50-100 | 1.5440 | 1.5390 | -0.0050 | rounding-safe |
-| paper_numbers.terrain.skylight_runs[0].d_tau | -5.6004 | -5.5566 | 0.0438 | explained: aperture bookkeeping |
-| paper_numbers.terrain.skylight_runs[0].d_zceil | 0.3957 | 0.2732 | -0.1224 | explained: aperture bookkeeping |
-| paper_numbers.terrain.skylight_runs[0].d_zdem | -5.2048 | -5.2834 | -0.0786 | explained: aperture bookkeeping |
+| paper_numbers.terrain.skylight_runs[0].d_tau | -5.6004 | -5.5953 | 0.0051 | explained: 1 cm quantisation of the delivered cloud |
+| paper_numbers.terrain.skylight_runs[0].d_zceil | 0.3957 | 0.3957 | -0.0000 | rounding-safe |
+| paper_numbers.terrain.skylight_runs[0].d_zdem | -5.2048 | -5.1997 | 0.0051 | explained: 1 cm quantisation of the delivered cloud |
 | paper_numbers.terrain.skylight_runs[0].run_s[0] | 29.0000 | 29.0000 | 0.0000 | identical |
-| paper_numbers.terrain.skylight_runs[0].run_s[1] | 36.0000 | 30.0000 | -6.0000 | explained: aperture bookkeeping |
-| paper_numbers.terrain.skylight_runs[1].d_tau | -7.2389 | -5.9394 | 1.2996 | explained: aperture bookkeeping |
-| paper_numbers.terrain.skylight_runs[1].d_zceil | 2.2604 | 0.8009 | -1.4594 | explained: aperture bookkeeping |
-| paper_numbers.terrain.skylight_runs[1].d_zdem | -4.9786 | -5.1385 | -0.1599 | explained: aperture bookkeeping |
-| paper_numbers.terrain.skylight_runs[1].run_s[0] | 54.0000 | 35.0000 | -19.0000 | explained: aperture bookkeeping |
-| paper_numbers.terrain.skylight_runs[1].run_s[1] | 56.0000 | 36.0000 | -20.0000 | explained: aperture bookkeeping |
-| paper_numbers.terrain.skylight_runs[2].d_tau | -5.8345 | -7.2355 | -1.4010 | explained: aperture bookkeeping |
-| paper_numbers.terrain.skylight_runs[2].d_zceil | 2.2244 | 2.2604 | 0.0360 | explained: aperture bookkeeping |
-| paper_numbers.terrain.skylight_runs[2].d_zdem | -3.6101 | -4.9751 | -1.3650 | explained: aperture bookkeeping |
-| paper_numbers.terrain.skylight_runs[2].run_s[0] | 89.0000 | 54.0000 | -35.0000 | explained: aperture bookkeeping |
-| paper_numbers.terrain.skylight_runs[2].run_s[1] | 99.0000 | 56.0000 | -43.0000 | explained: aperture bookkeeping |
-| paper_numbers.terrain.skylight_runs[3].d_tau | None | -5.8329 |  | explained: aperture bookkeeping |
-| paper_numbers.terrain.skylight_runs[3].d_zceil | None | 2.2244 |  | explained: aperture bookkeeping |
-| paper_numbers.terrain.skylight_runs[3].d_zdem | None | -3.6085 |  | explained: aperture bookkeeping |
-| paper_numbers.terrain.skylight_runs[3].run_s[0] | None | 89.0000 |  | explained: aperture bookkeeping |
-| paper_numbers.terrain.skylight_runs[3].run_s[1] | None | 99.0000 |  | explained: aperture bookkeeping |
+| paper_numbers.terrain.skylight_runs[0].run_s[1] | 36.0000 | 36.0000 | 0.0000 | identical |
+| paper_numbers.terrain.skylight_runs[1].d_tau | -7.2389 | -7.2355 | 0.0035 | rounding-safe |
+| paper_numbers.terrain.skylight_runs[1].d_zceil | 2.2604 | 2.2604 | -0.0000 | rounding-safe |
+| paper_numbers.terrain.skylight_runs[1].d_zdem | -4.9786 | -4.9751 | 0.0035 | rounding-safe |
+| paper_numbers.terrain.skylight_runs[1].run_s[0] | 54.0000 | 54.0000 | 0.0000 | identical |
+| paper_numbers.terrain.skylight_runs[1].run_s[1] | 56.0000 | 56.0000 | 0.0000 | identical |
+| paper_numbers.terrain.skylight_runs[2].d_tau | -5.8345 | -5.8329 | 0.0016 | rounding-safe |
+| paper_numbers.terrain.skylight_runs[2].d_zceil | 2.2244 | 2.2244 | 0.0000 | rounding-safe |
+| paper_numbers.terrain.skylight_runs[2].d_zdem | -3.6101 | -3.6085 | 0.0015 | rounding-safe |
+| paper_numbers.terrain.skylight_runs[2].run_s[0] | 89.0000 | 89.0000 | 0.0000 | identical |
+| paper_numbers.terrain.skylight_runs[2].run_s[1] | 99.0000 | 99.0000 | 0.0000 | identical |
 | paper_numbers.terrain.tau_hist_2m.counts[0] | 47 | 47 | 0 | identical |
 | paper_numbers.terrain.tau_hist_2m.counts[1] | 30 | 30 | 0 | identical |
 | paper_numbers.terrain.tau_hist_2m.counts[2] | 59 | 59 | 0 | identical |
@@ -424,17 +418,17 @@ none
 | review_stats.stats.median | 6.0255 | 6.0155 | -0.0100 | explained: 1 cm quantisation of the delivered cloud |
 | review_stats.stats.n_eff | 3.3673 | 3.3678 | 0.0005 | rounding-safe |
 | review_stats.stats.sigma_tau_systematic_m | 1.4900 | 1.4800 | -0.0100 | explained: S3 floor check on new voxel copy |
-| review_stats.terrain.ceiling_thinning.ci95[0] | -0.1699 | -0.1490 | 0.0209 | explained: aperture bookkeeping |
-| review_stats.terrain.ceiling_thinning.ci95[1] | -0.1093 | -0.0933 | 0.0159 | explained: aperture bookkeeping |
+| review_stats.terrain.ceiling_thinning.ci95[0] | -0.1699 | -0.1699 | 0.0000 | rounding-safe |
+| review_stats.terrain.ceiling_thinning.ci95[1] | -0.1093 | -0.1093 | 0.0000 | rounding-safe |
 | review_stats.terrain.ceiling_thinning.n | 108 | 108 | 0 | identical |
-| review_stats.terrain.ceiling_thinning.slope_m_per_m | -0.1345 | -0.1164 | 0.0181 | explained: aperture bookkeeping |
+| review_stats.terrain.ceiling_thinning.slope_m_per_m | -0.1345 | -0.1345 | -0.0000 | rounding-safe |
 | review_stats.terrain.const_ceiling_control.r | 0.9054 | 0.9053 | -0.0001 | rounding-safe |
 | review_stats.terrain.const_ceiling_control.r2 | 0.8155 | 0.8153 | -0.0002 | rounding-safe |
 | review_stats.terrain.const_ceiling_control.rms_residual_m | 1.6953 | 1.6953 | -0.0000 | rounding-safe |
 | review_stats.terrain.corr_tau_zdem | 0.9054 | 0.9053 | -0.0001 | rounding-safe |
 | review_stats.terrain.dem_share | 0.7047 | 0.7045 | -0.0002 | rounding-safe |
-| review_stats.terrain.near_skylight_median.10to20 | 2.2400 | 2.6655 | 0.4255 | explained: aperture bookkeeping |
-| review_stats.terrain.near_skylight_median.20to30 | 4.6300 | 4.1080 | -0.5220 | explained: aperture bookkeeping |
+| review_stats.terrain.near_skylight_median.10to20 | 2.2400 | 2.2300 | -0.0100 | rounding-safe |
+| review_stats.terrain.near_skylight_median.20to30 | 4.6300 | 4.6250 | -0.0050 | rounding-safe |
 | review_stats.terrain.near_skylight_median.lt10 | 1.3560 | 1.3560 | 0.0000 | identical |
 | review_stats.terrain.net_centreline.end | 234.2190 | 168.2190 | -66.0000 | datum (dz) |
 | review_stats.terrain.net_centreline.start | 232.5970 | 166.5970 | -66.0000 | datum (dz) |
@@ -444,26 +438,21 @@ none
 | review_stats.terrain.reach_median.200-250 | 7.9910 | 7.9810 | -0.0100 | rounding-safe |
 | review_stats.terrain.reach_median.250-300 | 12.9425 | 12.9325 | -0.0100 | rounding-safe |
 | review_stats.terrain.reach_median.50-100 | 1.5440 | 1.5390 | -0.0050 | rounding-safe |
-| review_stats.terrain.skylight_runs[0].d_tau | -5.6004 | -5.5566 | 0.0438 | explained: aperture bookkeeping |
-| review_stats.terrain.skylight_runs[0].d_zceil | 0.3957 | 0.2732 | -0.1224 | explained: aperture bookkeeping |
-| review_stats.terrain.skylight_runs[0].d_zdem | -5.2048 | -5.2834 | -0.0786 | explained: aperture bookkeeping |
+| review_stats.terrain.skylight_runs[0].d_tau | -5.6004 | -5.5953 | 0.0051 | explained: 1 cm quantisation of the delivered cloud |
+| review_stats.terrain.skylight_runs[0].d_zceil | 0.3957 | 0.3957 | -0.0000 | rounding-safe |
+| review_stats.terrain.skylight_runs[0].d_zdem | -5.2048 | -5.1997 | 0.0051 | explained: 1 cm quantisation of the delivered cloud |
 | review_stats.terrain.skylight_runs[0].run_s[0] | 29.0000 | 29.0000 | 0.0000 | identical |
-| review_stats.terrain.skylight_runs[0].run_s[1] | 36.0000 | 30.0000 | -6.0000 | explained: aperture bookkeeping |
-| review_stats.terrain.skylight_runs[1].d_tau | -7.2389 | -5.9394 | 1.2996 | explained: aperture bookkeeping |
-| review_stats.terrain.skylight_runs[1].d_zceil | 2.2604 | 0.8009 | -1.4594 | explained: aperture bookkeeping |
-| review_stats.terrain.skylight_runs[1].d_zdem | -4.9786 | -5.1385 | -0.1599 | explained: aperture bookkeeping |
-| review_stats.terrain.skylight_runs[1].run_s[0] | 54.0000 | 35.0000 | -19.0000 | explained: aperture bookkeeping |
-| review_stats.terrain.skylight_runs[1].run_s[1] | 56.0000 | 36.0000 | -20.0000 | explained: aperture bookkeeping |
-| review_stats.terrain.skylight_runs[2].d_tau | -5.8345 | -7.2355 | -1.4010 | explained: aperture bookkeeping |
-| review_stats.terrain.skylight_runs[2].d_zceil | 2.2244 | 2.2604 | 0.0360 | explained: aperture bookkeeping |
-| review_stats.terrain.skylight_runs[2].d_zdem | -3.6101 | -4.9751 | -1.3650 | explained: aperture bookkeeping |
-| review_stats.terrain.skylight_runs[2].run_s[0] | 89.0000 | 54.0000 | -35.0000 | explained: aperture bookkeeping |
-| review_stats.terrain.skylight_runs[2].run_s[1] | 99.0000 | 56.0000 | -43.0000 | explained: aperture bookkeeping |
-| review_stats.terrain.skylight_runs[3].d_tau | None | -5.8329 |  | explained: aperture bookkeeping |
-| review_stats.terrain.skylight_runs[3].d_zceil | None | 2.2244 |  | explained: aperture bookkeeping |
-| review_stats.terrain.skylight_runs[3].d_zdem | None | -3.6085 |  | explained: aperture bookkeeping |
-| review_stats.terrain.skylight_runs[3].run_s[0] | None | 89.0000 |  | explained: aperture bookkeeping |
-| review_stats.terrain.skylight_runs[3].run_s[1] | None | 99.0000 |  | explained: aperture bookkeeping |
+| review_stats.terrain.skylight_runs[0].run_s[1] | 36.0000 | 36.0000 | 0.0000 | identical |
+| review_stats.terrain.skylight_runs[1].d_tau | -7.2389 | -7.2355 | 0.0035 | rounding-safe |
+| review_stats.terrain.skylight_runs[1].d_zceil | 2.2604 | 2.2604 | -0.0000 | rounding-safe |
+| review_stats.terrain.skylight_runs[1].d_zdem | -4.9786 | -4.9751 | 0.0035 | rounding-safe |
+| review_stats.terrain.skylight_runs[1].run_s[0] | 54.0000 | 54.0000 | 0.0000 | identical |
+| review_stats.terrain.skylight_runs[1].run_s[1] | 56.0000 | 56.0000 | 0.0000 | identical |
+| review_stats.terrain.skylight_runs[2].d_tau | -5.8345 | -5.8329 | 0.0016 | rounding-safe |
+| review_stats.terrain.skylight_runs[2].d_zceil | 2.2244 | 2.2244 | 0.0000 | rounding-safe |
+| review_stats.terrain.skylight_runs[2].d_zdem | -3.6101 | -3.6085 | 0.0015 | rounding-safe |
+| review_stats.terrain.skylight_runs[2].run_s[0] | 89.0000 | 89.0000 | 0.0000 | identical |
+| review_stats.terrain.skylight_runs[2].run_s[1] | 99.0000 | 99.0000 | 0.0000 | identical |
 | review_stats.terrain.tau_hist_2m.counts[0] | 47 | 47 | 0 | identical |
 | review_stats.terrain.tau_hist_2m.counts[1] | 30 | 30 | 0 | identical |
 | review_stats.terrain.tau_hist_2m.counts[2] | 59 | 59 | 0 | identical |
@@ -497,8 +486,8 @@ none
 | roof_summary.n_intact | 276 | 276 | 0 | identical |
 | roof_summary.n_low_coverage | 0 | 0 | 0 | identical |
 | roof_summary.n_multipass | 0 | 0 | 0 | identical |
-| roof_summary.n_no_dem | 0 | 4 | 4 | explained: aperture bookkeeping |
-| roof_summary.n_skylight | 22 | 18 | -4 | explained: aperture bookkeeping |
+| roof_summary.n_no_dem | 0 | 0 | 0 | identical |
+| roof_summary.n_skylight | 22 | 22 | 0 | identical |
 | roof_summary.n_stations | 302 | 302 | 0 | identical |
 | roof_summary.rho_basalt | 2600.0000 | 2600.0000 | 0.0000 | identical |
 | roof_summary.shielding_g_cm2.atmosphere_ratio_median | 1.5200 | 1.5100 | -0.0100 | explained: 1 cm quantisation of the delivered cloud |

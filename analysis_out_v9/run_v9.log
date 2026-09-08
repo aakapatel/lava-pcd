@@ -198,3 +198,11 @@ Summary: {'identical': 427, 'explained: 1 cm quantisation of the delivered cloud
 --- 8. figure QA done; verdicts in figure_qa.md
 --- 6/7. regression_vs_v6.md, datum_transfer.json (geotiff_sensitivity, v9_summary) written Tue Sep  8 10:53:45 PM CEST 2026
 --- 9. committed 8dec31b Tue Sep  8 10:54:30 PM CEST 2026
+--- 10. class-precedence rerun (skylight over no_dem in run_roof): SKIP_MORPHO=1 bash analysis/run_v9_pipeline.sh (log pipeline_v9_rerun.log) Tue Sep  8 10:56:12 PM CEST 2026
+Summary: {'identical': 441, 'explained: 1 cm quantisation of the delivered cloud': 34, 'rounding-safe': 187, 'explained: S3 floor check on new voxel copy': 30, 'datum (dz)': 4, 'CHANGED': 4, 'datum-derived': 4, 'explained: in-aperture cells removed': 10}
+CHANGED paper_numbers.terrain.skylight_runs[0].d_tau: -5.60040125065138 -> -5.595317352787909 (0.00508389786347152)
+CHANGED paper_numbers.terrain.skylight_runs[0].d_zdem: -5.204760291818673 -> -5.199666492965122 (0.005093798853550879)
+CHANGED review_stats.terrain.skylight_runs[0].d_tau: -5.60040125065138 -> -5.595317352787909 (0.00508389786347152)
+CHANGED review_stats.terrain.skylight_runs[0].d_zdem: -5.204760291818673 -> -5.199666492965122 (0.005093798853550879)
+--- 11. figures regenerated after class-precedence rerun: bash analysis/make_v9_figures.sh Tue Sep  8 11:00:10 PM CEST 2026
+--- 12. committed a19a484 Tue Sep  8 11:02:02 PM CEST 2026

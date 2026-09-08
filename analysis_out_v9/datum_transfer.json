@@ -218,11 +218,10 @@
   "v9_summary": {
     "dz_applied_m": -66.0,
     "regression_counts": {
-      "identical": 427,
-      "explained: 1 cm quantisation of the delivered cloud": 34,
-      "rounding-safe": 163,
+      "identical": 441,
+      "explained: 1 cm quantisation of the delivered cloud": 38,
+      "rounding-safe": 187,
       "explained: S3 floor check on new voxel copy": 30,
-      "explained: aperture bookkeeping": 52,
       "datum (dz)": 4,
       "datum-derived": 4,
       "explained: in-aperture cells removed": 10
@@ -254,8 +253,8 @@
       "v9": {
         "n_stations": 302,
         "n_intact": 276,
-        "n_skylight": 18,
-        "n_no_dem": 4,
+        "n_skylight": 22,
+        "n_no_dem": 0,
         "n_low_coverage": 0,
         "n_multipass": 0,
         "n_inconsistent": 4

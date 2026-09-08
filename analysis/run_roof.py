@@ -4,7 +4,12 @@ tau_k = z_DEM(x_k, y_k) - z_ceil(k): the surface DEM above each centreline
 station minus the highest interior ceiling point of the station's cross-section
 (both in the aerial frame after the S1 registration). Stations inside a skylight
 footprint are classed 'skylight' (tau -> 0 by definition there); everything else
-is 'intact'. The empirical stability statement is conservative: every intact
+is 'intact'. A station inside the inflated aperture screen is an aperture
+station whether or not the surface DEM has a value there: a surface-only DEM
+(the v9 orthometric crop) has no cell inside the openings, whereas the earlier
+merged cloud filled them with interior points, so from v9 on 'skylight' takes
+precedence over 'no_dem' (decision 2026-09-08; no effect on earlier runs, where
+every aperture cell had a value). The empirical stability statement is conservative: every intact
 surveyed span satisfies tau/L >= kappa_env (the observed minimum), while the
 skylight (failed) stations sit at tau ~ 0.
 
@@ -145,12 +150,15 @@ def main() -> None:
         a = max(h.semi_major, 1.0) * SKYLIGHT_INFLATE
         d2 = np.hypot(x - cx, y - cy)
         klass[d2 <= a] = "skylight"
-    klass[np.isnan(tau)] = "no_dem"
+    # aperture stations keep their class even where the surface DEM has no
+    # cell (surface-only DEM inside an opening); see the docstring
+    klass[np.isnan(tau) & (klass != "skylight")] = "no_dem"
     klass[(cov < MIN_COVERAGE) & (klass == "intact")] = "low_coverage"
 
     ghost_frac = np.zeros(len(rows))
     for i in range(len(rows)):
         if np.isnan(zdem[i]):
+            ghost_frac[i] = np.nan   # no surface cell: no column statistic
             continue
         idx = txy.query_ball_point([x[i], y[i]], 4.0)
         if len(idx) < 50:

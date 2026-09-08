@@ -78,15 +78,9 @@ DATUM_DERIVED = [
 # matching one of these is reported as "explained: <tag>" instead of CHANGED;
 # the cause text is printed in the report so the reader can judge it.
 EXPLAINED = [
-    (r"n_skylight|n_no_dem|skylight_runs|near_skylight_median|ceiling_thinning",
-     "aperture bookkeeping",
-     "stations s=31..34 lie inside the S1 opening (2.3 x 1.6 m); the surface-only "
-     "orthometric crop has no return there, so run_roof classes them 'no_dem' "
-     "instead of 'skylight' (the v6 DEM had values in those cells only because the "
-     "merged July cloud carried tube points from the superseded 4-DOF registration "
-     "inside the hole). The geometric aperture count is unchanged (18 + 4 = 22), "
-     "the 276 intact stations are unchanged, and the run-based terrain diagnostics "
-     "regroup (S1 splits into two runs)."),
+    # (an earlier "aperture bookkeeping" entry covered the four S1 stations
+    # classed no_dem instead of skylight; retired 2026-09-08 when run_roof gave
+    # 'skylight' precedence over 'no_dem')
     (r"sigma_reg|sigma_tau|tau_threshold|floor_through_skylight|anchor_floor",
      "S3 floor check on new voxel copy",
      "the 10 cm working copy is re-voxelised from the new cloud; the 5 mm "
@@ -100,7 +94,7 @@ EXPLAINED = [
      "ArcticDEM shape std from 0.293 to 0.281 m (paper: 0.29 m, an upper bound) "
      "and the tilt 0.42 -> 0.43 m/km. Datum offsets carry the -66.00 m shift."),
     (r"stats\.median|orbital_dem_test|basis_comparison|shielding|kappa_sensitivity|"
-     r"tau_over_L\.second|sensitivity_tau_gt_0p5",
+     r"tau_over_L\.second|sensitivity_tau_gt_0p5|skylight_runs",
      "1 cm quantisation of the delivered cloud",
      "the new cloud is stored at 1 cm; per-cell maxima come out 0.5-1 cm lower "
      "than old minus 66.00 (median -66.01), so tau is lower by 0.0075 m in the mean "

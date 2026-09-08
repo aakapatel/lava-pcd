@@ -12,8 +12,12 @@ export ROOF_DEM_PCD=maps/aerial_isn16_ortho_dem.pcd     # also names the DEM cac
 PY=".venv/bin/python"
 run() { echo; echo "=== $(date '+%H:%M:%S') $*"; env -u PYTHONPATH PYTHONPATH=src "$@"; }
 
+# SKIP_MORPHO=1 reruns from the roof stage (the centreline/morphometry cache is
+# untouched by roof-class changes; used for the 2026-09-08 class-precedence rerun)
+if [ "${SKIP_MORPHO:-0}" != "1" ]; then
 run env MORPHO_SKEL_PCD=maps/flf_30cm_ed_ortho.pcd MORPHO_SECT_PCD=maps/flf_10cm_ed_ortho.pcd \
     $PY analysis/run_morphometry.py
+fi
 run env ROOF_TUBE_PCD=maps/flf_10cm_ed_ortho.pcd $PY analysis/run_roof.py
 run env VALID_TUBE_PCD=maps/flf_10cm_ed_ortho.pcd VALID_AERIAL_PCD=maps/aerial_isn16_ortho_10cm.pcd \
     $PY analysis/validate_ed_registration.py

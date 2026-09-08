@@ -1,19 +1,19 @@
 
-=== 22:52:08 .venv/bin/python analysis/make_figures.py
+=== 23:00:10 .venv/bin/python analysis/make_figures.py
 morphometry_panel.pdf
 roof_panel.pdf
 planetary_panel.pdf
 
-=== 22:52:09 env EDFIG_SHELL_PCD=maps/flf_30cm_ed_ortho.pcd EDFIG_SECT_PCD=maps/flf_10cm_ed_ortho.pcd EDFIG_AERIAL_PCD=maps/aerial_isn16_ortho_10cm.pcd .venv/bin/python analysis/make_ed_figures.py
+=== 23:00:11 env EDFIG_SHELL_PCD=maps/flf_30cm_ed_ortho.pcd EDFIG_SECT_PCD=maps/flf_10cm_ed_ortho.pcd EDFIG_AERIAL_PCD=maps/aerial_isn16_ortho_10cm.pcd .venv/bin/python analysis/make_ed_figures.py
 Extended Data panels -> analysis_out_v9/figures_for_manuscript
   ed_registration_panel.pdf
   ed_consistency_panel.pdf
   ed_centreline_panel.pdf
 
-=== 22:52:11 .venv/bin/python analysis/make_dem_validation_figure.py
+=== 23:00:14 .venv/bin/python analysis/make_dem_validation_figure.py
 dem_validation_panel.pdf
 
-=== 22:52:13 (render) env SHOWCASE_TUBE_PCD=maps/flf_10cm_ed_ortho.pcd SHOWCASE_SURFACE_PCD=maps/aerial_isn16_ortho_surface_10cm.pcd .venv/bin/python analysis/render_merged_showcase.py
+=== 23:00:16 (render) env SHOWCASE_TUBE_PCD=maps/flf_10cm_ed_ortho.pcd SHOWCASE_SURFACE_PCD=maps/aerial_isn16_ortho_surface_10cm.pcd .venv/bin/python analysis/render_merged_showcase.py
 surface: 13,652,789 pts (cutaway 8.0 m)
 tube: 2,813,845 pts, depth p1/p99 = 1.6/22.7 m
 wrote analysis_out_v9/renders/showcase_oblique.png
@@ -23,24 +23,24 @@ surface: 14,227,458 pts (cutaway 0.0 m)
 tube: 2,813,845 pts, depth p1/p99 = 1.6/22.7 m
 wrote analysis_out_v9/renders/showcase_closeup.png
 
-=== 22:52:24 env SHOWCASE_TUBE_PCD=maps/flf_10cm_ed_ortho.pcd SHOWCASE_SURFACE_PCD=maps/aerial_isn16_ortho_surface_10cm.pcd .venv/bin/python analysis/make_merged_showcase_figure.py
+=== 23:00:26 env SHOWCASE_TUBE_PCD=maps/flf_10cm_ed_ortho.pcd SHOWCASE_SURFACE_PCD=maps/aerial_isn16_ortho_surface_10cm.pcd .venv/bin/python analysis/make_merged_showcase_figure.py
 wrote analysis_out_v9/figures_for_manuscript/merged_showcase_panel.pdf
 
-=== 22:52:28 (render) env SKEL3D_TUBE_PCD=maps/flf_10cm_ed_ortho.pcd .venv/bin/python analysis/render_skeleton_3d.py
+=== 23:00:31 (render) env SKEL3D_TUBE_PCD=maps/flf_10cm_ed_ortho.pcd .venv/bin/python analysis/render_skeleton_3d.py
 wrote analysis_out_v9/renders/skeleton_3d.png
 copied trimmed copy to manuscript figures/
 
-=== 22:52:31 figures done -> analysis_out_v9/figures_for_manuscript
+=== 23:00:34 figures done -> analysis_out_v9/figures_for_manuscript
 total 4632
 drwxrwxr-x 2 aakapatel aakapatel    4096 Sep  8 22:49 .
-drwxrwxr-x 5 aakapatel aakapatel    4096 Sep  8 22:49 ..
--rw-rw-r-- 1 aakapatel aakapatel  559835 Sep  8 22:52 dem_validation_panel.pdf
--rw-rw-r-- 1 aakapatel aakapatel  153612 Sep  8 22:52 ed_centreline_panel.pdf
--rw-rw-r-- 1 aakapatel aakapatel   80888 Sep  8 22:52 ed_consistency_panel.pdf
--rw-rw-r-- 1 aakapatel aakapatel   81225 Sep  8 22:52 ed_registration_panel.pdf
--rw-rw-r-- 1 aakapatel aakapatel 2098489 Sep  8 22:52 merged_showcase_panel.pdf
--rw-rw-r-- 1 aakapatel aakapatel 1436571 Sep  8 22:52 merged_showcase_panel.png
--rw-rw-r-- 1 aakapatel aakapatel   93253 Sep  8 22:52 morphometry_panel.pdf
--rw-rw-r-- 1 aakapatel aakapatel   94045 Sep  8 22:52 planetary_panel.pdf
--rw-rw-r-- 1 aakapatel aakapatel   88879 Sep  8 22:52 roof_panel.pdf
--rw-rw-r-- 1 aakapatel aakapatel   36790 Sep  8 22:52 skeleton_3d.png
+drwxrwxr-x 5 aakapatel aakapatel    4096 Sep  8 22:56 ..
+-rw-rw-r-- 1 aakapatel aakapatel  559835 Sep  8 23:00 dem_validation_panel.pdf
+-rw-rw-r-- 1 aakapatel aakapatel  153643 Sep  8 23:00 ed_centreline_panel.pdf
+-rw-rw-r-- 1 aakapatel aakapatel   80975 Sep  8 23:00 ed_consistency_panel.pdf
+-rw-rw-r-- 1 aakapatel aakapatel   81225 Sep  8 23:00 ed_registration_panel.pdf
+-rw-rw-r-- 1 aakapatel aakapatel 2098489 Sep  8 23:00 merged_showcase_panel.pdf
+-rw-rw-r-- 1 aakapatel aakapatel 1436571 Sep  8 23:00 merged_showcase_panel.png
+-rw-rw-r-- 1 aakapatel aakapatel   93187 Sep  8 23:00 morphometry_panel.pdf
+-rw-rw-r-- 1 aakapatel aakapatel   94045 Sep  8 23:00 planetary_panel.pdf
+-rw-rw-r-- 1 aakapatel aakapatel   88710 Sep  8 23:00 roof_panel.pdf
+-rw-rw-r-- 1 aakapatel aakapatel   36790 Sep  8 23:00 skeleton_3d.png

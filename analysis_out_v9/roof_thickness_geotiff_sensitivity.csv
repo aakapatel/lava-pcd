@@ -30,10 +30,10 @@ s,z_dem_percellmax,z_dem_geotiff,tau_percellmax,tau_geotiff,class
 28.0,170.490,170.444,1.480,1.433,intact
 29.0,170.520,170.508,0.233,0.221,skylight
 30.0,170.120,170.008,-0.143,-0.255,skylight
-31.0,nan,169.934,nan,1.087,no_dem
-32.0,nan,169.875,nan,0.062,no_dem
-33.0,nan,169.841,nan,0.913,no_dem
-34.0,nan,170.010,nan,4.704,no_dem
+31.0,nan,169.934,nan,1.087,skylight
+32.0,nan,169.875,nan,0.062,skylight
+33.0,nan,169.841,nan,0.913,skylight
+34.0,nan,170.010,nan,4.704,skylight
 35.0,170.360,170.134,0.745,0.519,skylight
 36.0,170.560,170.577,0.594,0.611,skylight
 37.0,170.600,170.541,0.777,0.718,intact

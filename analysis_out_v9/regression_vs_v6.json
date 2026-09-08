@@ -1,11 +1,10 @@
 {
   "dz_m": -66.0,
   "counts": {
-    "identical": 427,
-    "explained: 1 cm quantisation of the delivered cloud": 34,
-    "rounding-safe": 163,
+    "identical": 441,
+    "explained: 1 cm quantisation of the delivered cloud": 38,
+    "rounding-safe": 187,
     "explained: S3 floor check on new voxel copy": 30,
-    "explained: aperture bookkeeping": 52,
     "datum (dz)": 4,
     "datum-derived": 4,
     "explained: in-aperture cells removed": 10
@@ -560,16 +559,16 @@
     {
       "field": "paper_numbers.n_no_dem",
       "v6": 0,
-      "v9": 4,
-      "diff": 4,
-      "verdict": "explained: aperture bookkeeping"
+      "v9": 0,
+      "diff": 0,
+      "verdict": "identical"
     },
     {
       "field": "paper_numbers.n_skylight_stations",
       "v6": 22,
-      "v9": 18,
-      "diff": -4,
-      "verdict": "explained: aperture bookkeeping"
+      "v9": 22,
+      "diff": 0,
+      "verdict": "identical"
     },
     {
       "field": "paper_numbers.n_stations",
@@ -1148,16 +1147,16 @@
     {
       "field": "paper_numbers.terrain.ceiling_thinning.ci95[0]",
       "v6": -0.169879848859671,
-      "v9": -0.14899966334630033,
-      "diff": 0.020880185513370675,
-      "verdict": "explained: aperture bookkeeping"
+      "v9": -0.16987984885966556,
+      "diff": 5.440092820663267e-15,
+      "verdict": "rounding-safe"
     },
     {
       "field": "paper_numbers.terrain.ceiling_thinning.ci95[1]",
       "v6": -0.10926285931154604,
-      "v9": -0.09332139342316259,
-      "diff": 0.015941465888383452,
-      "verdict": "explained: aperture bookkeeping"
+      "v9": -0.10926285931154134,
+      "diff": 4.704570066849101e-15,
+      "verdict": "rounding-safe"
     },
     {
       "field": "paper_numbers.terrain.ceiling_thinning.n",
@@ -1169,9 +1168,9 @@
     {
       "field": "paper_numbers.terrain.ceiling_thinning.slope_m_per_m",
       "v6": -0.13450967100605574,
-      "v9": -0.11637679148335921,
-      "diff": 0.01813287952269653,
-      "verdict": "explained: aperture bookkeeping"
+      "v9": -0.13450967100605818,
+      "diff": -2.4424906541753444e-15,
+      "verdict": "rounding-safe"
     },
     {
       "field": "paper_numbers.terrain.const_ceiling_control.r",
@@ -1211,16 +1210,16 @@
     {
       "field": "paper_numbers.terrain.near_skylight_median.10to20",
       "v6": 2.24,
-      "v9": 2.6654999999999998,
-      "diff": 0.42549999999999955,
-      "verdict": "explained: aperture bookkeeping"
+      "v9": 2.23,
+      "diff": -0.010000000000000231,
+      "verdict": "rounding-safe"
     },
     {
       "field": "paper_numbers.terrain.near_skylight_median.20to30",
       "v6": 4.63,
-      "v9": 4.1080000000000005,
-      "diff": -0.5219999999999994,
-      "verdict": "explained: aperture bookkeeping"
+      "v9": 4.625,
+      "diff": -0.004999999999999893,
+      "verdict": "rounding-safe"
     },
     {
       "field": "paper_numbers.terrain.near_skylight_median.lt10",
@@ -1288,23 +1287,23 @@
     {
       "field": "paper_numbers.terrain.skylight_runs[0].d_tau",
       "v6": -5.60040125065138,
-      "v9": -5.556597198744264,
-      "diff": 0.04380405190711656,
-      "verdict": "explained: aperture bookkeeping"
+      "v9": -5.595317352787909,
+      "diff": 0.00508389786347152,
+      "verdict": "explained: 1 cm quantisation of the delivered cloud"
     },
     {
       "field": "paper_numbers.terrain.skylight_runs[0].d_zceil",
       "v6": 0.3956722251172664,
-      "v9": 0.27324667954596293,
-      "diff": -0.12242554557130347,
-      "verdict": "explained: aperture bookkeeping"
+      "v9": 0.39567222511718114,
+      "diff": -8.526512829121202e-14,
+      "verdict": "rounding-safe"
     },
     {
       "field": "paper_numbers.terrain.skylight_runs[0].d_zdem",
       "v6": -5.204760291818673,
-      "v9": -5.283369958947134,
-      "diff": -0.07860966712846107,
-      "verdict": "explained: aperture bookkeeping"
+      "v9": -5.199666492965122,
+      "diff": 0.005093798853550879,
+      "verdict": "explained: 1 cm quantisation of the delivered cloud"
     },
     {
       "field": "paper_numbers.terrain.skylight_runs[0].run_s[0]",
@@ -1316,114 +1315,79 @@
     {
       "field": "paper_numbers.terrain.skylight_runs[0].run_s[1]",
       "v6": 36.0,
-      "v9": 30.0,
-      "diff": -6.0,
-      "verdict": "explained: aperture bookkeeping"
+      "v9": 36.0,
+      "diff": 0.0,
+      "verdict": "identical"
     },
     {
       "field": "paper_numbers.terrain.skylight_runs[1].d_tau",
       "v6": -7.238945340501794,
-      "v9": -5.939389533239037,
-      "diff": 1.2995558072627569,
-      "verdict": "explained: aperture bookkeeping"
+      "v9": -7.235459677419356,
+      "diff": 0.0034856630824382506,
+      "verdict": "rounding-safe"
     },
     {
       "field": "paper_numbers.terrain.skylight_runs[1].d_zceil",
       "v6": 2.260360215053794,
-      "v9": 0.8009421499292557,
-      "diff": -1.459418065124538,
-      "verdict": "explained: aperture bookkeeping"
+      "v9": 2.2603602150537654,
+      "diff": -2.842170943040401e-14,
+      "verdict": "rounding-safe"
     },
     {
       "field": "paper_numbers.terrain.skylight_runs[1].d_zdem",
       "v6": -4.978557347670261,
-      "v9": -5.138471004243314,
-      "diff": -0.15991365657305323,
-      "verdict": "explained: aperture bookkeeping"
+      "v9": -4.975071684587789,
+      "diff": 0.0034856630824720014,
+      "verdict": "rounding-safe"
     },
     {
       "field": "paper_numbers.terrain.skylight_runs[1].run_s[0]",
       "v6": 54.0,
-      "v9": 35.0,
-      "diff": -19.0,
-      "verdict": "explained: aperture bookkeeping"
+      "v9": 54.0,
+      "diff": 0.0,
+      "verdict": "identical"
     },
     {
       "field": "paper_numbers.terrain.skylight_runs[1].run_s[1]",
       "v6": 56.0,
-      "v9": 36.0,
-      "diff": -20.0,
-      "verdict": "explained: aperture bookkeeping"
+      "v9": 56.0,
+      "diff": 0.0,
+      "verdict": "identical"
     },
     {
       "field": "paper_numbers.terrain.skylight_runs[2].d_tau",
       "v6": -5.834465011961724,
-      "v9": -7.235459677419356,
-      "diff": -1.400994665457632,
-      "verdict": "explained: aperture bookkeeping"
+      "v9": -5.832866327751195,
+      "diff": 0.001598684210528667,
+      "verdict": "rounding-safe"
     },
     {
       "field": "paper_numbers.terrain.skylight_runs[2].d_zceil",
       "v6": 2.224367523923405,
-      "v9": 2.2603602150537654,
-      "diff": 0.0359926911303603,
-      "verdict": "explained: aperture bookkeeping"
+      "v9": 2.224367523923462,
+      "diff": 5.684341886080802e-14,
+      "verdict": "rounding-safe"
     },
     {
       "field": "paper_numbers.terrain.skylight_runs[2].d_zdem",
       "v6": -3.610059808612533,
-      "v9": -4.975071684587789,
-      "diff": -1.3650118759752559,
-      "verdict": "explained: aperture bookkeeping"
+      "v9": -3.60851375598088,
+      "diff": 0.0015460526316530832,
+      "verdict": "rounding-safe"
     },
     {
       "field": "paper_numbers.terrain.skylight_runs[2].run_s[0]",
       "v6": 89.0,
-      "v9": 54.0,
-      "diff": -35.0,
-      "verdict": "explained: aperture bookkeeping"
+      "v9": 89.0,
+      "diff": 0.0,
+      "verdict": "identical"
     },
     {
       "field": "paper_numbers.terrain.skylight_runs[2].run_s[1]",
       "v6": 99.0,
-      "v9": 56.0,
-      "diff": -43.0,
-      "verdict": "explained: aperture bookkeeping"
-    },
-    {
-      "field": "paper_numbers.terrain.skylight_runs[3].d_tau",
-      "v6": null,
-      "v9": -5.832866327751195,
-      "diff": "",
-      "verdict": "explained: aperture bookkeeping"
-    },
-    {
-      "field": "paper_numbers.terrain.skylight_runs[3].d_zceil",
-      "v6": null,
-      "v9": 2.224367523923462,
-      "diff": "",
-      "verdict": "explained: aperture bookkeeping"
-    },
-    {
-      "field": "paper_numbers.terrain.skylight_runs[3].d_zdem",
-      "v6": null,
-      "v9": -3.60851375598088,
-      "diff": "",
-      "verdict": "explained: aperture bookkeeping"
-    },
-    {
-      "field": "paper_numbers.terrain.skylight_runs[3].run_s[0]",
-      "v6": null,
-      "v9": 89.0,
-      "diff": "",
-      "verdict": "explained: aperture bookkeeping"
-    },
-    {
-      "field": "paper_numbers.terrain.skylight_runs[3].run_s[1]",
-      "v6": null,
       "v9": 99.0,
-      "diff": "",
-      "verdict": "explained: aperture bookkeeping"
+      "diff": 0.0,
+      "verdict": "identical"
     },
     {
       "field": "paper_numbers.terrain.tau_hist_2m.counts[0]",
@@ -2534,16 +2498,16 @@
     {
       "field": "review_stats.terrain.ceiling_thinning.ci95[0]",
       "v6": -0.169879848859671,
-      "v9": -0.14899966334630033,
-      "diff": 0.020880185513370675,
-      "verdict": "explained: aperture bookkeeping"
+      "v9": -0.16987984885966556,
+      "diff": 5.440092820663267e-15,
+      "verdict": "rounding-safe"
     },
     {
       "field": "review_stats.terrain.ceiling_thinning.ci95[1]",
       "v6": -0.10926285931154604,
-      "v9": -0.09332139342316259,
-      "diff": 0.015941465888383452,
-      "verdict": "explained: aperture bookkeeping"
+      "v9": -0.10926285931154134,
+      "diff": 4.704570066849101e-15,
+      "verdict": "rounding-safe"
     },
     {
       "field": "review_stats.terrain.ceiling_thinning.n",
@@ -2555,9 +2519,9 @@
     {
       "field": "review_stats.terrain.ceiling_thinning.slope_m_per_m",
       "v6": -0.13450967100605574,
-      "v9": -0.11637679148335921,
-      "diff": 0.01813287952269653,
-      "verdict": "explained: aperture bookkeeping"
+      "v9": -0.13450967100605818,
+      "diff": -2.4424906541753444e-15,
+      "verdict": "rounding-safe"
     },
     {
       "field": "review_stats.terrain.const_ceiling_control.r",
@@ -2597,16 +2561,16 @@
     {
       "field": "review_stats.terrain.near_skylight_median.10to20",
       "v6": 2.24,
-      "v9": 2.6654999999999998,
-      "diff": 0.42549999999999955,
-      "verdict": "explained: aperture bookkeeping"
+      "v9": 2.23,
+      "diff": -0.010000000000000231,
+      "verdict": "rounding-safe"
     },
     {
       "field": "review_stats.terrain.near_skylight_median.20to30",
       "v6": 4.63,
-      "v9": 4.1080000000000005,
-      "diff": -0.5219999999999994,
-      "verdict": "explained: aperture bookkeeping"
+      "v9": 4.625,
+      "diff": -0.004999999999999893,
+      "verdict": "rounding-safe"
     },
     {
       "field": "review_stats.terrain.near_skylight_median.lt10",
@@ -2674,23 +2638,23 @@
     {
       "field": "review_stats.terrain.skylight_runs[0].d_tau",
       "v6": -5.60040125065138,
-      "v9": -5.556597198744264,
-      "diff": 0.04380405190711656,
-      "verdict": "explained: aperture bookkeeping"
+      "v9": -5.595317352787909,
+      "diff": 0.00508389786347152,
+      "verdict": "explained: 1 cm quantisation of the delivered cloud"
     },
     {
       "field": "review_stats.terrain.skylight_runs[0].d_zceil",
       "v6": 0.3956722251172664,
-      "v9": 0.27324667954596293,
-      "diff": -0.12242554557130347,
-      "verdict": "explained: aperture bookkeeping"
+      "v9": 0.39567222511718114,
+      "diff": -8.526512829121202e-14,
+      "verdict": "rounding-safe"
     },
     {
       "field": "review_stats.terrain.skylight_runs[0].d_zdem",
       "v6": -5.204760291818673,
-      "v9": -5.283369958947134,
-      "diff": -0.07860966712846107,
-      "verdict": "explained: aperture bookkeeping"
+      "v9": -5.199666492965122,
+      "diff": 0.005093798853550879,
+      "verdict": "explained: 1 cm quantisation of the delivered cloud"
     },
     {
       "field": "review_stats.terrain.skylight_runs[0].run_s[0]",
@@ -2702,114 +2666,79 @@
     {
       "field": "review_stats.terrain.skylight_runs[0].run_s[1]",
       "v6": 36.0,
-      "v9": 30.0,
-      "diff": -6.0,
-      "verdict": "explained: aperture bookkeeping"
+      "v9": 36.0,
+      "diff": 0.0,
+      "verdict": "identical"
     },
     {
       "field": "review_stats.terrain.skylight_runs[1].d_tau",
       "v6": -7.238945340501794,
-      "v9": -5.939389533239037,
-      "diff": 1.2995558072627569,
-      "verdict": "explained: aperture bookkeeping"
+      "v9": -7.235459677419356,
+      "diff": 0.0034856630824382506,
+      "verdict": "rounding-safe"
     },
     {
       "field": "review_stats.terrain.skylight_runs[1].d_zceil",
       "v6": 2.260360215053794,
-      "v9": 0.8009421499292557,
-      "diff": -1.459418065124538,
-      "verdict": "explained: aperture bookkeeping"
+      "v9": 2.2603602150537654,
+      "diff": -2.842170943040401e-14,
+      "verdict": "rounding-safe"
     },
     {
       "field": "review_stats.terrain.skylight_runs[1].d_zdem",
       "v6": -4.978557347670261,
-      "v9": -5.138471004243314,
-      "diff": -0.15991365657305323,
-      "verdict": "explained: aperture bookkeeping"
+      "v9": -4.975071684587789,
+      "diff": 0.0034856630824720014,
+      "verdict": "rounding-safe"
     },
     {
       "field": "review_stats.terrain.skylight_runs[1].run_s[0]",
       "v6": 54.0,
-      "v9": 35.0,
-      "diff": -19.0,
-      "verdict": "explained: aperture bookkeeping"
+      "v9": 54.0,
+      "diff": 0.0,
+      "verdict": "identical"
     },
     {
       "field": "review_stats.terrain.skylight_runs[1].run_s[1]",
       "v6": 56.0,
-      "v9": 36.0,
-      "diff": -20.0,
-      "verdict": "explained: aperture bookkeeping"
+      "v9": 56.0,
+      "diff": 0.0,
+      "verdict": "identical"
     },
     {
       "field": "review_stats.terrain.skylight_runs[2].d_tau",
       "v6": -5.834465011961724,
-      "v9": -7.235459677419356,
-      "diff": -1.400994665457632,
-      "verdict": "explained: aperture bookkeeping"
+      "v9": -5.832866327751195,
+      "diff": 0.001598684210528667,
+      "verdict": "rounding-safe"
     },
     {
       "field": "review_stats.terrain.skylight_runs[2].d_zceil",
       "v6": 2.224367523923405,
-      "v9": 2.2603602150537654,
-      "diff": 0.0359926911303603,
-      "verdict": "explained: aperture bookkeeping"
+      "v9": 2.224367523923462,
+      "diff": 5.684341886080802e-14,
+      "verdict": "rounding-safe"
     },
     {
       "field": "review_stats.terrain.skylight_runs[2].d_zdem",
       "v6": -3.610059808612533,
-      "v9": -4.975071684587789,
-      "diff": -1.3650118759752559,
-      "verdict": "explained: aperture bookkeeping"
+      "v9": -3.60851375598088,
+      "diff": 0.0015460526316530832,
+      "verdict": "rounding-safe"
     },
     {
       "field": "review_stats.terrain.skylight_runs[2].run_s[0]",
       "v6": 89.0,
-      "v9": 54.0,
-      "diff": -35.0,
-      "verdict": "explained: aperture bookkeeping"
+      "v9": 89.0,
+      "diff": 0.0,
+      "verdict": "identical"
     },
     {
       "field": "review_stats.terrain.skylight_runs[2].run_s[1]",
       "v6": 99.0,
-      "v9": 56.0,
-      "diff": -43.0,
-      "verdict": "explained: aperture bookkeeping"
-    },
-    {
-      "field": "review_stats.terrain.skylight_runs[3].d_tau",
-      "v6": null,
-      "v9": -5.832866327751195,
-      "diff": "",
-      "verdict": "explained: aperture bookkeeping"
-    },
-    {
-      "field": "review_stats.terrain.skylight_runs[3].d_zceil",
-      "v6": null,
-      "v9": 2.224367523923462,
-      "diff": "",
-      "verdict": "explained: aperture bookkeeping"
-    },
-    {
-      "field": "review_stats.terrain.skylight_runs[3].d_zdem",
-      "v6": null,
-      "v9": -3.60851375598088,
-      "diff": "",
-      "verdict": "explained: aperture bookkeeping"
-    },
-    {
-      "field": "review_stats.terrain.skylight_runs[3].run_s[0]",
-      "v6": null,
-      "v9": 89.0,
-      "diff": "",
-      "verdict": "explained: aperture bookkeeping"
-    },
-    {
-      "field": "review_stats.terrain.skylight_runs[3].run_s[1]",
-      "v6": null,
       "v9": 99.0,
-      "diff": "",
-      "verdict": "explained: aperture bookkeeping"
+      "diff": 0.0,
+      "verdict": "identical"
     },
     {
       "field": "review_stats.terrain.tau_hist_2m.counts[0]",
@@ -3045,16 +2974,16 @@
     {
       "field": "roof_summary.n_no_dem",
       "v6": 0,
-      "v9": 4,
-      "diff": 4,
-      "verdict": "explained: aperture bookkeeping"
+      "v9": 0,
+      "diff": 0,
+      "verdict": "identical"
     },
     {
       "field": "roof_summary.n_skylight",
       "v6": 22,
-      "v9": 18,
-      "diff": -4,
-      "verdict": "explained: aperture bookkeeping"
+      "v9": 22,
+      "diff": 0,
+      "verdict": "identical"
     },
     {
       "field": "roof_summary.n_stations",
