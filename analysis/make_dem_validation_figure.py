@@ -32,9 +32,16 @@ import orbital_dem_test as odt
 
 ROOT = Path(__file__).resolve().parents[1]
 OUT = Path(os.environ.get("ANALYSIS_OUT", str(ROOT / "analysis_out_v6")))
-FIGS = (ROOT.parent / "_Nature__Autonomous_aerial_reconnaissance_of_a_basaltic_"
-        "lava_tube_reveals_interior_morphology_and_roof_thickness_distribution_"
-        "for_planetary_subsurface" / "figures")
+FIGS = Path(os.environ.get("FIGS_DIR", str(
+    ROOT.parent / "_Nature__Autonomous_aerial_reconnaissance_of_a_basaltic_"
+    "lava_tube_reveals_interior_morphology_and_roof_thickness_distribution_"
+    "for_planetary_subsurface" / "figures")))   # FIGS_DIR: review copies (v9)
+# Elevation-axis label follows the vertical datum recorded by the run
+# (ANALYSIS_OUT/datum.json, written by seed_v9_ortho.py); legacy runs carry
+# WGS84 ellipsoidal heights and say so.
+_DATUM = (json.loads((OUT / "datum.json").read_text())
+          if (OUT / "datum.json").exists() else {})
+ELEV_LABEL = _DATUM.get("elevation_axis_label", "elevation (m, WGS84 ellipsoidal)")
 ORIGIN = np.array([479158.0, 7089826.0])
 
 C = dict(tube="#0072B2", surface="#E69F00", intact="#009E73",
@@ -72,7 +79,7 @@ def main() -> None:
     d0 = d - np.median(d)
 
     fig = plt.figure(figsize=(7.1, 6.6))
-    gs = fig.add_gridspec(2, 2, hspace=0.45, wspace=0.30,
+    gs = fig.add_gridspec(2, 2, hspace=0.45, wspace=0.40,   # was 0.30: colourbar label touched panel b's ylabel
                           height_ratios=[1, 0.9], width_ratios=[1.5, 1])
 
     ax = fig.add_subplot(gs[0, 0])   # (a) difference map

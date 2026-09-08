@@ -1,0 +1,31 @@
+{
+  "note": "Independent surface check (review items E47/R2.9/R3.12): photogrammetric DEM vs national products over the survey footprint. Datum offset absorbs geoid/ellipsoid and reference differences; std and doming measure shape error, upper-bounded by snow/temporal change. CRS hypothesis for the local frame: EPSG:32627 with origin [479158.0, 7089826.0].",
+  "arcticdem": {
+    "product": "ArcticDEM v4.1 2 m (ellipsoidal)",
+    "n": 30550,
+    "best_shift_m": [
+      2.0,
+      -2.0
+    ],
+    "datum_offset_m": -65.39656066894531,
+    "std_raw_m": 0.2814088009091892,
+    "tilt_m_per_km": 0.42937601677121223,
+    "std_after_plane_m": 0.2780275964979627,
+    "doming_amplitude_m": 0.12910043345226768,
+    "std_after_quadratic_m": 0.2760219903420779
+  },
+  "islandsdem": {
+    "product": "IslandsDEM v1.0 10 m (orthometric)",
+    "n": 30550,
+    "best_shift_m": [
+      0.0,
+      0.0
+    ],
+    "datum_offset_m": 0.6269454956054688,
+    "std_raw_m": 0.355456894757309,
+    "tilt_m_per_km": 0.5752203260227142,
+    "std_after_plane_m": 0.3498020426702857,
+    "doming_amplitude_m": 0.13370396747238694,
+    "std_after_quadratic_m": 0.3481931603075434
+  }
+}

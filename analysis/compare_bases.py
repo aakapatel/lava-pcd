@@ -14,6 +14,7 @@ from __future__ import annotations
 
 import csv
 import json
+import os
 from pathlib import Path
 
 import numpy as np
@@ -21,7 +22,10 @@ from scipy.spatial import cKDTree
 
 ROOT = Path(__file__).resolve().parents[1]
 A = ROOT / "analysis_out_ed"    # DLIO basis
-B = ROOT / "analysis_out_v6"    # FAST-LIO chained basis (primary)
+# primary basis dir env-selectable (v9 orthometric rerun); default unchanged.
+# A stays the ellipsoidal DLIO run, so in an orthometric B dceil carries the
+# datum shift while dtau must not.
+B = Path(os.environ.get("ANALYSIS_OUT", str(ROOT / "analysis_out_v6")))
 
 
 def load(p):

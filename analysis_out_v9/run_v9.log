@@ -1,0 +1,200 @@
+=== v9 datum-transfer rerun (plan 11, work package D) started 2026-09-08 ===
+Analysis repo: lavatube_maps_data_analysis ; venv python via
+  env -u PYTHONPATH PYTHONPATH=src .venv/bin/python ; renders need
+  env -u WAYLAND_DISPLAY DISPLAY=:1
+
+--- 1. Dependency map discovered by reading analysis/*.py (before running anything) ---
+
+v8 canon (analysis_out_v6) provenance, reconstructed:
+  * DEM source of v6 = maps/full_surface_and_subsurface_merged.pcd (NOT aerial_crop.pcd):
+    the v6 cache is named dem_grid_full_surface_and_subsurface_merged.npz, which run_roof
+    only produces when ROOF_DEM_PCD is set to that file. Grid: (641,764) x-major z[ix,iy],
+    xmin 1200.7194, ymin 500.1730, res 0.5 (local frame, origin 479158/7089826).
+    merged surface vs aerial_crop co-registration: median 0.00 m, std 0.04 m
+    (analysis_out/merged_dem_validate.json). aerial_crop bbox x 1299.11-1598.40,
+    y 409.98-721.56 (25.6M pts); merged bbox x 1200.72-1520.72, y 500.17-881.67.
+  * Tube basis of v6 = FAST-LIO first flight chained into Ed's slice frame:
+    maps/flf_30cm_ed.pcd (skeleton), maps/flf_10cm_ed.pcd (sections, roof ghost screen).
+  * Exact v8 command sequence is not recorded verbatim (rerun_arcfix.log holds only the
+    stdout); reconstructed from PROGRESS.md 2026-08-13/14 + setup_ed_frame.py docstring.
+
+Script -> inputs (env var, default) -> outputs
+  run_morphometry.py   ANALYSIS_OUT(analysis_out); MORPHO_SKEL_PCD(maps/tube_30cm_aerial.pcd);
+                       MORPHO_SECT_PCD(maps/tube_10cm_aerial.pcd); reads/writes
+                       OUT/skeleton_poly.npz cache (L1 skeleton, RNG seed 7, grid decimation
+                       floor(Q/2 m) -> NOT exactly translation-invariant: a z shift changes
+                       the grid phase of the initial samples); writes centreline.csv,
+                       morphometry.csv, morphometry_summary.json, fig_skeleton_*.png,
+                       fig_sections_gallery.png. Flip rule uses sky_y=640 (xy only).
+  run_roof.py          ANALYSIS_OUT; ROOF_DEM_PCD(maps/aerial_crop.pcd) -> cache
+                       OUT/dem_grid_<stem>.npz (per-cell max 0.5 m, 3x3 median, grid origin =
+                       cloud min corner); ROOF_TUBE_PCD(maps/tube_10cm_aerial.pcd);
+                       reads OUT/morphometry.csv, OUT/aerial_holes.json (centroid xy +
+                       semi_major only), OUT/uncertainty_budget.json (sigma_tau);
+                       writes roof_thickness.csv, roof_summary.json, fig_roof_*.png.
+  validate_ed_registration.py  ANALYSIS_OUT(analysis_out_ed); VALID_TUBE_PCD(maps/tube_10cm_ed.pcd);
+                       HARDCODED maps/aerial_10cm.pcd (ellipsoidal!) near S3;
+                       HARDCODED analysis_out/aerial_holes.json (S3 xy only) and
+                       analysis_out/transform_flf_ed_chain.json (two-SLAM zones, datum-free);
+                       reads OUT/registration_report.json (rim rms), OUT/roof_thickness.csv,
+                       OUT/uncertainty_budget.json; writes OUT/registration_validation.json and
+                       updates OUT/uncertainty_budget.json (sigma_reg, sigma_tau).
+                       -> needs an env override for the aerial cloud (VALID_AERIAL_PCD).
+  run_planetary.py     ANALYSIS_OUT; reads OUT/roof_summary.json, morphometry_summary.json,
+                       planetary_catalogue.csv; writes planetary_summary.json. Datum-free.
+  chain_flf_to_ed.py / chain_slf_to_ed.py   HARDCODED analysis_out/ (transform_ed_slice.json,
+                       flf/slf_transform_landmark.json, centreline.csv) and maps/tube_30cm.pcd,
+                       flf_30cm.pcd, slf_30cm.pcd (SLAM frames). GICP between SLAM-frame maps:
+                       independent of the surface datum. Write maps/flf_*_ed.pcd,
+                       maps/slf_*_ed.pcd, analysis_out/transform_*_ed_chain.json;
+                       chain_slf_to_ed additionally writes analysis_out_v6/flight2_repeatability.json
+                       (HARDCODED OUT6) from OUT6/centreline.csv + maps/flf_30cm_ed.pcd.
+                       -> NOT rerun for v9 (would rewrite the v8-canon maps and the chain does
+                       not depend on the datum); the ortho maps are the existing ed maps plus
+                       the measured translation. flight2_repeatability for v9 is recomputed
+                       from the existing chain transform (new SLF_CHAIN_REUSE=1 path, no GICP).
+  compare_bases.py     HARDCODED A=analysis_out_ed, B=analysis_out_v6; writes B/basis_comparison.json.
+                       -> B made env-selectable (ANALYSIS_OUT), A stays analysis_out_ed
+                       (ellipsoidal): dceil will differ from v6 by exactly dz, dtau must not.
+  orbital_dem_test.py  ANALYSIS_OUT(analysis_out_v6); HARDCODED cache name
+                       dem_grid_full_surface_and_subsurface_merged.npz; reads roof_thickness.csv;
+                       writes orbital_dem_test.json, fig_orbital_dem_test.png.
+                       -> cache name derived from ROOF_DEM_PCD (default unchanged).
+  national_dem_check.py ANALYSIS_OUT(analysis_out_v6); same HARDCODED cache name; reads
+                       maps/national_dem_site.tif (ArcticDEM, EPSG:3413, ellipsoidal) and
+                       maps/islandsdem10m_site.tif (EPSG:3057, orthometric); writes
+                       national_dem_check.json, fig_national_dem_check.png.
+  run_review_stats.py  ANALYSIS_OUT(analysis_out_ed); reads OUT/roof_thickness.csv,
+                       uncertainty_budget.json, planetary_catalogue.csv, morphometry_summary.json,
+                       morphometry.csv, aerial_holes.json; HARDCODED analysis_out/tube_holes.json,
+                       flf_tube_holes.json (SLAM frame, datum-free); writes review_stats.json.
+                       Absolute-z fields: terrain.net_centreline.start/end (z_ceil).
+  collect_paper_numbers.py ANALYSIS_OUT; reads registration_report.json, uncertainty_budget.json,
+                       morphometry_summary.json, roof_summary.json, planetary_summary.json,
+                       vertical_check.json, review_stats.json, registration_validation.json,
+                       roof_thickness.csv; writes paper_numbers.json. Provenance note keyed on
+                       OUT.name.endswith("_v6") and hardcodes the DEM file name.
+  setup_ed_frame.py    seeds an ANALYSIS_OUT dir with aerial_holes.json, tube_holes.json,
+                       vertical_check.json, planetary_catalogue.csv, dem cache,
+                       uncertainty_budget.json, registration_report.json from analysis_out/.
+                       For v9 the seed is done by a new script (seed_v9_ortho.py) that copies
+                       these from analysis_out_v6 and z-shifts the absolute-z fields
+                       (aerial hole centroid z, vertical_check q*_aerial/q*_tube, registration_report
+                       aerial_holes centroid z). tube_holes.json is SLAM-frame: unchanged.
+Figure scripts:
+  make_figures.py      ANALYSIS_OUT; FIGS HARDCODED to the manuscript figures dir; reads
+                       roof_thickness.csv, morphometry.csv, centreline.csv, planetary_catalogue.csv,
+                       aerial_holes.json, review_stats.json, orbital_dem_test.json.
+                       Absolute-z axis: morphometry panel g "centreline z (m)".
+  make_ed_figures.py   ANALYSIS_OUT; EDFIG_SHELL_PCD(flf_30cm_aerial), EDFIG_SECT_PCD(flf_10cm_aerial);
+                       HARDCODED maps/aerial_10cm.pcd (panel b), analysis_out/roof_thickness.csv
+                       (4-DOF baseline ceiling, ellipsoidal, panel c), analysis_out/
+                       transform_ed_slice.json + transform_flf_ed_chain.json + aerial_holes.json;
+                       absolute-z axes: registration panel c, consistency panel a, centreline panel b.
+  make_dem_validation_figure.py ANALYSIS_OUT(v6); FIGS hardcoded; imports orbital_dem_test
+                       (same cache name); reads national_dem_check.json, maps/national_dem_site.tif,
+                       roof_thickness.csv.
+  render_merged_showcase.py  ANALYSIS_OUT; SHOWCASE_TUBE_PCD(flf_10cm_aerial); HARDCODED
+                       maps/merged_surface_10cm.pcd (ellipsoidal) + cache name; reads
+                       centreline.csv, aerial_holes.json; writes OUT/renders/showcase_*.png.
+  make_merged_showcase_figure.py ANALYSIS_OUT; SHOWCASE_TUBE_PCD; HARDCODED
+                       maps/merged_surface_10cm.pcd, cache name, FIGS; panel c has HARDCODED
+                       absolute-elevation text anchors (229.5, 242.5/248.5, 238.5/246.5) in the
+                       ellipsoidal range; ylabels "elevation (m, local)".
+  render_skeleton_3d.py ANALYSIS_OUT; SKEL3D_TUBE_PCD; FIGS hardcoded (writes skeleton_3d.png
+                       straight into the manuscript dir!) -> FIGS env needed.
+
+v9 input plan:
+  surface: new LAZ (EPSG:8088, orthometric ISH2004) -> pyproj EPSG:8088->EPSG:32627
+           ("Inverse of Iceland Lambert 2016 + ISN2016 to WGS 84 (1) + UTM zone 27N";
+           the ISN2016->WGS84 (1) step is a null transformation, pipeline has no helmert
+           step; pyproj-stated accuracy 1.0 m), minus origin (479158, 7089826), z untouched.
+           maps/aerial_isn16_ortho_crop.pcd  (aerial_crop bbox, full res)  -> old/new comparison
+           maps/aerial_isn16_ortho_dem.pcd   (merged-cloud bbox, full res) -> ROOF_DEM_PCD
+           maps/aerial_isn16_ortho_10cm.pcd  (union bbox, 10 cm voxel)     -> validate/ED fig b
+           maps/aerial_isn16_ortho_surface_10cm.pcd (merged bbox crop of the 10 cm) -> showcase
+  tube:    maps/{flf,slf,tube}_{10,30}cm_ed_ortho.pcd = ed maps + (0,0,dz) if the rule passes.
+--- 2. LAZ conversion: ANALYSIS_OUT=analysis_out_v9 python analysis/convert_isn16_surface.py (log: analysis_out_v9/convert_isn16.log) started Tue Sep  8 10:31:53 PM CEST 2026
+--- conversion finished Tue Sep  8 10:38:23 PM CEST 2026:   381 s     590.3 M read, union   51.6 M, crop  25.6 M, dem  33.4 M,    381 s {   "points_read": 590319423,   "points_in_union_bbox": 51621132,   "points_crop": 25640666,   "points_dem": 33448227,   "points_10cm": 21922741,   "z_range_union_local": [     162.35,     184.58   ],   "seconds": 381.7 } 
+--- 3. ANALYSIS_OUT=analysis_out_v9 python analysis/datum_transfer_check.py
+  result: NN dz new-old median -66.000 mean -66.0048 std 0.0201 (n 399980); per-cell-max DEM same grid median -66.00 std 0.0063 (0.5 m) / 0.0070 (0.25 m); phase-corr dx,dy ~1e-5 m, brute-force best (0,0); plane 0.013/-0.025 m/km; density 274.96 vs 274.96 pts/m2 (25,640,431 vs 25,640,666 pts) -> same point set; per-cell-max minus GeoTIFF +0.051 median (+0.037 flat .. +0.084 steep), at stations +0.059 median. RULE PASSED.
+--- 4. ANALYSIS_OUT=analysis_out_v9 python analysis/seed_v9_ortho.py
+rule passed: {
+  "dz_median_m": -66.0,
+  "dz_std_m": 0.020136892819091493,
+  "std_limit_m": 0.05,
+  "horizontal_shifts": [
+    {
+      "grid": "grid_0.5m",
+      "method": "phase",
+      "dx_m": 9.123130658271202e-06,
+      "dy_m": -1.316190741428032e-05
+    },
+    {
+      "grid": "grid_0.5m",
+      "method": "brute",
+      "dx_m": 0.0,
+      "dy_m": 0.0
+    },
+    {
+      "grid": "grid_0.25m",
+      "method": "phase",
+      "dx_m": -1.842444385838707e-05,
+      "dy_m": -3.0737923089797485e-05
+    },
+    {
+      "grid": "grid_0.25m",
+      "method": "brute",
+      "dx_m": 0.0,
+      "dy_m": 0.0
+    }
+  ],
+  "worst_abs_horizontal_m": 3.0737923089797485e-05,
+  "shift_limit_m": 0.5
+}
+wrote flf_10cm_ed_ortho.pcd
+wrote flf_30cm_ed_ortho.pcd
+wrote slf_10cm_ed_ortho.pcd
+wrote slf_30cm_ed_ortho.pcd
+wrote tube_10cm_ed_ortho.pcd
+wrote tube_30cm_ed_ortho.pcd
+wrote aerial_isn16_ortho_surface_10cm.pcd: 14,227,458 of 21,922,741
+seeded analysis_out_v9
+--- 5. bash analysis/run_v9_pipeline.sh (full log analysis_out_v9/pipeline_v9.log) started Tue Sep  8 10:39:46 PM CEST 2026
+--- DEM landmark audit (v9 cache vs v6 cache) ---
+v6 (641, 764) xmin 1200.7194 ymin 500.1730 res 0.50 finite 488288 z 230.36..249.52
+v9 (641, 764) xmin 1200.7194 ymin 500.1730 res 0.50 finite 488127 z 165.15..183.51
+S1 centre v6 231.91 v9 nan | 5 m east v6 237.40 v9 171.40
+S2 centre v6 230.36 v9 nan | 5 m east v6 236.58 v9 170.57
+S3 centre v6 233.35 v9 nan | 5 m east v6 238.56 v9 172.55
+roughness along x at y=650 (v9): {1225: 0.04, 1230: 0.076, 1235: 0.036, 1240: 0.016, 1245: 0.053, 1250: 0.054, 1255: 0.017, 1260: 0.031, 1265: 0.058, 1270: 0.057, 1275: 0.056, 1280: 0.019, 1285: 0.044}
+roughness along x at y=650 (v6): {1225: 0.04, 1230: 0.075, 1235: 0.038, 1240: 0.017, 1245: 0.055, 1250: 0.054, 1255: 0.015, 1260: 0.03, 1265: 0.057, 1270: 0.057, 1275: 0.055, 1280: 0.017, 1285: 0.042}
+v9-v6 DEM at v6 cells (nearest): n 488123 median -66.010 mean -66.006 std 0.016 p1 -66.02 p99 -66.00
+cells finite in v6 but not v9: 165 finite in v9 not v6: 4
+grid origin offset v9-v6: dx 0.0000 dy 0.0000
+Traceback (most recent call last):
+  File "/home/aakapatel/Nature Journal Article Autonomous lava tube mapping/lavatube_maps_data_analysis/analysis/regression_v9_vs_v6.py", line 286, in <module>
+    main()
+  File "/home/aakapatel/Nature Journal Article Autonomous lava tube mapping/lavatube_maps_data_analysis/analysis/regression_v9_vs_v6.py", line 269, in main
+    lines += [f"| {r['field']} | {fmt(r['v6'])} | {fmt(r['v9'])} | {fmt(r['diff'])} |"
+                                  ^^^^^^^^^^^^
+  File "/home/aakapatel/Nature Journal Article Autonomous lava tube mapping/lavatube_maps_data_analysis/analysis/regression_v9_vs_v6.py", line 204, in r2
+    return f"{v:.2f}"
+             ^^^^^^^
+TypeError: unsupported format string passed to NoneType.__format__
+Summary: {'identical': 427, 'explained: 1 cm quantisation of the delivered cloud': 34, 'rounding-safe': 163, 'explained: S3 floor check on new voxel copy': 30, 'explained: aperture bookkeeping': 42, 'datum (dz)': 4, 'CHANGED (non-numeric)': 10, 'datum-derived': 4, 'explained: in-aperture cells removed': 10}
+CHANGED paper_numbers.terrain.skylight_runs[3].d_tau: None -> -5.832866327751195 ()
+CHANGED paper_numbers.terrain.skylight_runs[3].d_zceil: None -> 2.224367523923462 ()
+CHANGED paper_numbers.terrain.skylight_runs[3].d_zdem: None -> -3.60851375598088 ()
+CHANGED paper_numbers.terrain.skylight_runs[3].run_s[0]: None -> 89.0 ()
+CHANGED paper_numbers.terrain.skylight_runs[3].run_s[1]: None -> 99.0 ()
+CHANGED review_stats.terrain.skylight_runs[3].d_tau: None -> -5.832866327751195 ()
+CHANGED review_stats.terrain.skylight_runs[3].d_zceil: None -> 2.224367523923462 ()
+CHANGED review_stats.terrain.skylight_runs[3].d_zdem: None -> -3.60851375598088 ()
+CHANGED review_stats.terrain.skylight_runs[3].run_s[0]: None -> 89.0 ()
+CHANGED review_stats.terrain.skylight_runs[3].run_s[1]: None -> 99.0 ()
+Summary: {'identical': 427, 'explained: 1 cm quantisation of the delivered cloud': 34, 'rounding-safe': 163, 'explained: S3 floor check on new voxel copy': 30, 'explained: aperture bookkeeping': 52, 'datum (dz)': 4, 'datum-derived': 4, 'explained: in-aperture cells removed': 10}
+--- 8. bash analysis/make_v9_figures.sh (log analysis_out_v9/figures_v9.log) Tue Sep  8 10:49:05 PM CEST 2026
+--- 8. figure QA done; verdicts in figure_qa.md
+--- 6/7. regression_vs_v6.md, datum_transfer.json (geotiff_sensitivity, v9_summary) written Tue Sep  8 10:53:45 PM CEST 2026
+--- 9. committed 8dec31b Tue Sep  8 10:54:30 PM CEST 2026

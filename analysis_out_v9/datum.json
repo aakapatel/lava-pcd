@@ -1,0 +1,7 @@
+{
+  "vertical_datum": "ISH2004 geoid (orthometric), ISN2016 delivery of 2026-09-08",
+  "horizontal": "EPSG:32627 minus (479158, 7089826), unchanged local frame",
+  "elevation_axis_label": "elevation (m a.s.l., ISH2004)",
+  "legacy_frame": "WGS84 ellipsoidal heights (v6/v8 canon)",
+  "dz_applied_m": -66.0
+}

@@ -17,6 +17,7 @@ Run:  PYTHONPATH=src .venv/bin/python analysis/chain_slf_to_ed.py
 from __future__ import annotations
 
 import json
+import os
 from pathlib import Path
 
 import numpy as np
@@ -28,7 +29,14 @@ from lava_pcd.merge import apply_transform
 
 ROOT = Path(__file__).resolve().parents[1]
 OUT = ROOT / "analysis_out"
-OUT6 = ROOT / "analysis_out_v6"
+# repeatability output dir env-selectable (default unchanged).
+OUT6 = Path(os.environ.get("ANALYSIS_OUT", str(ROOT / "analysis_out_v6")))
+# v9 datum-transfer rerun: SLF_CHAIN_REUSE=1 skips the GICP fit and the map
+# rewrite, reuses the committed transform_slf_ed_chain.json, and recomputes the
+# repeatability from the (env-selectable) chained maps along OUT6's centreline.
+REUSE = os.environ.get("SLF_CHAIN_REUSE", "") == "1"
+F1_PCD = Path(os.environ.get("SLF_F1_PCD", str(ROOT / "maps/flf_30cm_ed.pcd")))
+F2_PCD = os.environ.get("SLF_F2_PCD")   # only used with SLF_CHAIN_REUSE=1
 
 
 def load(p: Path) -> np.ndarray:
@@ -42,6 +50,14 @@ def load(p: Path) -> np.ndarray:
 def main() -> None:
     ED = np.array(json.loads((OUT / "transform_ed_slice.json").read_text())["matrix"])
     SLF4 = np.array(json.loads((OUT / "slf_transform_landmark.json").read_text())["matrix"])
+
+    if REUSE:
+        CHAIN = np.array(json.loads(
+            (OUT / "transform_slf_ed_chain.json").read_text())["matrix"])
+        print("SLF_CHAIN_REUSE=1: reusing transform_slf_ed_chain.json, no GICP, "
+              "no map rewrite")
+        repeatability(CHAIN, None)
+        return
 
     dlio = load(ROOT / "maps/tube_30cm.pcd")     # target (first flight, DLIO frame)
     slf = load(ROOT / "maps/slf_30cm.pcd")       # source (second flight, FAST-LIO frame)
@@ -79,15 +95,21 @@ def main() -> None:
         apply_transform(ROOT / f"maps/slf_{res_tag}.pcd",
                         ROOT / f"maps/slf_{res_tag}_ed.pcd", CHAIN,
                         show_progress=False)
+    repeatability(CHAIN, slf)
 
+
+def repeatability(CHAIN: np.ndarray, slf: np.ndarray | None) -> None:
     # flight-to-flight ceiling repeatability along the v6 centreline
     import csv
     rows = list(csv.DictReader(open(OUT6 / "centreline.csv")))
     x = np.array([float(r["x"]) for r in rows])
     y = np.array([float(r["y"]) for r in rows])
     s = np.array([float(r["s"]) for r in rows])
-    f1 = load(ROOT / "maps/flf_30cm_ed.pcd")     # flight 1, chained
-    f2 = slf @ CHAIN[:3, :3].T + CHAIN[:3, 3]    # flight 2, chained
+    f1 = load(F1_PCD)                            # flight 1, chained
+    if slf is None:                              # reuse mode: chained map on disk
+        f2 = load(Path(F2_PCD) if F2_PCD else ROOT / "maps/slf_30cm_ed.pcd")
+    else:
+        f2 = slf @ CHAIN[:3, :3].T + CHAIN[:3, 3]    # flight 2, chained
     t1, t2 = cKDTree(f1[:, :2]), cKDTree(f2[:, :2])
     off = np.full(len(x), np.nan)
     for i in range(len(x)):

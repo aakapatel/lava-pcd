@@ -1,0 +1,11 @@
+{
+  "sigma_reg_z_m": 1.45,
+  "sigma_reg_z_basis": "sigma_reg = quadrature(anchor floor RMS at S3, worst-zone two-SLAM RSS). PROVISIONAL until Ed's per-slice residuals arrive; validated against measurements the registration was not fitted to on our side.",
+  "sigma_lidar_z_m": 0.1,
+  "sigma_lidar_basis": "Ouster range precision (~3 cm) plus aggregated-map surface thickness (~10 cm at the 10 cm voxel working copy).",
+  "sigma_dem_z_m": 0.29,
+  "sigma_dem_basis": "MEASURED upper bound: std of (photogrammetric DEM minus ArcticDEM v4.1 2 m) over the survey footprint, 0.29 m, including ArcticDEM's own error and snow/temporal change (analysis/national_dem_check.py). Supersedes the assumed 2x-GSD value; doming bounded at 0.13 m, tilt 0.42 m/km.",
+  "sigma_tau_m": 1.48,
+  "horizontal_rim_rms_m": 1.7331442353132371,
+  "final_transform": "transform_ed_slice.json (E. Llewellin, slice-based manual fine alignment on the DLIO-frame cloud)"
+}

@@ -1,0 +1,5083 @@
+{
+  "dz_m": -66.0,
+  "counts": {
+    "identical": 427,
+    "explained: 1 cm quantisation of the delivered cloud": 34,
+    "rounding-safe": 163,
+    "explained: S3 floor check on new voxel copy": 30,
+    "explained: aperture bookkeeping": 52,
+    "datum (dz)": 4,
+    "datum-derived": 4,
+    "explained: in-aperture cells removed": 10
+  },
+  "rows": [
+    {
+      "field": "paper_numbers.area.max",
+      "v6": 81.4,
+      "v9": 81.4,
+      "diff": 0.0,
+      "verdict": "identical"
+    },
+    {
+      "field": "paper_numbers.area.mean_boot_ci95[0]",
+      "v6": 45.2,
+      "v9": 45.2,
+      "diff": 0.0,
+      "verdict": "identical"
+    },
+    {
+      "field": "paper_numbers.area.mean_boot_ci95[1]",
+      "v6": 49.2,
+      "v9": 49.2,
+      "diff": 0.0,
+      "verdict": "identical"
+    },
+    {
+      "field": "paper_numbers.area.median",
+      "v6": 48.0,
+      "v9": 48.0,
+      "diff": 0.0,
+      "verdict": "identical"
+    },
+    {
+      "field": "paper_numbers.area.min",
+      "v6": 5.1,
+      "v9": 5.1,
+      "diff": 0.0,
+      "verdict": "identical"
+    },
+    {
+      "field": "paper_numbers.area.p5",
+      "v6": 13.4,
+      "v9": 13.4,
+      "diff": 0.0,
+      "verdict": "identical"
+    },
+    {
+      "field": "paper_numbers.area.p95",
+      "v6": 75.8,
+      "v9": 75.8,
+      "diff": 0.0,
+      "verdict": "identical"
+    },
+    {
+      "field": "paper_numbers.area.q25",
+      "v6": 36.0,
+      "v9": 36.0,
+      "diff": 0.0,
+      "verdict": "identical"
+    },
+    {
+      "field": "paper_numbers.area.q75",
+      "v6": 59.2,
+      "v9": 59.2,
+      "diff": 0.0,
+      "verdict": "identical"
+    },
+    {
+      "field": "paper_numbers.centreline_length_m",
+      "v6": 301.0,
+      "v9": 301.0,
+      "diff": 0.0,
+      "verdict": "identical"
+    },
+    {
+      "field": "paper_numbers.envelope.Lmax_sqrt_model.earth.10MPa.at_tau_14m",
+      "v6": 104.77504064874782,
+      "v9": 104.77504064874782,
+      "diff": 0.0,
+      "verdict": "identical"
+    },
+    {
+      "field": "paper_numbers.envelope.Lmax_sqrt_model.earth.10MPa.at_tau_6m",
+      "v6": 69.7251833405723,
+      "v9": 69.7251833405723,
+      "diff": 0.0,
+      "verdict": "identical"
+    },
+    {
+      "field": "paper_numbers.envelope.Lmax_sqrt_model.earth.1MPa.at_tau_14m",
+      "v6": 33.132777038676906,
+      "v9": 33.132777038676906,
+      "diff": 0.0,
+      "verdict": "identical"
+    },
+    {
+      "field": "paper_numbers.envelope.Lmax_sqrt_model.earth.1MPa.at_tau_6m",
+      "v6": 22.049038962903623,
+      "v9": 22.049038962903623,
+      "diff": 0.0,
+      "verdict": "identical"
+    },
+    {
+      "field": "paper_numbers.envelope.Lmax_sqrt_model.earth.5MPa.at_tau_14m",
+      "v6": 74.08714174182575,
+      "v9": 74.08714174182575,
+      "diff": 0.0,
+      "verdict": "identical"
+    },
+    {
+      "field": "paper_numbers.envelope.Lmax_sqrt_model.earth.5MPa.at_tau_6m",
+      "v6": 49.303149959593966,
+      "v9": 49.303149959593966,
+      "diff": 0.0,
+      "verdict": "identical"
+    },
+    {
+      "field": "paper_numbers.envelope.Lmax_sqrt_model.mars.10MPa.at_tau_14m",
+      "v6": 170.3748109239964,
+      "v9": 170.3748109239964,
+      "diff": 0.0,
+      "verdict": "identical"
+    },
+    {
+      "field": "paper_numbers.envelope.Lmax_sqrt_model.mars.10MPa.at_tau_6m",
+      "v6": 113.38019870701869,
+      "v9": 113.38019870701869,
+      "diff": 0.0,
+      "verdict": "identical"
+    },
+    {
+      "field": "paper_numbers.envelope.Lmax_sqrt_model.mars.1MPa.at_tau_14m",
+      "v6": 53.87724584403653,
+      "v9": 53.87724584403653,
+      "diff": 0.0,
+      "verdict": "identical"
+    },
+    {
+      "field": "paper_numbers.envelope.Lmax_sqrt_model.mars.1MPa.at_tau_6m",
+      "v6": 35.8539669476657,
+      "v9": 35.8539669476657,
+      "diff": 0.0,
+      "verdict": "identical"
+    },
+    {
+      "field": "paper_numbers.envelope.Lmax_sqrt_model.mars.5MPa.at_tau_14m",
+      "v6": 120.47318414773372,
+      "v9": 120.47318414773372,
+      "diff": 0.0,
+      "verdict": "identical"
+    },
+    {
+      "field": "paper_numbers.envelope.Lmax_sqrt_model.mars.5MPa.at_tau_6m",
+      "v6": 80.17190735801114,
+      "v9": 80.17190735801114,
+      "diff": 0.0,
+      "verdict": "identical"
+    },
+    {
+      "field": "paper_numbers.envelope.Lmax_sqrt_model.moon.10MPa.at_tau_14m",
+      "v6": 257.8308227179206,
+      "v9": 257.8308227179206,
+      "diff": 0.0,
+      "verdict": "identical"
+    },
+    {
+      "field": "paper_numbers.envelope.Lmax_sqrt_model.moon.10MPa.at_tau_6m",
+      "v6": 171.57999914431394,
+      "v9": 171.57999914431394,
+      "diff": 0.0,
+      "verdict": "identical"
+    },
+    {
+      "field": "paper_numbers.envelope.Lmax_sqrt_model.moon.1MPa.at_tau_14m",
+      "v6": 81.53326507837141,
+      "v9": 81.53326507837141,
+      "diff": 0.0,
+      "verdict": "identical"
+    },
+    {
+      "field": "paper_numbers.envelope.Lmax_sqrt_model.moon.1MPa.at_tau_6m",
+      "v6": 54.25835982257736,
+      "v9": 54.25835982257736,
+      "diff": 0.0,
+      "verdict": "identical"
+    },
+    {
+      "field": "paper_numbers.envelope.Lmax_sqrt_model.moon.5MPa.at_tau_14m",
+      "v6": 182.31392314274822,
+      "v9": 182.31392314274822,
+      "diff": 0.0,
+      "verdict": "identical"
+    },
+    {
+      "field": "paper_numbers.envelope.Lmax_sqrt_model.moon.5MPa.at_tau_6m",
+      "v6": 121.32538091092641,
+      "v9": 121.32538091092641,
+      "diff": 0.0,
+      "verdict": "identical"
+    },
+    {
+      "field": "paper_numbers.envelope.beta",
+      "v6": 0.5,
+      "v9": 0.5,
+      "diff": 0.0,
+      "verdict": "identical"
+    },
+    {
+      "field": "paper_numbers.envelope.kappa_sensitivity.drop_one",
+      "v6": 0.007980456026058633,
+      "v9": 0.0071661237785016286,
+      "diff": -0.0008143322475570045,
+      "verdict": "explained: 1 cm quantisation of the delivered cloud"
+    },
+    {
+      "field": "paper_numbers.envelope.kappa_sensitivity.median",
+      "v6": 0.5455172659005576,
+      "v9": 0.5450740034892101,
+      "diff": -0.00044326241134751143,
+      "verdict": "rounding-safe"
+    },
+    {
+      "field": "paper_numbers.envelope.kappa_sensitivity.p5",
+      "v6": 0.08811822191921215,
+      "v9": 0.08840808562535268,
+      "diff": 0.00028986370614053625,
+      "verdict": "rounding-safe"
+    },
+    {
+      "field": "paper_numbers.envelope.kappa_sensitivity.single_min",
+      "v6": 0.0034398034398034397,
+      "v9": 0.0034398034398034397,
+      "diff": 0.0,
+      "verdict": "identical"
+    },
+    {
+      "field": "paper_numbers.envelope.rho_mid",
+      "v6": 2600.0,
+      "v9": 2600.0,
+      "diff": 0.0,
+      "verdict": "identical"
+    },
+    {
+      "field": "paper_numbers.envelope.sigma_req_MPa.drop_one",
+      "v6": 1.953881379310345,
+      "v9": 1.9669246461949268,
+      "diff": 0.013043266884581906,
+      "verdict": "rounding-safe"
+    },
+    {
+      "field": "paper_numbers.envelope.sigma_req_MPa.max",
+      "v6": 2.046197514422284,
+      "v9": 2.046197514422284,
+      "diff": 0.0,
+      "verdict": "identical"
+    },
+    {
+      "field": "paper_numbers.envelope.sigma_req_MPa.median",
+      "v6": 0.21396552056049317,
+      "v9": 0.21420442638115217,
+      "diff": 0.00023890582065899668,
+      "verdict": "rounding-safe"
+    },
+    {
+      "field": "paper_numbers.envelope.sigma_req_MPa.n",
+      "v6": 248,
+      "v9": 248,
+      "diff": 0,
+      "verdict": "identical"
+    },
+    {
+      "field": "paper_numbers.envelope.sigma_req_MPa.p90",
+      "v6": 0.7709753896806971,
+      "v9": 0.7722372732584468,
+      "diff": 0.0012618835777497006,
+      "verdict": "rounding-safe"
+    },
+    {
+      "field": "paper_numbers.envelope.sigma_req_MPa.p95",
+      "v6": 1.564736533929792,
+      "v9": 1.564736533929792,
+      "diff": 0.0,
+      "verdict": "identical"
+    },
+    {
+      "field": "paper_numbers.envelope.sigma_req_MPa.sensitivity_tau_gt_0p5.drop_one",
+      "v6": 3.057099754293893,
+      "v9": 3.086551582369942,
+      "diff": 0.029451828076048958,
+      "verdict": "explained: 1 cm quantisation of the delivered cloud"
+    },
+    {
+      "field": "paper_numbers.envelope.sigma_req_MPa.sensitivity_tau_gt_0p5.max",
+      "v6": 3.7041471999999995,
+      "v9": 3.7041471999999995,
+      "diff": 0.0,
+      "verdict": "identical"
+    },
+    {
+      "field": "paper_numbers.envelope.sigma_req_MPa.sensitivity_tau_gt_0p5.n",
+      "v6": 270,
+      "v9": 270,
+      "diff": 0,
+      "verdict": "identical"
+    },
+    {
+      "field": "paper_numbers.envelope.span_scale.mars",
+      "v6": 1.6261011197806923,
+      "v9": 1.6261011197806923,
+      "diff": 0.0,
+      "verdict": "identical"
+    },
+    {
+      "field": "paper_numbers.envelope.span_scale.moon",
+      "v6": 2.4608038433722332,
+      "v9": 2.4608038433722332,
+      "diff": 0.0,
+      "verdict": "identical"
+    },
+    {
+      "field": "paper_numbers.envelope.tau_over_L.median",
+      "v6": 0.5455172659005576,
+      "v9": 0.5450740034892101,
+      "diff": -0.00044326241134751143,
+      "verdict": "rounding-safe"
+    },
+    {
+      "field": "paper_numbers.envelope.tau_over_L.min",
+      "v6": 0.0034398034398034397,
+      "v9": 0.0034398034398034397,
+      "diff": 0.0,
+      "verdict": "identical"
+    },
+    {
+      "field": "paper_numbers.envelope.tau_over_L.p25",
+      "v6": 0.2973923997004063,
+      "v9": 0.2970107203110933,
+      "diff": -0.0003816793893129944,
+      "verdict": "rounding-safe"
+    },
+    {
+      "field": "paper_numbers.envelope.tau_over_L.p5",
+      "v6": 0.08811822191921215,
+      "v9": 0.08840808562535268,
+      "diff": 0.00028986370614053625,
+      "verdict": "rounding-safe"
+    },
+    {
+      "field": "paper_numbers.envelope.tau_over_L.second",
+      "v6": 0.007980456026058633,
+      "v9": 0.0071661237785016286,
+      "diff": -0.0008143322475570045,
+      "verdict": "explained: 1 cm quantisation of the delivered cloud"
+    },
+    {
+      "field": "paper_numbers.envelope.tau_threshold_m",
+      "v6": 1.49,
+      "v9": 1.48,
+      "diff": -0.010000000000000009,
+      "verdict": "explained: S3 floor check on new voxel copy"
+    },
+    {
+      "field": "paper_numbers.eta.median",
+      "v6": 1.53,
+      "v9": 1.53,
+      "diff": 0.0,
+      "verdict": "identical"
+    },
+    {
+      "field": "paper_numbers.eta.q25",
+      "v6": 1.31,
+      "v9": 1.31,
+      "diff": 0.0,
+      "verdict": "identical"
+    },
+    {
+      "field": "paper_numbers.eta.q75",
+      "v6": 1.84,
+      "v9": 1.84,
+      "diff": 0.0,
+      "verdict": "identical"
+    },
+    {
+      "field": "paper_numbers.height.max",
+      "v6": 11.41,
+      "v9": 11.41,
+      "diff": 0.0,
+      "verdict": "identical"
+    },
+    {
+      "field": "paper_numbers.height.median",
+      "v6": 8.09,
+      "v9": 8.09,
+      "diff": 0.0,
+      "verdict": "identical"
+    },
+    {
+      "field": "paper_numbers.height.min",
+      "v6": 3.53,
+      "v9": 3.53,
+      "diff": 0.0,
+      "verdict": "identical"
+    },
+    {
+      "field": "paper_numbers.mars.aperture_median_m",
+      "v6": 120.0,
+      "v9": 120.0,
+      "diff": 0.0,
+      "verdict": "identical"
+    },
+    {
+      "field": "paper_numbers.mars.counts.ge_10m",
+      "v6": 131,
+      "v9": 131,
+      "diff": 0,
+      "verdict": "identical"
+    },
+    {
+      "field": "paper_numbers.mars.counts.ge_20m",
+      "v6": 131,
+      "v9": 131,
+      "diff": 0,
+      "verdict": "identical"
+    },
+    {
+      "field": "paper_numbers.mars.counts.ge_50m",
+      "v6": 120,
+      "v9": 120,
+      "diff": 0,
+      "verdict": "identical"
+    },
+    {
+      "field": "paper_numbers.mars.counts.ge_5m",
+      "v6": 131,
+      "v9": 131,
+      "diff": 0,
+      "verdict": "identical"
+    },
+    {
+      "field": "paper_numbers.mars.counts.ge_narrowest",
+      "v6": 131,
+      "v9": 131,
+      "diff": 0,
+      "verdict": "identical"
+    },
+    {
+      "field": "paper_numbers.mars.n_dimensioned",
+      "v6": 131,
+      "v9": 131,
+      "diff": 0,
+      "verdict": "identical"
+    },
+    {
+      "field": "paper_numbers.mars.n_total",
+      "v6": 1062,
+      "v9": 1062,
+      "diff": 0,
+      "verdict": "identical"
+    },
+    {
+      "field": "paper_numbers.min_tau_over_L_retired",
+      "v6": 0.0034,
+      "v9": 0.0034,
+      "diff": 0.0,
+      "verdict": "identical"
+    },
+    {
+      "field": "paper_numbers.min_tau_over_L_station.s",
+      "v6": 51.0,
+      "v9": 51.0,
+      "diff": 0.0,
+      "verdict": "identical"
+    },
+    {
+      "field": "paper_numbers.min_tau_over_L_station.span",
+      "v6": 12.21,
+      "v9": 12.21,
+      "diff": 0.0,
+      "verdict": "identical"
+    },
+    {
+      "field": "paper_numbers.min_tau_over_L_station.tau",
+      "v6": 0.04,
+      "v9": 0.04,
+      "diff": 0.0,
+      "verdict": "identical"
+    },
+    {
+      "field": "paper_numbers.moon.aperture_median_m",
+      "v6": 29.0,
+      "v9": 29.0,
+      "diff": 0.0,
+      "verdict": "identical"
+    },
+    {
+      "field": "paper_numbers.moon.counts.ge_10m",
+      "v6": 258,
+      "v9": 258,
+      "diff": 0,
+      "verdict": "identical"
+    },
+    {
+      "field": "paper_numbers.moon.counts.ge_20m",
+      "v6": 190,
+      "v9": 190,
+      "diff": 0,
+      "verdict": "identical"
+    },
+    {
+      "field": "paper_numbers.moon.counts.ge_50m",
+      "v6": 63,
+      "v9": 63,
+      "diff": 0,
+      "verdict": "identical"
+    },
+    {
+      "field": "paper_numbers.moon.counts.ge_5m",
+      "v6": 266,
+      "v9": 266,
+      "diff": 0,
+      "verdict": "identical"
+    },
+    {
+      "field": "paper_numbers.moon.counts.ge_narrowest",
+      "v6": 265,
+      "v9": 265,
+      "diff": 0,
+      "verdict": "identical"
+    },
+    {
+      "field": "paper_numbers.moon.n_dimensioned",
+      "v6": 266,
+      "v9": 266,
+      "diff": 0,
+      "verdict": "identical"
+    },
+    {
+      "field": "paper_numbers.moon.n_total",
+      "v6": 278,
+      "v9": 278,
+      "diff": 0,
+      "verdict": "identical"
+    },
+    {
+      "field": "paper_numbers.n_multipass",
+      "v6": 0,
+      "v9": 0,
+      "diff": 0,
+      "verdict": "identical"
+    },
+    {
+      "field": "paper_numbers.n_no_dem",
+      "v6": 0,
+      "v9": 4,
+      "diff": 4,
+      "verdict": "explained: aperture bookkeeping"
+    },
+    {
+      "field": "paper_numbers.n_skylight_stations",
+      "v6": 22,
+      "v9": 18,
+      "diff": -4,
+      "verdict": "explained: aperture bookkeeping"
+    },
+    {
+      "field": "paper_numbers.n_stations",
+      "v6": 302,
+      "v9": 302,
+      "diff": 0,
+      "verdict": "identical"
+    },
+    {
+      "field": "paper_numbers.n_tau_clean",
+      "v6": 276,
+      "v9": 276,
+      "diff": 0,
+      "verdict": "identical"
+    },
+    {
+      "field": "paper_numbers.n_valid_sections",
+      "v6": 296,
+      "v9": 296,
+      "diff": 0,
+      "verdict": "identical"
+    },
+    {
+      "field": "paper_numbers.reg_matches",
+      "v6": 3,
+      "v9": 3,
+      "diff": 0,
+      "verdict": "identical"
+    },
+    {
+      "field": "paper_numbers.reg_rim_rms_m",
+      "v6": 1.7331442353132371,
+      "v9": 1.7331442353132371,
+      "diff": 0.0,
+      "verdict": "identical"
+    },
+    {
+      "field": "paper_numbers.reg_sigma_reg_z_m",
+      "v6": 1.46,
+      "v9": 1.45,
+      "diff": -0.010000000000000009,
+      "verdict": "explained: S3 floor check on new voxel copy"
+    },
+    {
+      "field": "paper_numbers.reg_sigma_tau_m",
+      "v6": 1.49,
+      "v9": 1.48,
+      "diff": -0.010000000000000009,
+      "verdict": "explained: S3 floor check on new voxel copy"
+    },
+    {
+      "field": "paper_numbers.reg_vres_mm[0]",
+      "v6": -5240,
+      "v9": -5240,
+      "diff": 0,
+      "verdict": "identical"
+    },
+    {
+      "field": "paper_numbers.reg_vres_mm[1]",
+      "v6": -5864,
+      "v9": -5864,
+      "diff": 0,
+      "verdict": "identical"
+    },
+    {
+      "field": "paper_numbers.reg_vres_mm[2]",
+      "v6": -3582,
+      "v9": -3582,
+      "diff": 0,
+      "verdict": "identical"
+    },
+    {
+      "field": "paper_numbers.registration_validation.floor_through_skylight_s3.annulus_outside_cone.median_m",
+      "v6": 0.9071502685546875,
+      "v9": 0.8983306884765625,
+      "diff": -0.008819580078125,
+      "verdict": "explained: S3 floor check on new voxel copy"
+    },
+    {
+      "field": "paper_numbers.registration_validation.floor_through_skylight_s3.annulus_outside_cone.n",
+      "v6": 321,
+      "v9": 327,
+      "diff": 6,
+      "verdict": "explained: S3 floor check on new voxel copy"
+    },
+    {
+      "field": "paper_numbers.registration_validation.floor_through_skylight_s3.annulus_outside_cone.p10_m",
+      "v6": -0.06867218017578125,
+      "v9": -0.07890319824218747,
+      "diff": -0.010231018066406222,
+      "verdict": "explained: S3 floor check on new voxel copy"
+    },
+    {
+      "field": "paper_numbers.registration_validation.floor_through_skylight_s3.annulus_outside_cone.p90_m",
+      "v6": 1.3718719482421875,
+      "v9": 1.3727249145507814,
+      "diff": 0.0008529663085938832,
+      "verdict": "rounding-safe"
+    },
+    {
+      "field": "paper_numbers.registration_validation.floor_through_skylight_s3.annulus_outside_cone.rms_m",
+      "v6": 1.3602545239430572,
+      "v9": 1.351579299890805,
+      "diff": -0.008675224052252295,
+      "verdict": "explained: S3 floor check on new voxel copy"
+    },
+    {
+      "field": "paper_numbers.registration_validation.floor_through_skylight_s3.median_m",
+      "v6": 0.8868675231933594,
+      "v9": 0.8738021850585938,
+      "diff": -0.013065338134765625,
+      "verdict": "explained: S3 floor check on new voxel copy"
+    },
+    {
+      "field": "paper_numbers.registration_validation.floor_through_skylight_s3.n",
+      "v6": 352,
+      "v9": 360,
+      "diff": 8,
+      "verdict": "explained: S3 floor check on new voxel copy"
+    },
+    {
+      "field": "paper_numbers.registration_validation.floor_through_skylight_s3.p10_m",
+      "v6": -1.1876602172851562,
+      "v9": -1.232403564453125,
+      "diff": -0.044743347167968794,
+      "verdict": "explained: S3 floor check on new voxel copy"
+    },
+    {
+      "field": "paper_numbers.registration_validation.floor_through_skylight_s3.p90_m",
+      "v6": 1.342333221435547,
+      "v9": 1.3371871948242189,
+      "diff": -0.005146026611328125,
+      "verdict": "explained: S3 floor check on new voxel copy"
+    },
+    {
+      "field": "paper_numbers.registration_validation.floor_through_skylight_s3.rms_m",
+      "v6": 1.3561264565921034,
+      "v9": 1.346913198113121,
+      "diff": -0.009213258478982356,
+      "verdict": "explained: S3 floor check on new voxel copy"
+    },
+    {
+      "field": "paper_numbers.registration_validation.n_negative_tau_stations",
+      "v6": 4,
+      "v9": 4,
+      "diff": 0,
+      "verdict": "identical"
+    },
+    {
+      "field": "paper_numbers.registration_validation.rim_horizontal_rms_m",
+      "v6": 1.7331442353132371,
+      "v9": 1.7331442353132371,
+      "diff": 0.0,
+      "verdict": "identical"
+    },
+    {
+      "field": "paper_numbers.registration_validation.sigma_reg_components.anchor_floor_rms_m",
+      "v6": 1.3561264565921034,
+      "v9": 1.346913198113121,
+      "diff": -0.009213258478982356,
+      "verdict": "explained: S3 floor check on new voxel copy"
+    },
+    {
+      "field": "paper_numbers.registration_validation.sigma_reg_components.drift_rss_m",
+      "v6": 0.5317848268821412,
+      "v9": 0.5317848268821408,
+      "diff": -4.440892098500626e-16,
+      "verdict": "rounding-safe"
+    },
+    {
+      "field": "paper_numbers.registration_validation.sigma_reg_z_m",
+      "v6": 1.46,
+      "v9": 1.45,
+      "diff": -0.010000000000000009,
+      "verdict": "explained: S3 floor check on new voxel copy"
+    },
+    {
+      "field": "paper_numbers.registration_validation.two_slam_zones.s0-80.mean",
+      "v6": -0.23240130147375915,
+      "v9": -0.23240130147375915,
+      "diff": 0.0,
+      "verdict": "identical"
+    },
+    {
+      "field": "paper_numbers.registration_validation.two_slam_zones.s0-80.n",
+      "v6": 80,
+      "v9": 80,
+      "diff": 0,
+      "verdict": "identical"
+    },
+    {
+      "field": "paper_numbers.registration_validation.two_slam_zones.s0-80.std",
+      "v6": 0.32202807834612057,
+      "v9": 0.32202807834612057,
+      "diff": 0.0,
+      "verdict": "identical"
+    },
+    {
+      "field": "paper_numbers.registration_validation.two_slam_zones.s160-240.mean",
+      "v6": -0.16641896855827198,
+      "v9": -0.16641896855827448,
+      "diff": -2.4980018054066022e-15,
+      "verdict": "rounding-safe"
+    },
+    {
+      "field": "paper_numbers.registration_validation.two_slam_zones.s160-240.n",
+      "v6": 80,
+      "v9": 80,
+      "diff": 0,
+      "verdict": "identical"
+    },
+    {
+      "field": "paper_numbers.registration_validation.two_slam_zones.s160-240.std",
+      "v6": 0.47831447518904535,
+      "v9": 0.4783144751890448,
+      "diff": -5.551115123125783e-16,
+      "verdict": "rounding-safe"
+    },
+    {
+      "field": "paper_numbers.registration_validation.two_slam_zones.s240-340.mean",
+      "v6": -0.10124656946424919,
+      "v9": -0.10124656946425091,
+      "diff": -1.7208456881689926e-15,
+      "verdict": "rounding-safe"
+    },
+    {
+      "field": "paper_numbers.registration_validation.two_slam_zones.s240-340.n",
+      "v6": 99,
+      "v9": 99,
+      "diff": 0,
+      "verdict": "identical"
+    },
+    {
+      "field": "paper_numbers.registration_validation.two_slam_zones.s240-340.std",
+      "v6": 0.12767163126176653,
+      "v9": 0.12767163126176656,
+      "diff": 2.7755575615628914e-17,
+      "verdict": "rounding-safe"
+    },
+    {
+      "field": "paper_numbers.registration_validation.two_slam_zones.s80-160.mean",
+      "v6": -0.13521942607767237,
+      "v9": -0.13521942607767415,
+      "diff": -1.7763568394002505e-15,
+      "verdict": "rounding-safe"
+    },
+    {
+      "field": "paper_numbers.registration_validation.two_slam_zones.s80-160.n",
+      "v6": 80,
+      "v9": 80,
+      "diff": 0,
+      "verdict": "identical"
+    },
+    {
+      "field": "paper_numbers.registration_validation.two_slam_zones.s80-160.std",
+      "v6": 0.12814573299629534,
+      "v9": 0.12814573299629553,
+      "diff": 1.942890293094024e-16,
+      "verdict": "rounding-safe"
+    },
+    {
+      "field": "paper_numbers.scale_ruler_diff_m[0]",
+      "v6": -0.181,
+      "v9": -0.181,
+      "diff": 0.0,
+      "verdict": "identical"
+    },
+    {
+      "field": "paper_numbers.scale_ruler_diff_m[1]",
+      "v6": 2.179,
+      "v9": 2.179,
+      "diff": 0.0,
+      "verdict": "identical"
+    },
+    {
+      "field": "paper_numbers.scale_ruler_diff_m[2]",
+      "v6": 2.425,
+      "v9": 2.425,
+      "diff": 0.0,
+      "verdict": "identical"
+    },
+    {
+      "field": "paper_numbers.shielding.atmosphere_ratio_median",
+      "v6": 1.52,
+      "v9": 1.51,
+      "diff": -0.010000000000000009,
+      "verdict": "explained: 1 cm quantisation of the delivered cloud"
+    },
+    {
+      "field": "paper_numbers.shielding.median",
+      "v6": 1567.0,
+      "v9": 1564.0,
+      "diff": -3.0,
+      "verdict": "rounding-safe"
+    },
+    {
+      "field": "paper_numbers.shielding.min",
+      "v6": 11.0,
+      "v9": 11.0,
+      "diff": 0.0,
+      "verdict": "identical"
+    },
+    {
+      "field": "paper_numbers.shielding_sensitivity.2200.frac_gt_100",
+      "v6": 0.9818840579710145,
+      "v9": 0.9782608695652174,
+      "diff": -0.0036231884057971175,
+      "verdict": "rounding-safe"
+    },
+    {
+      "field": "paper_numbers.shielding_sensitivity.2200.frac_gt_1000",
+      "v6": 0.6884057971014492,
+      "v9": 0.6884057971014492,
+      "diff": 0.0,
+      "verdict": "identical"
+    },
+    {
+      "field": "paper_numbers.shielding_sensitivity.2200.frac_gt_500",
+      "v6": 0.8043478260869565,
+      "v9": 0.8043478260869565,
+      "diff": 0.0,
+      "verdict": "identical"
+    },
+    {
+      "field": "paper_numbers.shielding_sensitivity.2200.median_g_cm2",
+      "v6": 1325.61,
+      "v9": 1323.41,
+      "diff": -2.199999999999818,
+      "verdict": "rounding-safe"
+    },
+    {
+      "field": "paper_numbers.shielding_sensitivity.2600.frac_gt_100",
+      "v6": 0.9855072463768116,
+      "v9": 0.9855072463768116,
+      "diff": 0.0,
+      "verdict": "identical"
+    },
+    {
+      "field": "paper_numbers.shielding_sensitivity.2600.frac_gt_1000",
+      "v6": 0.7210144927536232,
+      "v9": 0.7210144927536232,
+      "diff": 0.0,
+      "verdict": "identical"
+    },
+    {
+      "field": "paper_numbers.shielding_sensitivity.2600.frac_gt_500",
+      "v6": 0.8369565217391305,
+      "v9": 0.8369565217391305,
+      "diff": 0.0,
+      "verdict": "identical"
+    },
+    {
+      "field": "paper_numbers.shielding_sensitivity.2600.median_g_cm2",
+      "v6": 1566.63,
+      "v9": 1564.0299999999997,
+      "diff": -2.600000000000364,
+      "verdict": "rounding-safe"
+    },
+    {
+      "field": "paper_numbers.shielding_sensitivity.3000.frac_gt_100",
+      "v6": 0.9855072463768116,
+      "v9": 0.9855072463768116,
+      "diff": 0.0,
+      "verdict": "identical"
+    },
+    {
+      "field": "paper_numbers.shielding_sensitivity.3000.frac_gt_1000",
+      "v6": 0.7427536231884058,
+      "v9": 0.7427536231884058,
+      "diff": 0.0,
+      "verdict": "identical"
+    },
+    {
+      "field": "paper_numbers.shielding_sensitivity.3000.frac_gt_500",
+      "v6": 0.8659420289855072,
+      "v9": 0.8659420289855072,
+      "diff": 0.0,
+      "verdict": "identical"
+    },
+    {
+      "field": "paper_numbers.shielding_sensitivity.3000.median_g_cm2",
+      "v6": 1807.65,
+      "v9": 1804.65,
+      "diff": -3.0,
+      "verdict": "rounding-safe"
+    },
+    {
+      "field": "paper_numbers.sinuosity.max",
+      "v6": 1.079,
+      "v9": 1.079,
+      "diff": 0.0,
+      "verdict": "identical"
+    },
+    {
+      "field": "paper_numbers.sinuosity.mean",
+      "v6": 1.032,
+      "v9": 1.032,
+      "diff": 0.0,
+      "verdict": "identical"
+    },
+    {
+      "field": "paper_numbers.span_scale.mars",
+      "v6": 1.63,
+      "v9": 1.63,
+      "diff": 0.0,
+      "verdict": "identical"
+    },
+    {
+      "field": "paper_numbers.span_scale.moon",
+      "v6": 2.46,
+      "v9": 2.46,
+      "diff": 0.0,
+      "verdict": "identical"
+    },
+    {
+      "field": "paper_numbers.stats.ci_block.20[0]",
+      "v6": 3.51,
+      "v9": 3.5,
+      "diff": -0.009999999999999787,
+      "verdict": "rounding-safe"
+    },
+    {
+      "field": "paper_numbers.stats.ci_block.20[1]",
+      "v6": 8.326,
+      "v9": 8.316,
+      "diff": -0.009999999999999787,
+      "verdict": "rounding-safe"
+    },
+    {
+      "field": "paper_numbers.stats.ci_block.30[0]",
+      "v6": 3.14,
+      "v9": 3.14,
+      "diff": 0.0,
+      "verdict": "identical"
+    },
+    {
+      "field": "paper_numbers.stats.ci_block.30[1]",
+      "v6": 8.6555,
+      "v9": 8.650500000000001,
+      "diff": -0.004999999999999005,
+      "verdict": "rounding-safe"
+    },
+    {
+      "field": "paper_numbers.stats.ci_block.50[0]",
+      "v6": 2.439,
+      "v9": 2.429,
+      "diff": -0.010000000000000231,
+      "verdict": "rounding-safe"
+    },
+    {
+      "field": "paper_numbers.stats.ci_block.50[1]",
+      "v6": 8.9805,
+      "v9": 8.9755,
+      "diff": -0.004999999999999005,
+      "verdict": "rounding-safe"
+    },
+    {
+      "field": "paper_numbers.stats.ci_iid[0]",
+      "v6": 5.7305,
+      "v9": 5.7255,
+      "diff": -0.004999999999999893,
+      "verdict": "rounding-safe"
+    },
+    {
+      "field": "paper_numbers.stats.ci_iid[1]",
+      "v6": 6.4015,
+      "v9": 6.392,
+      "diff": -0.009500000000000064,
+      "verdict": "rounding-safe"
+    },
+    {
+      "field": "paper_numbers.stats.corr_len_1e_m",
+      "v6": 50,
+      "v9": 50,
+      "diff": 0,
+      "verdict": "identical"
+    },
+    {
+      "field": "paper_numbers.stats.corr_len_zero_m",
+      "v6": 102,
+      "v9": 102,
+      "diff": 0,
+      "verdict": "identical"
+    },
+    {
+      "field": "paper_numbers.stats.median",
+      "v6": 6.025499999999999,
+      "v9": 6.015499999999999,
+      "diff": -0.009999999999999787,
+      "verdict": "explained: 1 cm quantisation of the delivered cloud"
+    },
+    {
+      "field": "paper_numbers.stats.n_eff",
+      "v6": 3.3673174606338883,
+      "v9": 3.3678118322056174,
+      "diff": 0.0004943715717291575,
+      "verdict": "rounding-safe"
+    },
+    {
+      "field": "paper_numbers.stats.sigma_tau_systematic_m",
+      "v6": 1.49,
+      "v9": 1.48,
+      "diff": -0.010000000000000009,
+      "verdict": "explained: S3 floor check on new voxel copy"
+    },
+    {
+      "field": "paper_numbers.tau.max",
+      "v6": 14.15,
+      "v9": 14.14,
+      "diff": -0.009999999999999787,
+      "verdict": "rounding-safe"
+    },
+    {
+      "field": "paper_numbers.tau.median",
+      "v6": 6.03,
+      "v9": 6.02,
+      "diff": -0.010000000000000675,
+      "verdict": "rounding-safe"
+    },
+    {
+      "field": "paper_numbers.tau.median_ci95[0]",
+      "v6": 5.74,
+      "v9": 5.73,
+      "diff": -0.009999999999999787,
+      "verdict": "rounding-safe"
+    },
+    {
+      "field": "paper_numbers.tau.median_ci95[1]",
+      "v6": 6.4,
+      "v9": 6.39,
+      "diff": -0.010000000000000675,
+      "verdict": "rounding-safe"
+    },
+    {
+      "field": "paper_numbers.tau.min",
+      "v6": 0.04,
+      "v9": 0.04,
+      "diff": 0.0,
+      "verdict": "identical"
+    },
+    {
+      "field": "paper_numbers.tau.q25",
+      "v6": 3.24,
+      "v9": 3.24,
+      "diff": 0.0,
+      "verdict": "identical"
+    },
+    {
+      "field": "paper_numbers.tau.q75",
+      "v6": 9.01,
+      "v9": 9.0,
+      "diff": -0.009999999999999787,
+      "verdict": "rounding-safe"
+    },
+    {
+      "field": "paper_numbers.tau.sigma",
+      "v6": 1.49,
+      "v9": 1.48,
+      "diff": -0.010000000000000009,
+      "verdict": "rounding-safe"
+    },
+    {
+      "field": "paper_numbers.tau_s_range_m[0]",
+      "v6": 0.0,
+      "v9": 0.0,
+      "diff": 0.0,
+      "verdict": "identical"
+    },
+    {
+      "field": "paper_numbers.tau_s_range_m[1]",
+      "v6": 301.0,
+      "v9": 301.0,
+      "diff": 0.0,
+      "verdict": "identical"
+    },
+    {
+      "field": "paper_numbers.terrain.ceiling_thinning.ci95[0]",
+      "v6": -0.169879848859671,
+      "v9": -0.14899966334630033,
+      "diff": 0.020880185513370675,
+      "verdict": "explained: aperture bookkeeping"
+    },
+    {
+      "field": "paper_numbers.terrain.ceiling_thinning.ci95[1]",
+      "v6": -0.10926285931154604,
+      "v9": -0.09332139342316259,
+      "diff": 0.015941465888383452,
+      "verdict": "explained: aperture bookkeeping"
+    },
+    {
+      "field": "paper_numbers.terrain.ceiling_thinning.n",
+      "v6": 108,
+      "v9": 108,
+      "diff": 0,
+      "verdict": "identical"
+    },
+    {
+      "field": "paper_numbers.terrain.ceiling_thinning.slope_m_per_m",
+      "v6": -0.13450967100605574,
+      "v9": -0.11637679148335921,
+      "diff": 0.01813287952269653,
+      "verdict": "explained: aperture bookkeeping"
+    },
+    {
+      "field": "paper_numbers.terrain.const_ceiling_control.r",
+      "v6": 0.9054436757855368,
+      "v9": 0.9053459634043665,
+      "diff": -9.771238117028958e-05,
+      "verdict": "rounding-safe"
+    },
+    {
+      "field": "paper_numbers.terrain.const_ceiling_control.r2",
+      "v6": 0.8154773306946987,
+      "v9": 0.8152974930001698,
+      "diff": -0.00017983769452889486,
+      "verdict": "rounding-safe"
+    },
+    {
+      "field": "paper_numbers.terrain.const_ceiling_control.rms_residual_m",
+      "v6": 1.6953427141899735,
+      "v9": 1.6953266197759855,
+      "diff": -1.6094413987977063e-05,
+      "verdict": "rounding-safe"
+    },
+    {
+      "field": "paper_numbers.terrain.corr_tau_zdem",
+      "v6": 0.9054436757855369,
+      "v9": 0.9053459634043661,
+      "diff": -9.771238117073366e-05,
+      "verdict": "rounding-safe"
+    },
+    {
+      "field": "paper_numbers.terrain.dem_share",
+      "v6": 0.704730325469491,
+      "v9": 0.7045293681649831,
+      "diff": -0.00020095730450786498,
+      "verdict": "rounding-safe"
+    },
+    {
+      "field": "paper_numbers.terrain.near_skylight_median.10to20",
+      "v6": 2.24,
+      "v9": 2.6654999999999998,
+      "diff": 0.42549999999999955,
+      "verdict": "explained: aperture bookkeeping"
+    },
+    {
+      "field": "paper_numbers.terrain.near_skylight_median.20to30",
+      "v6": 4.63,
+      "v9": 4.1080000000000005,
+      "diff": -0.5219999999999994,
+      "verdict": "explained: aperture bookkeeping"
+    },
+    {
+      "field": "paper_numbers.terrain.near_skylight_median.lt10",
+      "v6": 1.3559999999999999,
+      "v9": 1.3559999999999999,
+      "diff": 0.0,
+      "verdict": "identical"
+    },
+    {
+      "field": "paper_numbers.terrain.net_centreline.end",
+      "v6": 234.219,
+      "v9": 168.219,
+      "diff": -66.0,
+      "verdict": "datum (dz)"
+    },
+    {
+      "field": "paper_numbers.terrain.net_centreline.start",
+      "v6": 232.597,
+      "v9": 166.597,
+      "diff": -66.0,
+      "verdict": "datum (dz)"
+    },
+    {
+      "field": "paper_numbers.terrain.reach_median.0-50",
+      "v6": 1.8355000000000001,
+      "v9": 1.8305,
+      "diff": -0.0050000000000001155,
+      "verdict": "rounding-safe"
+    },
+    {
+      "field": "paper_numbers.terrain.reach_median.100-150",
+      "v6": 4.686,
+      "v9": 4.670999999999999,
+      "diff": -0.015000000000000568,
+      "verdict": "rounding-safe"
+    },
+    {
+      "field": "paper_numbers.terrain.reach_median.150-200",
+      "v6": 6.475,
+      "v9": 6.47,
+      "diff": -0.004999999999999893,
+      "verdict": "rounding-safe"
+    },
+    {
+      "field": "paper_numbers.terrain.reach_median.200-250",
+      "v6": 7.991,
+      "v9": 7.981,
+      "diff": -0.009999999999999787,
+      "verdict": "rounding-safe"
+    },
+    {
+      "field": "paper_numbers.terrain.reach_median.250-300",
+      "v6": 12.942499999999999,
+      "v9": 12.932500000000001,
+      "diff": -0.00999999999999801,
+      "verdict": "rounding-safe"
+    },
+    {
+      "field": "paper_numbers.terrain.reach_median.50-100",
+      "v6": 1.544,
+      "v9": 1.539,
+      "diff": -0.0050000000000001155,
+      "verdict": "rounding-safe"
+    },
+    {
+      "field": "paper_numbers.terrain.skylight_runs[0].d_tau",
+      "v6": -5.60040125065138,
+      "v9": -5.556597198744264,
+      "diff": 0.04380405190711656,
+      "verdict": "explained: aperture bookkeeping"
+    },
+    {
+      "field": "paper_numbers.terrain.skylight_runs[0].d_zceil",
+      "v6": 0.3956722251172664,
+      "v9": 0.27324667954596293,
+      "diff": -0.12242554557130347,
+      "verdict": "explained: aperture bookkeeping"
+    },
+    {
+      "field": "paper_numbers.terrain.skylight_runs[0].d_zdem",
+      "v6": -5.204760291818673,
+      "v9": -5.283369958947134,
+      "diff": -0.07860966712846107,
+      "verdict": "explained: aperture bookkeeping"
+    },
+    {
+      "field": "paper_numbers.terrain.skylight_runs[0].run_s[0]",
+      "v6": 29.0,
+      "v9": 29.0,
+      "diff": 0.0,
+      "verdict": "identical"
+    },
+    {
+      "field": "paper_numbers.terrain.skylight_runs[0].run_s[1]",
+      "v6": 36.0,
+      "v9": 30.0,
+      "diff": -6.0,
+      "verdict": "explained: aperture bookkeeping"
+    },
+    {
+      "field": "paper_numbers.terrain.skylight_runs[1].d_tau",
+      "v6": -7.238945340501794,
+      "v9": -5.939389533239037,
+      "diff": 1.2995558072627569,
+      "verdict": "explained: aperture bookkeeping"
+    },
+    {
+      "field": "paper_numbers.terrain.skylight_runs[1].d_zceil",
+      "v6": 2.260360215053794,
+      "v9": 0.8009421499292557,
+      "diff": -1.459418065124538,
+      "verdict": "explained: aperture bookkeeping"
+    },
+    {
+      "field": "paper_numbers.terrain.skylight_runs[1].d_zdem",
+      "v6": -4.978557347670261,
+      "v9": -5.138471004243314,
+      "diff": -0.15991365657305323,
+      "verdict": "explained: aperture bookkeeping"
+    },
+    {
+      "field": "paper_numbers.terrain.skylight_runs[1].run_s[0]",
+      "v6": 54.0,
+      "v9": 35.0,
+      "diff": -19.0,
+      "verdict": "explained: aperture bookkeeping"
+    },
+    {
+      "field": "paper_numbers.terrain.skylight_runs[1].run_s[1]",
+      "v6": 56.0,
+      "v9": 36.0,
+      "diff": -20.0,
+      "verdict": "explained: aperture bookkeeping"
+    },
+    {
+      "field": "paper_numbers.terrain.skylight_runs[2].d_tau",
+      "v6": -5.834465011961724,
+      "v9": -7.235459677419356,
+      "diff": -1.400994665457632,
+      "verdict": "explained: aperture bookkeeping"
+    },
+    {
+      "field": "paper_numbers.terrain.skylight_runs[2].d_zceil",
+      "v6": 2.224367523923405,
+      "v9": 2.2603602150537654,
+      "diff": 0.0359926911303603,
+      "verdict": "explained: aperture bookkeeping"
+    },
+    {
+      "field": "paper_numbers.terrain.skylight_runs[2].d_zdem",
+      "v6": -3.610059808612533,
+      "v9": -4.975071684587789,
+      "diff": -1.3650118759752559,
+      "verdict": "explained: aperture bookkeeping"
+    },
+    {
+      "field": "paper_numbers.terrain.skylight_runs[2].run_s[0]",
+      "v6": 89.0,
+      "v9": 54.0,
+      "diff": -35.0,
+      "verdict": "explained: aperture bookkeeping"
+    },
+    {
+      "field": "paper_numbers.terrain.skylight_runs[2].run_s[1]",
+      "v6": 99.0,
+      "v9": 56.0,
+      "diff": -43.0,
+      "verdict": "explained: aperture bookkeeping"
+    },
+    {
+      "field": "paper_numbers.terrain.skylight_runs[3].d_tau",
+      "v6": null,
+      "v9": -5.832866327751195,
+      "diff": "",
+      "verdict": "explained: aperture bookkeeping"
+    },
+    {
+      "field": "paper_numbers.terrain.skylight_runs[3].d_zceil",
+      "v6": null,
+      "v9": 2.224367523923462,
+      "diff": "",
+      "verdict": "explained: aperture bookkeeping"
+    },
+    {
+      "field": "paper_numbers.terrain.skylight_runs[3].d_zdem",
+      "v6": null,
+      "v9": -3.60851375598088,
+      "diff": "",
+      "verdict": "explained: aperture bookkeeping"
+    },
+    {
+      "field": "paper_numbers.terrain.skylight_runs[3].run_s[0]",
+      "v6": null,
+      "v9": 89.0,
+      "diff": "",
+      "verdict": "explained: aperture bookkeeping"
+    },
+    {
+      "field": "paper_numbers.terrain.skylight_runs[3].run_s[1]",
+      "v6": null,
+      "v9": 99.0,
+      "diff": "",
+      "verdict": "explained: aperture bookkeeping"
+    },
+    {
+      "field": "paper_numbers.terrain.tau_hist_2m.counts[0]",
+      "v6": 47,
+      "v9": 47,
+      "diff": 0,
+      "verdict": "identical"
+    },
+    {
+      "field": "paper_numbers.terrain.tau_hist_2m.counts[1]",
+      "v6": 30,
+      "v9": 30,
+      "diff": 0,
+      "verdict": "identical"
+    },
+    {
+      "field": "paper_numbers.terrain.tau_hist_2m.counts[2]",
+      "v6": 59,
+      "v9": 59,
+      "diff": 0,
+      "verdict": "identical"
+    },
+    {
+      "field": "paper_numbers.terrain.tau_hist_2m.counts[3]",
+      "v6": 44,
+      "v9": 44,
+      "diff": 0,
+      "verdict": "identical"
+    },
+    {
+      "field": "paper_numbers.terrain.tau_hist_2m.counts[4]",
+      "v6": 34,
+      "v9": 34,
+      "diff": 0,
+      "verdict": "identical"
+    },
+    {
+      "field": "paper_numbers.terrain.tau_hist_2m.counts[5]",
+      "v6": 22,
+      "v9": 22,
+      "diff": 0,
+      "verdict": "identical"
+    },
+    {
+      "field": "paper_numbers.terrain.tau_hist_2m.counts[6]",
+      "v6": 38,
+      "v9": 38,
+      "diff": 0,
+      "verdict": "identical"
+    },
+    {
+      "field": "paper_numbers.terrain.tau_hist_2m.counts[7]",
+      "v6": 2,
+      "v9": 2,
+      "diff": 0,
+      "verdict": "identical"
+    },
+    {
+      "field": "paper_numbers.terrain.tau_hist_2m.edges[0]",
+      "v6": 0,
+      "v9": 0,
+      "diff": 0,
+      "verdict": "identical"
+    },
+    {
+      "field": "paper_numbers.terrain.tau_hist_2m.edges[1]",
+      "v6": 2,
+      "v9": 2,
+      "diff": 0,
+      "verdict": "identical"
+    },
+    {
+      "field": "paper_numbers.terrain.tau_hist_2m.edges[2]",
+      "v6": 4,
+      "v9": 4,
+      "diff": 0,
+      "verdict": "identical"
+    },
+    {
+      "field": "paper_numbers.terrain.tau_hist_2m.edges[3]",
+      "v6": 6,
+      "v9": 6,
+      "diff": 0,
+      "verdict": "identical"
+    },
+    {
+      "field": "paper_numbers.terrain.tau_hist_2m.edges[4]",
+      "v6": 8,
+      "v9": 8,
+      "diff": 0,
+      "verdict": "identical"
+    },
+    {
+      "field": "paper_numbers.terrain.tau_hist_2m.edges[5]",
+      "v6": 10,
+      "v9": 10,
+      "diff": 0,
+      "verdict": "identical"
+    },
+    {
+      "field": "paper_numbers.terrain.tau_hist_2m.edges[6]",
+      "v6": 12,
+      "v9": 12,
+      "diff": 0,
+      "verdict": "identical"
+    },
+    {
+      "field": "paper_numbers.terrain.tau_hist_2m.edges[7]",
+      "v6": 14,
+      "v9": 14,
+      "diff": 0,
+      "verdict": "identical"
+    },
+    {
+      "field": "paper_numbers.terrain.tau_hist_2m.edges[8]",
+      "v6": 16,
+      "v9": 16,
+      "diff": 0,
+      "verdict": "identical"
+    },
+    {
+      "field": "paper_numbers.terrain.variance.tau",
+      "v6": 15.576335034485929,
+      "v9": 15.560873506301197,
+      "diff": -0.015461528184731677,
+      "verdict": "rounding-safe"
+    },
+    {
+      "field": "paper_numbers.terrain.variance.z_ceil",
+      "v6": 2.8741734459147246,
+      "v9": 2.8741734459147246,
+      "diff": 0.0,
+      "verdict": "identical"
+    },
+    {
+      "field": "paper_numbers.terrain.variance.z_dem",
+      "v6": 10.977115658475103,
+      "v9": 10.963092379489607,
+      "diff": -0.014023278985495935,
+      "verdict": "rounding-safe"
+    },
+    {
+      "field": "paper_numbers.terrain.zceil_range",
+      "v6": 10.558999999999997,
+      "v9": 10.558999999999997,
+      "diff": 0.0,
+      "verdict": "identical"
+    },
+    {
+      "field": "paper_numbers.terrain.zdem_range",
+      "v6": 12.659999999999997,
+      "v9": 12.650000000000006,
+      "diff": -0.009999999999990905,
+      "verdict": "rounding-safe"
+    },
+    {
+      "field": "paper_numbers.vertical_q90_diffs_m[0]",
+      "v6": -0.043,
+      "v9": -0.043,
+      "diff": 0.0,
+      "verdict": "identical"
+    },
+    {
+      "field": "paper_numbers.vertical_q90_diffs_m[1]",
+      "v6": -1.369,
+      "v9": -1.369,
+      "diff": 0.0,
+      "verdict": "identical"
+    },
+    {
+      "field": "paper_numbers.vertical_q90_diffs_m[2]",
+      "v6": 0.471,
+      "v9": 0.471,
+      "diff": 0.0,
+      "verdict": "identical"
+    },
+    {
+      "field": "paper_numbers.width.max",
+      "v6": 31.6,
+      "v9": 31.6,
+      "diff": 0.0,
+      "verdict": "identical"
+    },
+    {
+      "field": "paper_numbers.width.median",
+      "v6": 10.53,
+      "v9": 10.53,
+      "diff": 0.0,
+      "verdict": "identical"
+    },
+    {
+      "field": "paper_numbers.width.min",
+      "v6": 6.07,
+      "v9": 6.07,
+      "diff": 0.0,
+      "verdict": "identical"
+    },
+    {
+      "field": "review_stats.envelope.Lmax_sqrt_model.earth.10MPa.at_tau_14m",
+      "v6": 104.77504064874782,
+      "v9": 104.77504064874782,
+      "diff": 0.0,
+      "verdict": "identical"
+    },
+    {
+      "field": "review_stats.envelope.Lmax_sqrt_model.earth.10MPa.at_tau_6m",
+      "v6": 69.7251833405723,
+      "v9": 69.7251833405723,
+      "diff": 0.0,
+      "verdict": "identical"
+    },
+    {
+      "field": "review_stats.envelope.Lmax_sqrt_model.earth.1MPa.at_tau_14m",
+      "v6": 33.132777038676906,
+      "v9": 33.132777038676906,
+      "diff": 0.0,
+      "verdict": "identical"
+    },
+    {
+      "field": "review_stats.envelope.Lmax_sqrt_model.earth.1MPa.at_tau_6m",
+      "v6": 22.049038962903623,
+      "v9": 22.049038962903623,
+      "diff": 0.0,
+      "verdict": "identical"
+    },
+    {
+      "field": "review_stats.envelope.Lmax_sqrt_model.earth.5MPa.at_tau_14m",
+      "v6": 74.08714174182575,
+      "v9": 74.08714174182575,
+      "diff": 0.0,
+      "verdict": "identical"
+    },
+    {
+      "field": "review_stats.envelope.Lmax_sqrt_model.earth.5MPa.at_tau_6m",
+      "v6": 49.303149959593966,
+      "v9": 49.303149959593966,
+      "diff": 0.0,
+      "verdict": "identical"
+    },
+    {
+      "field": "review_stats.envelope.Lmax_sqrt_model.mars.10MPa.at_tau_14m",
+      "v6": 170.3748109239964,
+      "v9": 170.3748109239964,
+      "diff": 0.0,
+      "verdict": "identical"
+    },
+    {
+      "field": "review_stats.envelope.Lmax_sqrt_model.mars.10MPa.at_tau_6m",
+      "v6": 113.38019870701869,
+      "v9": 113.38019870701869,
+      "diff": 0.0,
+      "verdict": "identical"
+    },
+    {
+      "field": "review_stats.envelope.Lmax_sqrt_model.mars.1MPa.at_tau_14m",
+      "v6": 53.87724584403653,
+      "v9": 53.87724584403653,
+      "diff": 0.0,
+      "verdict": "identical"
+    },
+    {
+      "field": "review_stats.envelope.Lmax_sqrt_model.mars.1MPa.at_tau_6m",
+      "v6": 35.8539669476657,
+      "v9": 35.8539669476657,
+      "diff": 0.0,
+      "verdict": "identical"
+    },
+    {
+      "field": "review_stats.envelope.Lmax_sqrt_model.mars.5MPa.at_tau_14m",
+      "v6": 120.47318414773372,
+      "v9": 120.47318414773372,
+      "diff": 0.0,
+      "verdict": "identical"
+    },
+    {
+      "field": "review_stats.envelope.Lmax_sqrt_model.mars.5MPa.at_tau_6m",
+      "v6": 80.17190735801114,
+      "v9": 80.17190735801114,
+      "diff": 0.0,
+      "verdict": "identical"
+    },
+    {
+      "field": "review_stats.envelope.Lmax_sqrt_model.moon.10MPa.at_tau_14m",
+      "v6": 257.8308227179206,
+      "v9": 257.8308227179206,
+      "diff": 0.0,
+      "verdict": "identical"
+    },
+    {
+      "field": "review_stats.envelope.Lmax_sqrt_model.moon.10MPa.at_tau_6m",
+      "v6": 171.57999914431394,
+      "v9": 171.57999914431394,
+      "diff": 0.0,
+      "verdict": "identical"
+    },
+    {
+      "field": "review_stats.envelope.Lmax_sqrt_model.moon.1MPa.at_tau_14m",
+      "v6": 81.53326507837141,
+      "v9": 81.53326507837141,
+      "diff": 0.0,
+      "verdict": "identical"
+    },
+    {
+      "field": "review_stats.envelope.Lmax_sqrt_model.moon.1MPa.at_tau_6m",
+      "v6": 54.25835982257736,
+      "v9": 54.25835982257736,
+      "diff": 0.0,
+      "verdict": "identical"
+    },
+    {
+      "field": "review_stats.envelope.Lmax_sqrt_model.moon.5MPa.at_tau_14m",
+      "v6": 182.31392314274822,
+      "v9": 182.31392314274822,
+      "diff": 0.0,
+      "verdict": "identical"
+    },
+    {
+      "field": "review_stats.envelope.Lmax_sqrt_model.moon.5MPa.at_tau_6m",
+      "v6": 121.32538091092641,
+      "v9": 121.32538091092641,
+      "diff": 0.0,
+      "verdict": "identical"
+    },
+    {
+      "field": "review_stats.envelope.beta",
+      "v6": 0.5,
+      "v9": 0.5,
+      "diff": 0.0,
+      "verdict": "identical"
+    },
+    {
+      "field": "review_stats.envelope.kappa_sensitivity.drop_one",
+      "v6": 0.007980456026058633,
+      "v9": 0.0071661237785016286,
+      "diff": -0.0008143322475570045,
+      "verdict": "explained: 1 cm quantisation of the delivered cloud"
+    },
+    {
+      "field": "review_stats.envelope.kappa_sensitivity.median",
+      "v6": 0.5455172659005576,
+      "v9": 0.5450740034892101,
+      "diff": -0.00044326241134751143,
+      "verdict": "rounding-safe"
+    },
+    {
+      "field": "review_stats.envelope.kappa_sensitivity.p5",
+      "v6": 0.08811822191921215,
+      "v9": 0.08840808562535268,
+      "diff": 0.00028986370614053625,
+      "verdict": "rounding-safe"
+    },
+    {
+      "field": "review_stats.envelope.kappa_sensitivity.single_min",
+      "v6": 0.0034398034398034397,
+      "v9": 0.0034398034398034397,
+      "diff": 0.0,
+      "verdict": "identical"
+    },
+    {
+      "field": "review_stats.envelope.rho_mid",
+      "v6": 2600.0,
+      "v9": 2600.0,
+      "diff": 0.0,
+      "verdict": "identical"
+    },
+    {
+      "field": "review_stats.envelope.sigma_req_MPa.drop_one",
+      "v6": 1.953881379310345,
+      "v9": 1.9669246461949268,
+      "diff": 0.013043266884581906,
+      "verdict": "rounding-safe"
+    },
+    {
+      "field": "review_stats.envelope.sigma_req_MPa.max",
+      "v6": 2.046197514422284,
+      "v9": 2.046197514422284,
+      "diff": 0.0,
+      "verdict": "identical"
+    },
+    {
+      "field": "review_stats.envelope.sigma_req_MPa.median",
+      "v6": 0.21396552056049317,
+      "v9": 0.21420442638115217,
+      "diff": 0.00023890582065899668,
+      "verdict": "rounding-safe"
+    },
+    {
+      "field": "review_stats.envelope.sigma_req_MPa.n",
+      "v6": 248,
+      "v9": 248,
+      "diff": 0,
+      "verdict": "identical"
+    },
+    {
+      "field": "review_stats.envelope.sigma_req_MPa.p90",
+      "v6": 0.7709753896806971,
+      "v9": 0.7722372732584468,
+      "diff": 0.0012618835777497006,
+      "verdict": "rounding-safe"
+    },
+    {
+      "field": "review_stats.envelope.sigma_req_MPa.p95",
+      "v6": 1.564736533929792,
+      "v9": 1.564736533929792,
+      "diff": 0.0,
+      "verdict": "identical"
+    },
+    {
+      "field": "review_stats.envelope.sigma_req_MPa.sensitivity_tau_gt_0p5.drop_one",
+      "v6": 3.057099754293893,
+      "v9": 3.086551582369942,
+      "diff": 0.029451828076048958,
+      "verdict": "explained: 1 cm quantisation of the delivered cloud"
+    },
+    {
+      "field": "review_stats.envelope.sigma_req_MPa.sensitivity_tau_gt_0p5.max",
+      "v6": 3.7041471999999995,
+      "v9": 3.7041471999999995,
+      "diff": 0.0,
+      "verdict": "identical"
+    },
+    {
+      "field": "review_stats.envelope.sigma_req_MPa.sensitivity_tau_gt_0p5.n",
+      "v6": 270,
+      "v9": 270,
+      "diff": 0,
+      "verdict": "identical"
+    },
+    {
+      "field": "review_stats.envelope.span_scale.mars",
+      "v6": 1.6261011197806923,
+      "v9": 1.6261011197806923,
+      "diff": 0.0,
+      "verdict": "identical"
+    },
+    {
+      "field": "review_stats.envelope.span_scale.moon",
+      "v6": 2.4608038433722332,
+      "v9": 2.4608038433722332,
+      "diff": 0.0,
+      "verdict": "identical"
+    },
+    {
+      "field": "review_stats.envelope.tau_over_L.median",
+      "v6": 0.5455172659005576,
+      "v9": 0.5450740034892101,
+      "diff": -0.00044326241134751143,
+      "verdict": "rounding-safe"
+    },
+    {
+      "field": "review_stats.envelope.tau_over_L.min",
+      "v6": 0.0034398034398034397,
+      "v9": 0.0034398034398034397,
+      "diff": 0.0,
+      "verdict": "identical"
+    },
+    {
+      "field": "review_stats.envelope.tau_over_L.p25",
+      "v6": 0.2973923997004063,
+      "v9": 0.2970107203110933,
+      "diff": -0.0003816793893129944,
+      "verdict": "rounding-safe"
+    },
+    {
+      "field": "review_stats.envelope.tau_over_L.p5",
+      "v6": 0.08811822191921215,
+      "v9": 0.08840808562535268,
+      "diff": 0.00028986370614053625,
+      "verdict": "rounding-safe"
+    },
+    {
+      "field": "review_stats.envelope.tau_over_L.second",
+      "v6": 0.007980456026058633,
+      "v9": 0.0071661237785016286,
+      "diff": -0.0008143322475570045,
+      "verdict": "explained: 1 cm quantisation of the delivered cloud"
+    },
+    {
+      "field": "review_stats.envelope.tau_threshold_m",
+      "v6": 1.49,
+      "v9": 1.48,
+      "diff": -0.010000000000000009,
+      "verdict": "explained: S3 floor check on new voxel copy"
+    },
+    {
+      "field": "review_stats.mars_pits.apc_median",
+      "v6": 120.0,
+      "v9": 120.0,
+      "diff": 0.0,
+      "verdict": "identical"
+    },
+    {
+      "field": "review_stats.mars_pits.n_apc",
+      "v6": 132,
+      "v9": 132,
+      "diff": 0,
+      "verdict": "identical"
+    },
+    {
+      "field": "review_stats.mars_pits.n_apc_dimensioned",
+      "v6": 131,
+      "v9": 131,
+      "diff": 0,
+      "verdict": "identical"
+    },
+    {
+      "field": "review_stats.mars_pits.n_sky_type",
+      "v6": 354,
+      "v9": 354,
+      "diff": 0,
+      "verdict": "identical"
+    },
+    {
+      "field": "review_stats.mars_pits.n_total",
+      "v6": 1062,
+      "v9": 1062,
+      "diff": 0,
+      "verdict": "identical"
+    },
+    {
+      "field": "review_stats.moon_pits.all_inner.frac_lt_10",
+      "v6": 0.20676691729323307,
+      "v9": 0.20676691729323307,
+      "diff": 0.0,
+      "verdict": "identical"
+    },
+    {
+      "field": "review_stats.moon_pits.all_inner.frac_lt_narrowest",
+      "v6": 0.09022556390977443,
+      "v9": 0.09022556390977443,
+      "diff": 0.0,
+      "verdict": "identical"
+    },
+    {
+      "field": "review_stats.moon_pits.all_inner.median",
+      "v6": 16.0,
+      "v9": 16.0,
+      "diff": 0.0,
+      "verdict": "identical"
+    },
+    {
+      "field": "review_stats.moon_pits.all_inner.n",
+      "v6": 266,
+      "v9": 266,
+      "diff": 0,
+      "verdict": "identical"
+    },
+    {
+      "field": "review_stats.moon_pits.by_type.pit (highland).depth_median",
+      "v6": 27.0,
+      "v9": 27.0,
+      "diff": 0.0,
+      "verdict": "identical"
+    },
+    {
+      "field": "review_stats.moon_pits.by_type.pit (highland).inner_ge_narrowest",
+      "v6": 5,
+      "v9": 5,
+      "diff": 0,
+      "verdict": "identical"
+    },
+    {
+      "field": "review_stats.moon_pits.by_type.pit (highland).inner_max",
+      "v6": 45.0,
+      "v9": 45.0,
+      "diff": 0.0,
+      "verdict": "identical"
+    },
+    {
+      "field": "review_stats.moon_pits.by_type.pit (highland).inner_median",
+      "v6": 37.0,
+      "v9": 37.0,
+      "diff": 0.0,
+      "verdict": "identical"
+    },
+    {
+      "field": "review_stats.moon_pits.by_type.pit (highland).inner_min",
+      "v6": 19.0,
+      "v9": 19.0,
+      "diff": 0.0,
+      "verdict": "identical"
+    },
+    {
+      "field": "review_stats.moon_pits.by_type.pit (highland).n",
+      "v6": 5,
+      "v9": 5,
+      "diff": 0,
+      "verdict": "identical"
+    },
+    {
+      "field": "review_stats.moon_pits.by_type.pit (highland).n_inner",
+      "v6": 5,
+      "v9": 5,
+      "diff": 0,
+      "verdict": "identical"
+    },
+    {
+      "field": "review_stats.moon_pits.by_type.pit (highland).n_outer",
+      "v6": 5,
+      "v9": 5,
+      "diff": 0,
+      "verdict": "identical"
+    },
+    {
+      "field": "review_stats.moon_pits.by_type.pit (highland).outer_median",
+      "v6": 63.0,
+      "v9": 63.0,
+      "diff": 0.0,
+      "verdict": "identical"
+    },
+    {
+      "field": "review_stats.moon_pits.by_type.pit (impact melt).depth_median",
+      "v6": 9.0,
+      "v9": 9.0,
+      "diff": 0.0,
+      "verdict": "identical"
+    },
+    {
+      "field": "review_stats.moon_pits.by_type.pit (impact melt).inner_ge_narrowest",
+      "v6": 224,
+      "v9": 224,
+      "diff": 0,
+      "verdict": "identical"
+    },
+    {
+      "field": "review_stats.moon_pits.by_type.pit (impact melt).inner_max",
+      "v6": 385.0,
+      "v9": 385.0,
+      "diff": 0.0,
+      "verdict": "identical"
+    },
+    {
+      "field": "review_stats.moon_pits.by_type.pit (impact melt).inner_median",
+      "v6": 15.5,
+      "v9": 15.5,
+      "diff": 0.0,
+      "verdict": "identical"
+    },
+    {
+      "field": "review_stats.moon_pits.by_type.pit (impact melt).inner_min",
+      "v6": 4.0,
+      "v9": 4.0,
+      "diff": 0.0,
+      "verdict": "identical"
+    },
+    {
+      "field": "review_stats.moon_pits.by_type.pit (impact melt).n",
+      "v6": 257,
+      "v9": 257,
+      "diff": 0,
+      "verdict": "identical"
+    },
+    {
+      "field": "review_stats.moon_pits.by_type.pit (impact melt).n_inner",
+      "v6": 248,
+      "v9": 248,
+      "diff": 0,
+      "verdict": "identical"
+    },
+    {
+      "field": "review_stats.moon_pits.by_type.pit (impact melt).n_outer",
+      "v6": 246,
+      "v9": 246,
+      "diff": 0,
+      "verdict": "identical"
+    },
+    {
+      "field": "review_stats.moon_pits.by_type.pit (impact melt).outer_median",
+      "v6": 26.5,
+      "v9": 26.5,
+      "diff": 0.0,
+      "verdict": "identical"
+    },
+    {
+      "field": "review_stats.moon_pits.by_type.pit (mare).depth_median",
+      "v6": 40.0,
+      "v9": 40.0,
+      "diff": 0.0,
+      "verdict": "identical"
+    },
+    {
+      "field": "review_stats.moon_pits.by_type.pit (mare).inner_ge_narrowest",
+      "v6": 13,
+      "v9": 13,
+      "diff": 0,
+      "verdict": "identical"
+    },
+    {
+      "field": "review_stats.moon_pits.by_type.pit (mare).inner_max",
+      "v6": 175.0,
+      "v9": 175.0,
+      "diff": 0.0,
+      "verdict": "identical"
+    },
+    {
+      "field": "review_stats.moon_pits.by_type.pit (mare).inner_median",
+      "v6": 100.0,
+      "v9": 100.0,
+      "diff": 0.0,
+      "verdict": "identical"
+    },
+    {
+      "field": "review_stats.moon_pits.by_type.pit (mare).inner_min",
+      "v6": 14.0,
+      "v9": 14.0,
+      "diff": 0.0,
+      "verdict": "identical"
+    },
+    {
+      "field": "review_stats.moon_pits.by_type.pit (mare).n",
+      "v6": 16,
+      "v9": 16,
+      "diff": 0,
+      "verdict": "identical"
+    },
+    {
+      "field": "review_stats.moon_pits.by_type.pit (mare).n_inner",
+      "v6": 13,
+      "v9": 13,
+      "diff": 0,
+      "verdict": "identical"
+    },
+    {
+      "field": "review_stats.moon_pits.by_type.pit (mare).n_outer",
+      "v6": 15,
+      "v9": 15,
+      "diff": 0,
+      "verdict": "identical"
+    },
+    {
+      "field": "review_stats.moon_pits.by_type.pit (mare).outer_median",
+      "v6": 175.0,
+      "v9": 175.0,
+      "diff": 0.0,
+      "verdict": "identical"
+    },
+    {
+      "field": "review_stats.moon_pits.narrowest_section_m",
+      "v6": 6.07,
+      "v9": 6.07,
+      "diff": 0.0,
+      "verdict": "identical"
+    },
+    {
+      "field": "review_stats.scale_ruler.aerial.S1S2",
+      "v6": 22.44303252543745,
+      "v9": 22.44303252543745,
+      "diff": 0.0,
+      "verdict": "identical"
+    },
+    {
+      "field": "review_stats.scale_ruler.aerial.S1S3",
+      "v6": 57.0158232316613,
+      "v9": 57.0158232316613,
+      "diff": 0.0,
+      "verdict": "identical"
+    },
+    {
+      "field": "review_stats.scale_ruler.aerial.S2S3",
+      "v6": 34.72537768761215,
+      "v9": 34.72537768761215,
+      "diff": 0.0,
+      "verdict": "identical"
+    },
+    {
+      "field": "review_stats.scale_ruler.dlio_map.S1S2",
+      "v6": 22.262242449736465,
+      "v9": 22.262242449736465,
+      "diff": 0.0,
+      "verdict": "identical"
+    },
+    {
+      "field": "review_stats.scale_ruler.dlio_map.S1S3",
+      "v6": 59.19512886471778,
+      "v9": 59.19512886471778,
+      "diff": 0.0,
+      "verdict": "identical"
+    },
+    {
+      "field": "review_stats.scale_ruler.dlio_map.S2S3",
+      "v6": 37.149960414064104,
+      "v9": 37.149960414064104,
+      "diff": 0.0,
+      "verdict": "identical"
+    },
+    {
+      "field": "review_stats.scale_ruler.dlio_minus_aerial.S1S2",
+      "v6": -0.18079007570098327,
+      "v9": -0.18079007570098327,
+      "diff": 0.0,
+      "verdict": "identical"
+    },
+    {
+      "field": "review_stats.scale_ruler.dlio_minus_aerial.S1S3",
+      "v6": 2.1793056330564795,
+      "v9": 2.1793056330564795,
+      "diff": 0.0,
+      "verdict": "identical"
+    },
+    {
+      "field": "review_stats.scale_ruler.dlio_minus_aerial.S2S3",
+      "v6": 2.424582726451952,
+      "v9": 2.424582726451952,
+      "diff": 0.0,
+      "verdict": "identical"
+    },
+    {
+      "field": "review_stats.scale_ruler.dlio_minus_flf.S1S2",
+      "v6": -0.30439229295483017,
+      "v9": -0.30439229295483017,
+      "diff": 0.0,
+      "verdict": "identical"
+    },
+    {
+      "field": "review_stats.scale_ruler.dlio_minus_flf.S1S3",
+      "v6": 1.9356177849084872,
+      "v9": 1.9356177849084872,
+      "diff": 0.0,
+      "verdict": "identical"
+    },
+    {
+      "field": "review_stats.scale_ruler.dlio_minus_flf.S2S3",
+      "v6": 2.181364179525957,
+      "v9": 2.181364179525957,
+      "diff": 0.0,
+      "verdict": "identical"
+    },
+    {
+      "field": "review_stats.scale_ruler.flf_map.S1S2",
+      "v6": 22.566634742691296,
+      "v9": 22.566634742691296,
+      "diff": 0.0,
+      "verdict": "identical"
+    },
+    {
+      "field": "review_stats.scale_ruler.flf_map.S1S3",
+      "v6": 57.25951107980929,
+      "v9": 57.25951107980929,
+      "diff": 0.0,
+      "verdict": "identical"
+    },
+    {
+      "field": "review_stats.scale_ruler.flf_map.S2S3",
+      "v6": 34.96859623453815,
+      "v9": 34.96859623453815,
+      "diff": 0.0,
+      "verdict": "identical"
+    },
+    {
+      "field": "review_stats.scale_ruler.flf_minus_aerial.S1S2",
+      "v6": 0.1236022172538469,
+      "v9": 0.1236022172538469,
+      "diff": 0.0,
+      "verdict": "identical"
+    },
+    {
+      "field": "review_stats.scale_ruler.flf_minus_aerial.S1S3",
+      "v6": 0.24368784814799227,
+      "v9": 0.24368784814799227,
+      "diff": 0.0,
+      "verdict": "identical"
+    },
+    {
+      "field": "review_stats.scale_ruler.flf_minus_aerial.S2S3",
+      "v6": 0.24321854692599487,
+      "v9": 0.24321854692599487,
+      "diff": 0.0,
+      "verdict": "identical"
+    },
+    {
+      "field": "review_stats.scale_ruler.hole_semi_major.aerial[0]",
+      "v6": 2.2791297913328066,
+      "v9": 2.2791297913328066,
+      "diff": 0.0,
+      "verdict": "identical"
+    },
+    {
+      "field": "review_stats.scale_ruler.hole_semi_major.aerial[1]",
+      "v6": 1.4142135623730951,
+      "v9": 1.4142135623730951,
+      "diff": 0.0,
+      "verdict": "identical"
+    },
+    {
+      "field": "review_stats.scale_ruler.hole_semi_major.aerial[2]",
+      "v6": 4.668308414005641,
+      "v9": 4.668308414005641,
+      "diff": 0.0,
+      "verdict": "identical"
+    },
+    {
+      "field": "review_stats.scale_ruler.hole_semi_major.dlio[0]",
+      "v6": 2.5625738852291935,
+      "v9": 2.5625738852291935,
+      "diff": 0.0,
+      "verdict": "identical"
+    },
+    {
+      "field": "review_stats.scale_ruler.hole_semi_major.dlio[1]",
+      "v6": 2.449489742783178,
+      "v9": 2.449489742783178,
+      "diff": 0.0,
+      "verdict": "identical"
+    },
+    {
+      "field": "review_stats.scale_ruler.hole_semi_major.dlio[2]",
+      "v6": 7.6375067096266385,
+      "v9": 7.6375067096266385,
+      "diff": 0.0,
+      "verdict": "identical"
+    },
+    {
+      "field": "review_stats.scale_ruler.hole_semi_major.flf[0]",
+      "v6": 2.1838568563966754,
+      "v9": 2.1838568563966754,
+      "diff": 0.0,
+      "verdict": "identical"
+    },
+    {
+      "field": "review_stats.scale_ruler.hole_semi_major.flf[1]",
+      "v6": 2.0976176963403033,
+      "v9": 2.0976176963403033,
+      "diff": 0.0,
+      "verdict": "identical"
+    },
+    {
+      "field": "review_stats.scale_ruler.hole_semi_major.flf[2]",
+      "v6": 5.167915807619661,
+      "v9": 5.167915807619661,
+      "diff": 0.0,
+      "verdict": "identical"
+    },
+    {
+      "field": "review_stats.shielding.2200.frac_gt_100",
+      "v6": 0.9818840579710145,
+      "v9": 0.9782608695652174,
+      "diff": -0.0036231884057971175,
+      "verdict": "rounding-safe"
+    },
+    {
+      "field": "review_stats.shielding.2200.frac_gt_1000",
+      "v6": 0.6884057971014492,
+      "v9": 0.6884057971014492,
+      "diff": 0.0,
+      "verdict": "identical"
+    },
+    {
+      "field": "review_stats.shielding.2200.frac_gt_500",
+      "v6": 0.8043478260869565,
+      "v9": 0.8043478260869565,
+      "diff": 0.0,
+      "verdict": "identical"
+    },
+    {
+      "field": "review_stats.shielding.2200.median_g_cm2",
+      "v6": 1325.61,
+      "v9": 1323.41,
+      "diff": -2.199999999999818,
+      "verdict": "rounding-safe"
+    },
+    {
+      "field": "review_stats.shielding.2600.frac_gt_100",
+      "v6": 0.9855072463768116,
+      "v9": 0.9855072463768116,
+      "diff": 0.0,
+      "verdict": "identical"
+    },
+    {
+      "field": "review_stats.shielding.2600.frac_gt_1000",
+      "v6": 0.7210144927536232,
+      "v9": 0.7210144927536232,
+      "diff": 0.0,
+      "verdict": "identical"
+    },
+    {
+      "field": "review_stats.shielding.2600.frac_gt_500",
+      "v6": 0.8369565217391305,
+      "v9": 0.8369565217391305,
+      "diff": 0.0,
+      "verdict": "identical"
+    },
+    {
+      "field": "review_stats.shielding.2600.median_g_cm2",
+      "v6": 1566.63,
+      "v9": 1564.0299999999997,
+      "diff": -2.600000000000364,
+      "verdict": "rounding-safe"
+    },
+    {
+      "field": "review_stats.shielding.3000.frac_gt_100",
+      "v6": 0.9855072463768116,
+      "v9": 0.9855072463768116,
+      "diff": 0.0,
+      "verdict": "identical"
+    },
+    {
+      "field": "review_stats.shielding.3000.frac_gt_1000",
+      "v6": 0.7427536231884058,
+      "v9": 0.7427536231884058,
+      "diff": 0.0,
+      "verdict": "identical"
+    },
+    {
+      "field": "review_stats.shielding.3000.frac_gt_500",
+      "v6": 0.8659420289855072,
+      "v9": 0.8659420289855072,
+      "diff": 0.0,
+      "verdict": "identical"
+    },
+    {
+      "field": "review_stats.shielding.3000.median_g_cm2",
+      "v6": 1807.65,
+      "v9": 1804.65,
+      "diff": -3.0,
+      "verdict": "rounding-safe"
+    },
+    {
+      "field": "review_stats.stats.ci_block.20[0]",
+      "v6": 3.51,
+      "v9": 3.5,
+      "diff": -0.009999999999999787,
+      "verdict": "rounding-safe"
+    },
+    {
+      "field": "review_stats.stats.ci_block.20[1]",
+      "v6": 8.326,
+      "v9": 8.316,
+      "diff": -0.009999999999999787,
+      "verdict": "rounding-safe"
+    },
+    {
+      "field": "review_stats.stats.ci_block.30[0]",
+      "v6": 3.14,
+      "v9": 3.14,
+      "diff": 0.0,
+      "verdict": "identical"
+    },
+    {
+      "field": "review_stats.stats.ci_block.30[1]",
+      "v6": 8.6555,
+      "v9": 8.650500000000001,
+      "diff": -0.004999999999999005,
+      "verdict": "rounding-safe"
+    },
+    {
+      "field": "review_stats.stats.ci_block.50[0]",
+      "v6": 2.439,
+      "v9": 2.429,
+      "diff": -0.010000000000000231,
+      "verdict": "rounding-safe"
+    },
+    {
+      "field": "review_stats.stats.ci_block.50[1]",
+      "v6": 8.9805,
+      "v9": 8.9755,
+      "diff": -0.004999999999999005,
+      "verdict": "rounding-safe"
+    },
+    {
+      "field": "review_stats.stats.ci_iid[0]",
+      "v6": 5.7305,
+      "v9": 5.7255,
+      "diff": -0.004999999999999893,
+      "verdict": "rounding-safe"
+    },
+    {
+      "field": "review_stats.stats.ci_iid[1]",
+      "v6": 6.4015,
+      "v9": 6.392,
+      "diff": -0.009500000000000064,
+      "verdict": "rounding-safe"
+    },
+    {
+      "field": "review_stats.stats.corr_len_1e_m",
+      "v6": 50,
+      "v9": 50,
+      "diff": 0,
+      "verdict": "identical"
+    },
+    {
+      "field": "review_stats.stats.corr_len_zero_m",
+      "v6": 102,
+      "v9": 102,
+      "diff": 0,
+      "verdict": "identical"
+    },
+    {
+      "field": "review_stats.stats.median",
+      "v6": 6.025499999999999,
+      "v9": 6.015499999999999,
+      "diff": -0.009999999999999787,
+      "verdict": "explained: 1 cm quantisation of the delivered cloud"
+    },
+    {
+      "field": "review_stats.stats.n_eff",
+      "v6": 3.3673174606338883,
+      "v9": 3.3678118322056174,
+      "diff": 0.0004943715717291575,
+      "verdict": "rounding-safe"
+    },
+    {
+      "field": "review_stats.stats.sigma_tau_systematic_m",
+      "v6": 1.49,
+      "v9": 1.48,
+      "diff": -0.010000000000000009,
+      "verdict": "explained: S3 floor check on new voxel copy"
+    },
+    {
+      "field": "review_stats.terrain.ceiling_thinning.ci95[0]",
+      "v6": -0.169879848859671,
+      "v9": -0.14899966334630033,
+      "diff": 0.020880185513370675,
+      "verdict": "explained: aperture bookkeeping"
+    },
+    {
+      "field": "review_stats.terrain.ceiling_thinning.ci95[1]",
+      "v6": -0.10926285931154604,
+      "v9": -0.09332139342316259,
+      "diff": 0.015941465888383452,
+      "verdict": "explained: aperture bookkeeping"
+    },
+    {
+      "field": "review_stats.terrain.ceiling_thinning.n",
+      "v6": 108,
+      "v9": 108,
+      "diff": 0,
+      "verdict": "identical"
+    },
+    {
+      "field": "review_stats.terrain.ceiling_thinning.slope_m_per_m",
+      "v6": -0.13450967100605574,
+      "v9": -0.11637679148335921,
+      "diff": 0.01813287952269653,
+      "verdict": "explained: aperture bookkeeping"
+    },
+    {
+      "field": "review_stats.terrain.const_ceiling_control.r",
+      "v6": 0.9054436757855368,
+      "v9": 0.9053459634043665,
+      "diff": -9.771238117028958e-05,
+      "verdict": "rounding-safe"
+    },
+    {
+      "field": "review_stats.terrain.const_ceiling_control.r2",
+      "v6": 0.8154773306946987,
+      "v9": 0.8152974930001698,
+      "diff": -0.00017983769452889486,
+      "verdict": "rounding-safe"
+    },
+    {
+      "field": "review_stats.terrain.const_ceiling_control.rms_residual_m",
+      "v6": 1.6953427141899735,
+      "v9": 1.6953266197759855,
+      "diff": -1.6094413987977063e-05,
+      "verdict": "rounding-safe"
+    },
+    {
+      "field": "review_stats.terrain.corr_tau_zdem",
+      "v6": 0.9054436757855369,
+      "v9": 0.9053459634043661,
+      "diff": -9.771238117073366e-05,
+      "verdict": "rounding-safe"
+    },
+    {
+      "field": "review_stats.terrain.dem_share",
+      "v6": 0.704730325469491,
+      "v9": 0.7045293681649831,
+      "diff": -0.00020095730450786498,
+      "verdict": "rounding-safe"
+    },
+    {
+      "field": "review_stats.terrain.near_skylight_median.10to20",
+      "v6": 2.24,
+      "v9": 2.6654999999999998,
+      "diff": 0.42549999999999955,
+      "verdict": "explained: aperture bookkeeping"
+    },
+    {
+      "field": "review_stats.terrain.near_skylight_median.20to30",
+      "v6": 4.63,
+      "v9": 4.1080000000000005,
+      "diff": -0.5219999999999994,
+      "verdict": "explained: aperture bookkeeping"
+    },
+    {
+      "field": "review_stats.terrain.near_skylight_median.lt10",
+      "v6": 1.3559999999999999,
+      "v9": 1.3559999999999999,
+      "diff": 0.0,
+      "verdict": "identical"
+    },
+    {
+      "field": "review_stats.terrain.net_centreline.end",
+      "v6": 234.219,
+      "v9": 168.219,
+      "diff": -66.0,
+      "verdict": "datum (dz)"
+    },
+    {
+      "field": "review_stats.terrain.net_centreline.start",
+      "v6": 232.597,
+      "v9": 166.597,
+      "diff": -66.0,
+      "verdict": "datum (dz)"
+    },
+    {
+      "field": "review_stats.terrain.reach_median.0-50",
+      "v6": 1.8355000000000001,
+      "v9": 1.8305,
+      "diff": -0.0050000000000001155,
+      "verdict": "rounding-safe"
+    },
+    {
+      "field": "review_stats.terrain.reach_median.100-150",
+      "v6": 4.686,
+      "v9": 4.670999999999999,
+      "diff": -0.015000000000000568,
+      "verdict": "rounding-safe"
+    },
+    {
+      "field": "review_stats.terrain.reach_median.150-200",
+      "v6": 6.475,
+      "v9": 6.47,
+      "diff": -0.004999999999999893,
+      "verdict": "rounding-safe"
+    },
+    {
+      "field": "review_stats.terrain.reach_median.200-250",
+      "v6": 7.991,
+      "v9": 7.981,
+      "diff": -0.009999999999999787,
+      "verdict": "rounding-safe"
+    },
+    {
+      "field": "review_stats.terrain.reach_median.250-300",
+      "v6": 12.942499999999999,
+      "v9": 12.932500000000001,
+      "diff": -0.00999999999999801,
+      "verdict": "rounding-safe"
+    },
+    {
+      "field": "review_stats.terrain.reach_median.50-100",
+      "v6": 1.544,
+      "v9": 1.539,
+      "diff": -0.0050000000000001155,
+      "verdict": "rounding-safe"
+    },
+    {
+      "field": "review_stats.terrain.skylight_runs[0].d_tau",
+      "v6": -5.60040125065138,
+      "v9": -5.556597198744264,
+      "diff": 0.04380405190711656,
+      "verdict": "explained: aperture bookkeeping"
+    },
+    {
+      "field": "review_stats.terrain.skylight_runs[0].d_zceil",
+      "v6": 0.3956722251172664,
+      "v9": 0.27324667954596293,
+      "diff": -0.12242554557130347,
+      "verdict": "explained: aperture bookkeeping"
+    },
+    {
+      "field": "review_stats.terrain.skylight_runs[0].d_zdem",
+      "v6": -5.204760291818673,
+      "v9": -5.283369958947134,
+      "diff": -0.07860966712846107,
+      "verdict": "explained: aperture bookkeeping"
+    },
+    {
+      "field": "review_stats.terrain.skylight_runs[0].run_s[0]",
+      "v6": 29.0,
+      "v9": 29.0,
+      "diff": 0.0,
+      "verdict": "identical"
+    },
+    {
+      "field": "review_stats.terrain.skylight_runs[0].run_s[1]",
+      "v6": 36.0,
+      "v9": 30.0,
+      "diff": -6.0,
+      "verdict": "explained: aperture bookkeeping"
+    },
+    {
+      "field": "review_stats.terrain.skylight_runs[1].d_tau",
+      "v6": -7.238945340501794,
+      "v9": -5.939389533239037,
+      "diff": 1.2995558072627569,
+      "verdict": "explained: aperture bookkeeping"
+    },
+    {
+      "field": "review_stats.terrain.skylight_runs[1].d_zceil",
+      "v6": 2.260360215053794,
+      "v9": 0.8009421499292557,
+      "diff": -1.459418065124538,
+      "verdict": "explained: aperture bookkeeping"
+    },
+    {
+      "field": "review_stats.terrain.skylight_runs[1].d_zdem",
+      "v6": -4.978557347670261,
+      "v9": -5.138471004243314,
+      "diff": -0.15991365657305323,
+      "verdict": "explained: aperture bookkeeping"
+    },
+    {
+      "field": "review_stats.terrain.skylight_runs[1].run_s[0]",
+      "v6": 54.0,
+      "v9": 35.0,
+      "diff": -19.0,
+      "verdict": "explained: aperture bookkeeping"
+    },
+    {
+      "field": "review_stats.terrain.skylight_runs[1].run_s[1]",
+      "v6": 56.0,
+      "v9": 36.0,
+      "diff": -20.0,
+      "verdict": "explained: aperture bookkeeping"
+    },
+    {
+      "field": "review_stats.terrain.skylight_runs[2].d_tau",
+      "v6": -5.834465011961724,
+      "v9": -7.235459677419356,
+      "diff": -1.400994665457632,
+      "verdict": "explained: aperture bookkeeping"
+    },
+    {
+      "field": "review_stats.terrain.skylight_runs[2].d_zceil",
+      "v6": 2.224367523923405,
+      "v9": 2.2603602150537654,
+      "diff": 0.0359926911303603,
+      "verdict": "explained: aperture bookkeeping"
+    },
+    {
+      "field": "review_stats.terrain.skylight_runs[2].d_zdem",
+      "v6": -3.610059808612533,
+      "v9": -4.975071684587789,
+      "diff": -1.3650118759752559,
+      "verdict": "explained: aperture bookkeeping"
+    },
+    {
+      "field": "review_stats.terrain.skylight_runs[2].run_s[0]",
+      "v6": 89.0,
+      "v9": 54.0,
+      "diff": -35.0,
+      "verdict": "explained: aperture bookkeeping"
+    },
+    {
+      "field": "review_stats.terrain.skylight_runs[2].run_s[1]",
+      "v6": 99.0,
+      "v9": 56.0,
+      "diff": -43.0,
+      "verdict": "explained: aperture bookkeeping"
+    },
+    {
+      "field": "review_stats.terrain.skylight_runs[3].d_tau",
+      "v6": null,
+      "v9": -5.832866327751195,
+      "diff": "",
+      "verdict": "explained: aperture bookkeeping"
+    },
+    {
+      "field": "review_stats.terrain.skylight_runs[3].d_zceil",
+      "v6": null,
+      "v9": 2.224367523923462,
+      "diff": "",
+      "verdict": "explained: aperture bookkeeping"
+    },
+    {
+      "field": "review_stats.terrain.skylight_runs[3].d_zdem",
+      "v6": null,
+      "v9": -3.60851375598088,
+      "diff": "",
+      "verdict": "explained: aperture bookkeeping"
+    },
+    {
+      "field": "review_stats.terrain.skylight_runs[3].run_s[0]",
+      "v6": null,
+      "v9": 89.0,
+      "diff": "",
+      "verdict": "explained: aperture bookkeeping"
+    },
+    {
+      "field": "review_stats.terrain.skylight_runs[3].run_s[1]",
+      "v6": null,
+      "v9": 99.0,
+      "diff": "",
+      "verdict": "explained: aperture bookkeeping"
+    },
+    {
+      "field": "review_stats.terrain.tau_hist_2m.counts[0]",
+      "v6": 47,
+      "v9": 47,
+      "diff": 0,
+      "verdict": "identical"
+    },
+    {
+      "field": "review_stats.terrain.tau_hist_2m.counts[1]",
+      "v6": 30,
+      "v9": 30,
+      "diff": 0,
+      "verdict": "identical"
+    },
+    {
+      "field": "review_stats.terrain.tau_hist_2m.counts[2]",
+      "v6": 59,
+      "v9": 59,
+      "diff": 0,
+      "verdict": "identical"
+    },
+    {
+      "field": "review_stats.terrain.tau_hist_2m.counts[3]",
+      "v6": 44,
+      "v9": 44,
+      "diff": 0,
+      "verdict": "identical"
+    },
+    {
+      "field": "review_stats.terrain.tau_hist_2m.counts[4]",
+      "v6": 34,
+      "v9": 34,
+      "diff": 0,
+      "verdict": "identical"
+    },
+    {
+      "field": "review_stats.terrain.tau_hist_2m.counts[5]",
+      "v6": 22,
+      "v9": 22,
+      "diff": 0,
+      "verdict": "identical"
+    },
+    {
+      "field": "review_stats.terrain.tau_hist_2m.counts[6]",
+      "v6": 38,
+      "v9": 38,
+      "diff": 0,
+      "verdict": "identical"
+    },
+    {
+      "field": "review_stats.terrain.tau_hist_2m.counts[7]",
+      "v6": 2,
+      "v9": 2,
+      "diff": 0,
+      "verdict": "identical"
+    },
+    {
+      "field": "review_stats.terrain.tau_hist_2m.edges[0]",
+      "v6": 0,
+      "v9": 0,
+      "diff": 0,
+      "verdict": "identical"
+    },
+    {
+      "field": "review_stats.terrain.tau_hist_2m.edges[1]",
+      "v6": 2,
+      "v9": 2,
+      "diff": 0,
+      "verdict": "identical"
+    },
+    {
+      "field": "review_stats.terrain.tau_hist_2m.edges[2]",
+      "v6": 4,
+      "v9": 4,
+      "diff": 0,
+      "verdict": "identical"
+    },
+    {
+      "field": "review_stats.terrain.tau_hist_2m.edges[3]",
+      "v6": 6,
+      "v9": 6,
+      "diff": 0,
+      "verdict": "identical"
+    },
+    {
+      "field": "review_stats.terrain.tau_hist_2m.edges[4]",
+      "v6": 8,
+      "v9": 8,
+      "diff": 0,
+      "verdict": "identical"
+    },
+    {
+      "field": "review_stats.terrain.tau_hist_2m.edges[5]",
+      "v6": 10,
+      "v9": 10,
+      "diff": 0,
+      "verdict": "identical"
+    },
+    {
+      "field": "review_stats.terrain.tau_hist_2m.edges[6]",
+      "v6": 12,
+      "v9": 12,
+      "diff": 0,
+      "verdict": "identical"
+    },
+    {
+      "field": "review_stats.terrain.tau_hist_2m.edges[7]",
+      "v6": 14,
+      "v9": 14,
+      "diff": 0,
+      "verdict": "identical"
+    },
+    {
+      "field": "review_stats.terrain.tau_hist_2m.edges[8]",
+      "v6": 16,
+      "v9": 16,
+      "diff": 0,
+      "verdict": "identical"
+    },
+    {
+      "field": "review_stats.terrain.variance.tau",
+      "v6": 15.576335034485929,
+      "v9": 15.560873506301197,
+      "diff": -0.015461528184731677,
+      "verdict": "rounding-safe"
+    },
+    {
+      "field": "review_stats.terrain.variance.z_ceil",
+      "v6": 2.8741734459147246,
+      "v9": 2.8741734459147246,
+      "diff": 0.0,
+      "verdict": "identical"
+    },
+    {
+      "field": "review_stats.terrain.variance.z_dem",
+      "v6": 10.977115658475103,
+      "v9": 10.963092379489607,
+      "diff": -0.014023278985495935,
+      "verdict": "rounding-safe"
+    },
+    {
+      "field": "review_stats.terrain.zceil_range",
+      "v6": 10.558999999999997,
+      "v9": 10.558999999999997,
+      "diff": 0.0,
+      "verdict": "identical"
+    },
+    {
+      "field": "review_stats.terrain.zdem_range",
+      "v6": 12.659999999999997,
+      "v9": 12.650000000000006,
+      "diff": -0.009999999999990905,
+      "verdict": "rounding-safe"
+    },
+    {
+      "field": "review_stats.volume.n_sections",
+      "v6": 302,
+      "v9": 302,
+      "diff": 0,
+      "verdict": "identical"
+    },
+    {
+      "field": "review_stats.volume.per_m",
+      "v6": 46.57803774834437,
+      "v9": 46.57803774834437,
+      "diff": 0.0,
+      "verdict": "identical"
+    },
+    {
+      "field": "review_stats.volume.total_m3",
+      "v6": 14066.5674,
+      "v9": 14066.5674,
+      "diff": 0.0,
+      "verdict": "identical"
+    },
+    {
+      "field": "roof_summary.kappa_env",
+      "v6": 0.0034,
+      "v9": 0.0034,
+      "diff": 0.0,
+      "verdict": "identical"
+    },
+    {
+      "field": "roof_summary.kappa_env_station.s",
+      "v6": 51.0,
+      "v9": 51.0,
+      "diff": 0.0,
+      "verdict": "identical"
+    },
+    {
+      "field": "roof_summary.kappa_env_station.span",
+      "v6": 12.21,
+      "v9": 12.21,
+      "diff": 0.0,
+      "verdict": "identical"
+    },
+    {
+      "field": "roof_summary.kappa_env_station.tau",
+      "v6": 0.04,
+      "v9": 0.04,
+      "diff": 0.0,
+      "verdict": "identical"
+    },
+    {
+      "field": "roof_summary.n_inconsistent",
+      "v6": 4,
+      "v9": 4,
+      "diff": 0,
+      "verdict": "identical"
+    },
+    {
+      "field": "roof_summary.n_intact",
+      "v6": 276,
+      "v9": 276,
+      "diff": 0,
+      "verdict": "identical"
+    },
+    {
+      "field": "roof_summary.n_low_coverage",
+      "v6": 0,
+      "v9": 0,
+      "diff": 0,
+      "verdict": "identical"
+    },
+    {
+      "field": "roof_summary.n_multipass",
+      "v6": 0,
+      "v9": 0,
+      "diff": 0,
+      "verdict": "identical"
+    },
+    {
+      "field": "roof_summary.n_no_dem",
+      "v6": 0,
+      "v9": 4,
+      "diff": 4,
+      "verdict": "explained: aperture bookkeeping"
+    },
+    {
+      "field": "roof_summary.n_skylight",
+      "v6": 22,
+      "v9": 18,
+      "diff": -4,
+      "verdict": "explained: aperture bookkeeping"
+    },
+    {
+      "field": "roof_summary.n_stations",
+      "v6": 302,
+      "v9": 302,
+      "diff": 0,
+      "verdict": "identical"
+    },
+    {
+      "field": "roof_summary.rho_basalt",
+      "v6": 2600.0,
+      "v9": 2600.0,
+      "diff": 0.0,
+      "verdict": "identical"
+    },
+    {
+      "field": "roof_summary.shielding_g_cm2.atmosphere_ratio_median",
+      "v6": 1.52,
+      "v9": 1.51,
+      "diff": -0.010000000000000009,
+      "verdict": "explained: 1 cm quantisation of the delivered cloud"
+    },
+    {
+      "field": "roof_summary.shielding_g_cm2.median",
+      "v6": 1567.0,
+      "v9": 1564.0,
+      "diff": -3.0,
+      "verdict": "explained: 1 cm quantisation of the delivered cloud"
+    },
+    {
+      "field": "roof_summary.shielding_g_cm2.min",
+      "v6": 11.0,
+      "v9": 11.0,
+      "diff": 0.0,
+      "verdict": "identical"
+    },
+    {
+      "field": "roof_summary.tau_m.max",
+      "v6": 14.15,
+      "v9": 14.14,
+      "diff": -0.009999999999999787,
+      "verdict": "rounding-safe"
+    },
+    {
+      "field": "roof_summary.tau_m.median",
+      "v6": 6.03,
+      "v9": 6.02,
+      "diff": -0.010000000000000675,
+      "verdict": "rounding-safe"
+    },
+    {
+      "field": "roof_summary.tau_m.median_ci95[0]",
+      "v6": 5.74,
+      "v9": 5.73,
+      "diff": -0.009999999999999787,
+      "verdict": "rounding-safe"
+    },
+    {
+      "field": "roof_summary.tau_m.median_ci95[1]",
+      "v6": 6.4,
+      "v9": 6.39,
+      "diff": -0.010000000000000675,
+      "verdict": "rounding-safe"
+    },
+    {
+      "field": "roof_summary.tau_m.min",
+      "v6": 0.04,
+      "v9": 0.04,
+      "diff": 0.0,
+      "verdict": "identical"
+    },
+    {
+      "field": "roof_summary.tau_m.q25",
+      "v6": 3.24,
+      "v9": 3.24,
+      "diff": 0.0,
+      "verdict": "identical"
+    },
+    {
+      "field": "roof_summary.tau_m.q75",
+      "v6": 9.01,
+      "v9": 9.0,
+      "diff": -0.009999999999999787,
+      "verdict": "rounding-safe"
+    },
+    {
+      "field": "roof_summary.tau_m.sigma",
+      "v6": 1.49,
+      "v9": 1.48,
+      "diff": -0.010000000000000009,
+      "verdict": "rounding-safe"
+    },
+    {
+      "field": "morphometry_summary.area_m2.max",
+      "v6": 81.4,
+      "v9": 81.4,
+      "diff": 0.0,
+      "verdict": "identical"
+    },
+    {
+      "field": "morphometry_summary.area_m2.mean_boot_ci95[0]",
+      "v6": 45.2,
+      "v9": 45.2,
+      "diff": 0.0,
+      "verdict": "identical"
+    },
+    {
+      "field": "morphometry_summary.area_m2.mean_boot_ci95[1]",
+      "v6": 49.2,
+      "v9": 49.2,
+      "diff": 0.0,
+      "verdict": "identical"
+    },
+    {
+      "field": "morphometry_summary.area_m2.median",
+      "v6": 48.0,
+      "v9": 48.0,
+      "diff": 0.0,
+      "verdict": "identical"
+    },
+    {
+      "field": "morphometry_summary.area_m2.min",
+      "v6": 5.1,
+      "v9": 5.1,
+      "diff": 0.0,
+      "verdict": "identical"
+    },
+    {
+      "field": "morphometry_summary.area_m2.p5",
+      "v6": 13.4,
+      "v9": 13.4,
+      "diff": 0.0,
+      "verdict": "identical"
+    },
+    {
+      "field": "morphometry_summary.area_m2.p95",
+      "v6": 75.8,
+      "v9": 75.8,
+      "diff": 0.0,
+      "verdict": "identical"
+    },
+    {
+      "field": "morphometry_summary.area_m2.q25",
+      "v6": 36.0,
+      "v9": 36.0,
+      "diff": 0.0,
+      "verdict": "identical"
+    },
+    {
+      "field": "morphometry_summary.area_m2.q75",
+      "v6": 59.2,
+      "v9": 59.2,
+      "diff": 0.0,
+      "verdict": "identical"
+    },
+    {
+      "field": "morphometry_summary.eta.median",
+      "v6": 1.53,
+      "v9": 1.53,
+      "diff": 0.0,
+      "verdict": "identical"
+    },
+    {
+      "field": "morphometry_summary.eta.q25",
+      "v6": 1.31,
+      "v9": 1.31,
+      "diff": 0.0,
+      "verdict": "identical"
+    },
+    {
+      "field": "morphometry_summary.eta.q75",
+      "v6": 1.84,
+      "v9": 1.84,
+      "diff": 0.0,
+      "verdict": "identical"
+    },
+    {
+      "field": "morphometry_summary.height_m.max",
+      "v6": 11.41,
+      "v9": 11.41,
+      "diff": 0.0,
+      "verdict": "identical"
+    },
+    {
+      "field": "morphometry_summary.height_m.median",
+      "v6": 8.09,
+      "v9": 8.09,
+      "diff": 0.0,
+      "verdict": "identical"
+    },
+    {
+      "field": "morphometry_summary.height_m.min",
+      "v6": 3.53,
+      "v9": 3.53,
+      "diff": 0.0,
+      "verdict": "identical"
+    },
+    {
+      "field": "morphometry_summary.min_coverage",
+      "v6": 0.5,
+      "v9": 0.5,
+      "diff": 0.0,
+      "verdict": "identical"
+    },
+    {
+      "field": "morphometry_summary.n_stations",
+      "v6": 302,
+      "v9": 302,
+      "diff": 0,
+      "verdict": "identical"
+    },
+    {
+      "field": "morphometry_summary.n_valid_sections",
+      "v6": 296,
+      "v9": 296,
+      "diff": 0,
+      "verdict": "identical"
+    },
+    {
+      "field": "morphometry_summary.sinuosity_50m.max",
+      "v6": 1.079,
+      "v9": 1.079,
+      "diff": 0.0,
+      "verdict": "identical"
+    },
+    {
+      "field": "morphometry_summary.sinuosity_50m.mean",
+      "v6": 1.032,
+      "v9": 1.032,
+      "diff": 0.0,
+      "verdict": "identical"
+    },
+    {
+      "field": "morphometry_summary.total_centreline_m",
+      "v6": 301.0,
+      "v9": 301.0,
+      "diff": 0.0,
+      "verdict": "identical"
+    },
+    {
+      "field": "morphometry_summary.width_m.max",
+      "v6": 31.6,
+      "v9": 31.6,
+      "diff": 0.0,
+      "verdict": "identical"
+    },
+    {
+      "field": "morphometry_summary.width_m.median",
+      "v6": 10.53,
+      "v9": 10.53,
+      "diff": 0.0,
+      "verdict": "identical"
+    },
+    {
+      "field": "morphometry_summary.width_m.min",
+      "v6": 6.07,
+      "v9": 6.07,
+      "diff": 0.0,
+      "verdict": "identical"
+    },
+    {
+      "field": "morphometry_summary.width_min_m",
+      "v6": 6.07,
+      "v9": 6.07,
+      "diff": 0.0,
+      "verdict": "identical"
+    },
+    {
+      "field": "registration_validation.floor_through_skylight_s3.annulus_outside_cone.median_m",
+      "v6": 0.9071502685546875,
+      "v9": 0.8983306884765625,
+      "diff": -0.008819580078125,
+      "verdict": "explained: S3 floor check on new voxel copy"
+    },
+    {
+      "field": "registration_validation.floor_through_skylight_s3.annulus_outside_cone.n",
+      "v6": 321,
+      "v9": 327,
+      "diff": 6,
+      "verdict": "explained: S3 floor check on new voxel copy"
+    },
+    {
+      "field": "registration_validation.floor_through_skylight_s3.annulus_outside_cone.p10_m",
+      "v6": -0.06867218017578125,
+      "v9": -0.07890319824218747,
+      "diff": -0.010231018066406222,
+      "verdict": "explained: S3 floor check on new voxel copy"
+    },
+    {
+      "field": "registration_validation.floor_through_skylight_s3.annulus_outside_cone.p90_m",
+      "v6": 1.3718719482421875,
+      "v9": 1.3727249145507814,
+      "diff": 0.0008529663085938832,
+      "verdict": "rounding-safe"
+    },
+    {
+      "field": "registration_validation.floor_through_skylight_s3.annulus_outside_cone.rms_m",
+      "v6": 1.3602545239430572,
+      "v9": 1.351579299890805,
+      "diff": -0.008675224052252295,
+      "verdict": "explained: S3 floor check on new voxel copy"
+    },
+    {
+      "field": "registration_validation.floor_through_skylight_s3.median_m",
+      "v6": 0.8868675231933594,
+      "v9": 0.8738021850585938,
+      "diff": -0.013065338134765625,
+      "verdict": "explained: S3 floor check on new voxel copy"
+    },
+    {
+      "field": "registration_validation.floor_through_skylight_s3.n",
+      "v6": 352,
+      "v9": 360,
+      "diff": 8,
+      "verdict": "explained: S3 floor check on new voxel copy"
+    },
+    {
+      "field": "registration_validation.floor_through_skylight_s3.p10_m",
+      "v6": -1.1876602172851562,
+      "v9": -1.232403564453125,
+      "diff": -0.044743347167968794,
+      "verdict": "explained: S3 floor check on new voxel copy"
+    },
+    {
+      "field": "registration_validation.floor_through_skylight_s3.p90_m",
+      "v6": 1.342333221435547,
+      "v9": 1.3371871948242189,
+      "diff": -0.005146026611328125,
+      "verdict": "explained: S3 floor check on new voxel copy"
+    },
+    {
+      "field": "registration_validation.floor_through_skylight_s3.rms_m",
+      "v6": 1.3561264565921034,
+      "v9": 1.346913198113121,
+      "diff": -0.009213258478982356,
+      "verdict": "explained: S3 floor check on new voxel copy"
+    },
+    {
+      "field": "registration_validation.n_negative_tau_stations",
+      "v6": 4,
+      "v9": 4,
+      "diff": 0,
+      "verdict": "identical"
+    },
+    {
+      "field": "registration_validation.rim_horizontal_rms_m",
+      "v6": 1.7331442353132371,
+      "v9": 1.7331442353132371,
+      "diff": 0.0,
+      "verdict": "identical"
+    },
+    {
+      "field": "registration_validation.sigma_reg_components.anchor_floor_rms_m",
+      "v6": 1.3561264565921034,
+      "v9": 1.346913198113121,
+      "diff": -0.009213258478982356,
+      "verdict": "explained: S3 floor check on new voxel copy"
+    },
+    {
+      "field": "registration_validation.sigma_reg_components.drift_rss_m",
+      "v6": 0.5317848268821412,
+      "v9": 0.5317848268821408,
+      "diff": -4.440892098500626e-16,
+      "verdict": "rounding-safe"
+    },
+    {
+      "field": "registration_validation.sigma_reg_z_m",
+      "v6": 1.46,
+      "v9": 1.45,
+      "diff": -0.010000000000000009,
+      "verdict": "explained: S3 floor check on new voxel copy"
+    },
+    {
+      "field": "registration_validation.two_slam_zones.s0-80.mean",
+      "v6": -0.23240130147375915,
+      "v9": -0.23240130147375915,
+      "diff": 0.0,
+      "verdict": "identical"
+    },
+    {
+      "field": "registration_validation.two_slam_zones.s0-80.n",
+      "v6": 80,
+      "v9": 80,
+      "diff": 0,
+      "verdict": "identical"
+    },
+    {
+      "field": "registration_validation.two_slam_zones.s0-80.std",
+      "v6": 0.32202807834612057,
+      "v9": 0.32202807834612057,
+      "diff": 0.0,
+      "verdict": "identical"
+    },
+    {
+      "field": "registration_validation.two_slam_zones.s160-240.mean",
+      "v6": -0.16641896855827198,
+      "v9": -0.16641896855827448,
+      "diff": -2.4980018054066022e-15,
+      "verdict": "rounding-safe"
+    },
+    {
+      "field": "registration_validation.two_slam_zones.s160-240.n",
+      "v6": 80,
+      "v9": 80,
+      "diff": 0,
+      "verdict": "identical"
+    },
+    {
+      "field": "registration_validation.two_slam_zones.s160-240.std",
+      "v6": 0.47831447518904535,
+      "v9": 0.4783144751890448,
+      "diff": -5.551115123125783e-16,
+      "verdict": "rounding-safe"
+    },
+    {
+      "field": "registration_validation.two_slam_zones.s240-340.mean",
+      "v6": -0.10124656946424919,
+      "v9": -0.10124656946425091,
+      "diff": -1.7208456881689926e-15,
+      "verdict": "rounding-safe"
+    },
+    {
+      "field": "registration_validation.two_slam_zones.s240-340.n",
+      "v6": 99,
+      "v9": 99,
+      "diff": 0,
+      "verdict": "identical"
+    },
+    {
+      "field": "registration_validation.two_slam_zones.s240-340.std",
+      "v6": 0.12767163126176653,
+      "v9": 0.12767163126176656,
+      "diff": 2.7755575615628914e-17,
+      "verdict": "rounding-safe"
+    },
+    {
+      "field": "registration_validation.two_slam_zones.s80-160.mean",
+      "v6": -0.13521942607767237,
+      "v9": -0.13521942607767415,
+      "diff": -1.7763568394002505e-15,
+      "verdict": "rounding-safe"
+    },
+    {
+      "field": "registration_validation.two_slam_zones.s80-160.n",
+      "v6": 80,
+      "v9": 80,
+      "diff": 0,
+      "verdict": "identical"
+    },
+    {
+      "field": "registration_validation.two_slam_zones.s80-160.std",
+      "v6": 0.12814573299629534,
+      "v9": 0.12814573299629553,
+      "diff": 1.942890293094024e-16,
+      "verdict": "rounding-safe"
+    },
+    {
+      "field": "flight2_repeatability.median",
+      "v6": 0.0808979659532838,
+      "v9": 0.08089874267578523,
+      "diff": 7.767225014276846e-07,
+      "verdict": "rounding-safe"
+    },
+    {
+      "field": "flight2_repeatability.n_stations",
+      "v6": 302,
+      "v9": 302,
+      "diff": 0,
+      "verdict": "identical"
+    },
+    {
+      "field": "flight2_repeatability.p5",
+      "v6": -0.20595284344515646,
+      "v9": -0.20594867706299738,
+      "diff": 4.166382159082049e-06,
+      "verdict": "rounding-safe"
+    },
+    {
+      "field": "flight2_repeatability.p95",
+      "v6": 0.7124815641329856,
+      "v9": 0.7124800338745155,
+      "diff": -1.530258470050505e-06,
+      "verdict": "rounding-safe"
+    },
+    {
+      "field": "flight2_repeatability.rms",
+      "v6": 0.3706576312425478,
+      "v9": 0.37065534739214995,
+      "diff": -2.2838503978550584e-06,
+      "verdict": "rounding-safe"
+    },
+    {
+      "field": "flight2_repeatability.s_range[0]",
+      "v6": 0.0,
+      "v9": 0.0,
+      "diff": 0.0,
+      "verdict": "identical"
+    },
+    {
+      "field": "flight2_repeatability.s_range[1]",
+      "v6": 301.0,
+      "v9": 301.0,
+      "diff": 0.0,
+      "verdict": "identical"
+    },
+    {
+      "field": "basis_comparison.dceil.median",
+      "v6": 0.2049999999999983,
+      "v9": -65.795,
+      "diff": -66.0,
+      "verdict": "datum-derived"
+    },
+    {
+      "field": "basis_comparison.dceil.rms",
+      "v6": 0.865234924429519,
+      "v9": 65.59676813028737,
+      "diff": 64.73153320585786,
+      "verdict": "datum-derived"
+    },
+    {
+      "field": "basis_comparison.dtau.median",
+      "v6": -0.2320000000000002,
+      "v9": -0.23999999999999977,
+      "diff": -0.007999999999999563,
+      "verdict": "explained: 1 cm quantisation of the delivered cloud"
+    },
+    {
+      "field": "basis_comparison.dtau.p5",
+      "v6": -1.4165999999999999,
+      "v9": -1.4220499999999998,
+      "diff": -0.005449999999999955,
+      "verdict": "explained: 1 cm quantisation of the delivered cloud"
+    },
+    {
+      "field": "basis_comparison.dtau.p95",
+      "v6": 0.17339999999999942,
+      "v9": 0.17339999999999942,
+      "diff": 0.0,
+      "verdict": "identical"
+    },
+    {
+      "field": "basis_comparison.dtau.rms",
+      "v6": 0.8547172580689335,
+      "v9": 0.8584926847568486,
+      "diff": 0.0037754266879150844,
+      "verdict": "rounding-safe"
+    },
+    {
+      "field": "basis_comparison.dtau_zones.s0-80.mean",
+      "v6": -0.33822222222222215,
+      "v9": -0.34268253968253953,
+      "diff": -0.004460317460317387,
+      "verdict": "rounding-safe"
+    },
+    {
+      "field": "basis_comparison.dtau_zones.s0-80.n",
+      "v6": 63,
+      "v9": 63,
+      "diff": 0,
+      "verdict": "identical"
+    },
+    {
+      "field": "basis_comparison.dtau_zones.s0-80.std",
+      "v6": 0.48732256663386453,
+      "v9": 0.487575499254131,
+      "diff": 0.00025293262026648833,
+      "verdict": "rounding-safe"
+    },
+    {
+      "field": "basis_comparison.dtau_zones.s160-240.mean",
+      "v6": -0.5546625000000001,
+      "v9": -0.5626625000000001,
+      "diff": -0.008000000000000007,
+      "verdict": "explained: 1 cm quantisation of the delivered cloud"
+    },
+    {
+      "field": "basis_comparison.dtau_zones.s160-240.n",
+      "v6": 80,
+      "v9": 80,
+      "diff": 0,
+      "verdict": "identical"
+    },
+    {
+      "field": "basis_comparison.dtau_zones.s160-240.std",
+      "v6": 0.8085444784263571,
+      "v9": 0.8084153162785511,
+      "diff": -0.00012916214780600566,
+      "verdict": "rounding-safe"
+    },
+    {
+      "field": "basis_comparison.dtau_zones.s240-360.mean",
+      "v6": -0.3961129032258064,
+      "v9": -0.406741935483871,
+      "diff": -0.010629032258064608,
+      "verdict": "explained: 1 cm quantisation of the delivered cloud"
+    },
+    {
+      "field": "basis_comparison.dtau_zones.s240-360.n",
+      "v6": 62,
+      "v9": 62,
+      "diff": 0,
+      "verdict": "identical"
+    },
+    {
+      "field": "basis_comparison.dtau_zones.s240-360.std",
+      "v6": 0.7375637556879233,
+      "v9": 0.7371714453601133,
+      "diff": -0.0003923103278100637,
+      "verdict": "rounding-safe"
+    },
+    {
+      "field": "basis_comparison.dtau_zones.s80-160.mean",
+      "v6": -0.3420869565217391,
+      "v9": -0.3491739130434782,
+      "diff": -0.0070869565217391295,
+      "verdict": "explained: 1 cm quantisation of the delivered cloud"
+    },
+    {
+      "field": "basis_comparison.dtau_zones.s80-160.n",
+      "v6": 69,
+      "v9": 69,
+      "diff": 0,
+      "verdict": "identical"
+    },
+    {
+      "field": "basis_comparison.dtau_zones.s80-160.std",
+      "v6": 0.8474835852222578,
+      "v9": 0.847789400915686,
+      "diff": 0.0003058156934282463,
+      "verdict": "rounding-safe"
+    },
+    {
+      "field": "basis_comparison.median_horiz_offset_m",
+      "v6": 0.47234202592690905,
+      "v9": 0.47234202592690905,
+      "diff": 0.0,
+      "verdict": "identical"
+    },
+    {
+      "field": "basis_comparison.morphometry.area_median[0]",
+      "v6": 48.9,
+      "v9": 48.9,
+      "diff": 0.0,
+      "verdict": "identical"
+    },
+    {
+      "field": "basis_comparison.morphometry.area_median[1]",
+      "v6": 48.0,
+      "v9": 48.0,
+      "diff": 0.0,
+      "verdict": "identical"
+    },
+    {
+      "field": "basis_comparison.morphometry.centreline_m[0]",
+      "v6": 356.0,
+      "v9": 356.0,
+      "diff": 0.0,
+      "verdict": "identical"
+    },
+    {
+      "field": "basis_comparison.morphometry.centreline_m[1]",
+      "v6": 301.0,
+      "v9": 301.0,
+      "diff": 0.0,
+      "verdict": "identical"
+    },
+    {
+      "field": "basis_comparison.morphometry.height_median[0]",
+      "v6": 8.05,
+      "v9": 8.05,
+      "diff": 0.0,
+      "verdict": "identical"
+    },
+    {
+      "field": "basis_comparison.morphometry.height_median[1]",
+      "v6": 8.09,
+      "v9": 8.09,
+      "diff": 0.0,
+      "verdict": "identical"
+    },
+    {
+      "field": "basis_comparison.morphometry.width_median[0]",
+      "v6": 10.46,
+      "v9": 10.46,
+      "diff": 0.0,
+      "verdict": "identical"
+    },
+    {
+      "field": "basis_comparison.morphometry.width_median[1]",
+      "v6": 10.53,
+      "v9": 10.53,
+      "diff": 0.0,
+      "verdict": "identical"
+    },
+    {
+      "field": "basis_comparison.n_matched",
+      "v6": 274,
+      "v9": 274,
+      "diff": 0,
+      "verdict": "identical"
+    },
+    {
+      "field": "national_dem_check.arcticdem.best_shift_m[0]",
+      "v6": 2.0,
+      "v9": 2.0,
+      "diff": 0.0,
+      "verdict": "identical"
+    },
+    {
+      "field": "national_dem_check.arcticdem.best_shift_m[1]",
+      "v6": -2.0,
+      "v9": -2.0,
+      "diff": 0.0,
+      "verdict": "identical"
+    },
+    {
+      "field": "national_dem_check.arcticdem.datum_offset_m",
+      "v6": 0.6100006103515625,
+      "v9": -65.39656066894531,
+      "diff": -66.00656127929688,
+      "verdict": "datum-derived"
+    },
+    {
+      "field": "national_dem_check.arcticdem.doming_amplitude_m",
+      "v6": 0.12804736003501907,
+      "v9": 0.12910043345226768,
+      "diff": 0.0010530734172486123,
+      "verdict": "rounding-safe"
+    },
+    {
+      "field": "national_dem_check.arcticdem.n",
+      "v6": 30559,
+      "v9": 30550,
+      "diff": -9,
+      "verdict": "explained: in-aperture cells removed"
+    },
+    {
+      "field": "national_dem_check.arcticdem.std_after_plane_m",
+      "v6": 0.2895446329465095,
+      "v9": 0.2780275964979627,
+      "diff": -0.011517036448546791,
+      "verdict": "explained: in-aperture cells removed"
+    },
+    {
+      "field": "national_dem_check.arcticdem.std_after_quadratic_m",
+      "v6": 0.28769400460104827,
+      "v9": 0.2760219903420779,
+      "diff": -0.011672014258970353,
+      "verdict": "explained: in-aperture cells removed"
+    },
+    {
+      "field": "national_dem_check.arcticdem.std_raw_m",
+      "v6": 0.29258773151551676,
+      "v9": 0.2814088009091892,
+      "diff": -0.011178930606327575,
+      "verdict": "explained: in-aperture cells removed"
+    },
+    {
+      "field": "national_dem_check.arcticdem.tilt_m_per_km",
+      "v6": 0.4214086587717027,
+      "v9": 0.42937601677121223,
+      "diff": 0.007967357999509539,
+      "verdict": "explained: in-aperture cells removed"
+    },
+    {
+      "field": "national_dem_check.islandsdem.best_shift_m[0]",
+      "v6": 0.0,
+      "v9": 0.0,
+      "diff": 0.0,
+      "verdict": "identical"
+    },
+    {
+      "field": "national_dem_check.islandsdem.best_shift_m[1]",
+      "v6": 0.0,
+      "v9": 0.0,
+      "diff": 0.0,
+      "verdict": "identical"
+    },
+    {
+      "field": "national_dem_check.islandsdem.datum_offset_m",
+      "v6": 66.63253784179688,
+      "v9": 0.6269454956054688,
+      "diff": -66.0055923461914,
+      "verdict": "datum-derived"
+    },
+    {
+      "field": "national_dem_check.islandsdem.doming_amplitude_m",
+      "v6": 0.13318506865087046,
+      "v9": 0.13370396747238694,
+      "diff": 0.0005188988215164836,
+      "verdict": "rounding-safe"
+    },
+    {
+      "field": "national_dem_check.islandsdem.n",
+      "v6": 30559,
+      "v9": 30550,
+      "diff": -9,
+      "verdict": "explained: in-aperture cells removed"
+    },
+    {
+      "field": "national_dem_check.islandsdem.std_after_plane_m",
+      "v6": 0.3584985379354869,
+      "v9": 0.3498020426702857,
+      "diff": -0.00869649526520122,
+      "verdict": "explained: in-aperture cells removed"
+    },
+    {
+      "field": "national_dem_check.islandsdem.std_after_quadratic_m",
+      "v6": 0.3569381753032524,
+      "v9": 0.3481931603075434,
+      "diff": -0.00874501499570901,
+      "verdict": "explained: in-aperture cells removed"
+    },
+    {
+      "field": "national_dem_check.islandsdem.std_raw_m",
+      "v6": 0.36350261295258723,
+      "v9": 0.355456894757309,
+      "diff": -0.008045718195278218,
+      "verdict": "explained: in-aperture cells removed"
+    },
+    {
+      "field": "national_dem_check.islandsdem.tilt_m_per_km",
+      "v6": 0.5487352532500188,
+      "v9": 0.5752203260227142,
+      "diff": 0.026485072772695406,
+      "verdict": "explained: in-aperture cells removed"
+    },
+    {
+      "field": "orbital_dem_test.baseline.median",
+      "v6": 6.025499999999999,
+      "v9": 6.015499999999999,
+      "diff": -0.009999999999999787,
+      "verdict": "explained: 1 cm quantisation of the delivered cloud"
+    },
+    {
+      "field": "orbital_dem_test.baseline.thick_thin_contrast_m",
+      "v6": 9.9515,
+      "v9": 9.9465,
+      "diff": -0.004999999999999005,
+      "verdict": "rounding-safe"
+    },
+    {
+      "field": "orbital_dem_test.configs[0].dome_m",
+      "v6": 0.0,
+      "v9": 0.0,
+      "diff": 0.0,
+      "verdict": "identical"
+    },
+    {
+      "field": "orbital_dem_test.configs[0].frac_error_gt_1p5.mean",
+      "v6": 0.0,
+      "v9": 0.0,
+      "diff": 0.0,
+      "verdict": "identical"
+    },
+    {
+      "field": "orbital_dem_test.configs[0].frac_error_gt_1p5.worst",
+      "v6": 0.0,
+      "v9": 0.0,
+      "diff": 0.0,
+      "verdict": "identical"
+    },
+    {
+      "field": "orbital_dem_test.configs[0].frac_false_negative_roof",
+      "v6": 0.0,
+      "v9": 0.0,
+      "diff": 0.0,
+      "verdict": "identical"
+    },
+    {
+      "field": "orbital_dem_test.configs[0].grid_m",
+      "v6": 0.5,
+      "v9": 0.5,
+      "diff": 0.0,
+      "verdict": "identical"
+    },
+    {
+      "field": "orbital_dem_test.configs[0].median_shift_m.mean",
+      "v6": -6.1035155418665e-07,
+      "v9": -2.746582023149813e-06,
+      "diff": -2.136230468963163e-06,
+      "verdict": "rounding-safe"
+    },
+    {
+      "field": "orbital_dem_test.configs[0].median_shift_m.worst",
+      "v6": 6.1035155418665e-07,
+      "v9": 2.746582023149813e-06,
+      "diff": 2.136230468963163e-06,
+      "verdict": "rounding-safe"
+    },
+    {
+      "field": "orbital_dem_test.configs[0].n_seeds",
+      "v6": 1,
+      "v9": 1,
+      "diff": 0,
+      "verdict": "identical"
+    },
+    {
+      "field": "orbital_dem_test.configs[0].per_station_rms_m.mean",
+      "v6": 0.000179775907506164,
+      "v9": 0.00018962557009040825,
+      "diff": 9.849662584244232e-06,
+      "verdict": "rounding-safe"
+    },
+    {
+      "field": "orbital_dem_test.configs[0].per_station_rms_m.worst",
+      "v6": 0.000179775907506164,
+      "v9": 0.00018962557009040825,
+      "diff": 9.849662584244232e-06,
+      "verdict": "rounding-safe"
+    },
+    {
+      "field": "orbital_dem_test.configs[0].sigma_m",
+      "v6": 0.0,
+      "v9": 0.0,
+      "diff": 0.0,
+      "verdict": "identical"
+    },
+    {
+      "field": "orbital_dem_test.configs[0].thick_thin_contrast_m.baseline",
+      "v6": 9.9515,
+      "v9": 9.9465,
+      "diff": -0.004999999999999005,
+      "verdict": "rounding-safe"
+    },
+    {
+      "field": "orbital_dem_test.configs[0].thick_thin_contrast_m.mean",
+      "v6": 9.951508850097639,
+      "v9": 9.946496337890608,
+      "diff": -0.00501251220703125,
+      "verdict": "explained: 1 cm quantisation of the delivered cloud"
+    },
+    {
+      "field": "orbital_dem_test.configs[0].thick_thin_contrast_m.worst",
+      "v6": 9.951508850097639,
+      "v9": 9.946496337890608,
+      "diff": -0.00501251220703125,
+      "verdict": "explained: 1 cm quantisation of the delivered cloud"
+    },
+    {
+      "field": "orbital_dem_test.configs[1].dome_m",
+      "v6": 0.0,
+      "v9": 0.0,
+      "diff": 0.0,
+      "verdict": "identical"
+    },
+    {
+      "field": "orbital_dem_test.configs[1].frac_error_gt_1p5.mean",
+      "v6": 0.0,
+      "v9": 0.0,
+      "diff": 0.0,
+      "verdict": "identical"
+    },
+    {
+      "field": "orbital_dem_test.configs[1].frac_error_gt_1p5.worst",
+      "v6": 0.0,
+      "v9": 0.0,
+      "diff": 0.0,
+      "verdict": "identical"
+    },
+    {
+      "field": "orbital_dem_test.configs[1].frac_false_negative_roof",
+      "v6": 0.021739130434782608,
+      "v9": 0.021739130434782608,
+      "diff": 0.0,
+      "verdict": "identical"
+    },
+    {
+      "field": "orbital_dem_test.configs[1].grid_m",
+      "v6": 1.0,
+      "v9": 1.0,
+      "diff": 0.0,
+      "verdict": "identical"
+    },
+    {
+      "field": "orbital_dem_test.configs[1].median_shift_m.mean",
+      "v6": 0.08793569982430505,
+      "v9": 0.09055969655892397,
+      "diff": 0.0026239967346189247,
+      "verdict": "rounding-safe"
+    },
+    {
+      "field": "orbital_dem_test.configs[1].median_shift_m.worst",
+      "v6": 0.428869652603348,
+      "v9": 0.42887323841877745,
+      "diff": 3.585815429474337e-06,
+      "verdict": "rounding-safe"
+    },
+    {
+      "field": "orbital_dem_test.configs[1].n_seeds",
+      "v6": 20,
+      "v9": 20,
+      "diff": 0,
+      "verdict": "identical"
+    },
+    {
+      "field": "orbital_dem_test.configs[1].per_station_rms_m.mean",
+      "v6": 0.28835282962114833,
+      "v9": 0.28833608646329123,
+      "diff": -1.674315785710201e-05,
+      "verdict": "rounding-safe"
+    },
+    {
+      "field": "orbital_dem_test.configs[1].per_station_rms_m.worst",
+      "v6": 0.41833498763930893,
+      "v9": 0.4186125507658035,
+      "diff": 0.00027756312649457326,
+      "verdict": "rounding-safe"
+    },
+    {
+      "field": "orbital_dem_test.configs[1].sigma_m",
+      "v6": 0.3,
+      "v9": 0.3,
+      "diff": 0.0,
+      "verdict": "identical"
+    },
+    {
+      "field": "orbital_dem_test.configs[1].thick_thin_contrast_m.baseline",
+      "v6": 9.9515,
+      "v9": 9.9465,
+      "diff": -0.004999999999999005,
+      "verdict": "rounding-safe"
+    },
+    {
+      "field": "orbital_dem_test.configs[1].thick_thin_contrast_m.mean",
+      "v6": 9.967617137768173,
+      "v9": 9.964320024867664,
+      "diff": -0.003297112900508381,
+      "verdict": "rounding-safe"
+    },
+    {
+      "field": "orbital_dem_test.configs[1].thick_thin_contrast_m.worst",
+      "v6": 9.23414753781762,
+      "v9": 9.230669040183415,
+      "diff": -0.0034784976342052687,
+      "verdict": "rounding-safe"
+    },
+    {
+      "field": "orbital_dem_test.configs[2].dome_m",
+      "v6": 0.0,
+      "v9": 0.0,
+      "diff": 0.0,
+      "verdict": "identical"
+    },
+    {
+      "field": "orbital_dem_test.configs[2].frac_error_gt_1p5.mean",
+      "v6": 0.0016304347826086956,
+      "v9": 0.0012681159420289856,
+      "diff": -0.00036231884057970993,
+      "verdict": "rounding-safe"
+    },
+    {
+      "field": "orbital_dem_test.configs[2].frac_error_gt_1p5.worst",
+      "v6": 0.014492753623188406,
+      "v9": 0.014492753623188406,
+      "diff": 0.0,
+      "verdict": "identical"
+    },
+    {
+      "field": "orbital_dem_test.configs[2].frac_false_negative_roof",
+      "v6": 0.03260869565217391,
+      "v9": 0.03260869565217391,
+      "diff": 0.0,
+      "verdict": "identical"
+    },
+    {
+      "field": "orbital_dem_test.configs[2].grid_m",
+      "v6": 2.0,
+      "v9": 2.0,
+      "diff": 0.0,
+      "verdict": "identical"
+    },
+    {
+      "field": "orbital_dem_test.configs[2].median_shift_m.mean",
+      "v6": 0.1359952061100241,
+      "v9": 0.13892381585792607,
+      "diff": 0.0029286097479019613,
+      "verdict": "rounding-safe"
+    },
+    {
+      "field": "orbital_dem_test.configs[2].median_shift_m.worst",
+      "v6": 0.6900156683055574,
+      "v9": 0.6928287786571197,
+      "diff": 0.002813110351562287,
+      "verdict": "rounding-safe"
+    },
+    {
+      "field": "orbital_dem_test.configs[2].n_seeds",
+      "v6": 20,
+      "v9": 20,
+      "diff": 0,
+      "verdict": "identical"
+    },
+    {
+      "field": "orbital_dem_test.configs[2].per_station_rms_m.mean",
+      "v6": 0.4835213564584623,
+      "v9": 0.4826034514161489,
+      "diff": -0.0009179050423133717,
+      "verdict": "rounding-safe"
+    },
+    {
+      "field": "orbital_dem_test.configs[2].per_station_rms_m.worst",
+      "v6": 0.6982024137041534,
+      "v9": 0.6981941855998974,
+      "diff": -8.22810425593623e-06,
+      "verdict": "rounding-safe"
+    },
+    {
+      "field": "orbital_dem_test.configs[2].sigma_m",
+      "v6": 0.5,
+      "v9": 0.5,
+      "diff": 0.0,
+      "verdict": "identical"
+    },
+    {
+      "field": "orbital_dem_test.configs[2].thick_thin_contrast_m.baseline",
+      "v6": 9.9515,
+      "v9": 9.9465,
+      "diff": -0.004999999999999005,
+      "verdict": "rounding-safe"
+    },
+    {
+      "field": "orbital_dem_test.configs[2].thick_thin_contrast_m.mean",
+      "v6": 10.024238935748459,
+      "v9": 10.020028859179668,
+      "diff": -0.00421007656879091,
+      "verdict": "rounding-safe"
+    },
+    {
+      "field": "orbital_dem_test.configs[2].thick_thin_contrast_m.worst",
+      "v6": 8.837527478610951,
+      "v9": 8.836302483951528,
+      "diff": -0.0012249946594238281,
+      "verdict": "rounding-safe"
+    },
+    {
+      "field": "orbital_dem_test.configs[3].dome_m",
+      "v6": 0.0,
+      "v9": 0.0,
+      "diff": 0.0,
+      "verdict": "identical"
+    },
+    {
+      "field": "orbital_dem_test.configs[3].frac_error_gt_1p5.mean",
+      "v6": 0.13949275362318841,
+      "v9": 0.13858695652173914,
+      "diff": -0.0009057971014492794,
+      "verdict": "rounding-safe"
+    },
+    {
+      "field": "orbital_dem_test.configs[3].frac_error_gt_1p5.worst",
+      "v6": 0.3333333333333333,
+      "v9": 0.3333333333333333,
+      "diff": 0.0,
+      "verdict": "identical"
+    },
+    {
+      "field": "orbital_dem_test.configs[3].frac_false_negative_roof",
+      "v6": 0.14855072463768115,
+      "v9": 0.14492753623188406,
+      "diff": -0.00362318840579709,
+      "verdict": "rounding-safe"
+    },
+    {
+      "field": "orbital_dem_test.configs[3].grid_m",
+      "v6": 5.0,
+      "v9": 5.0,
+      "diff": 0.0,
+      "verdict": "identical"
+    },
+    {
+      "field": "orbital_dem_test.configs[3].median_shift_m.mean",
+      "v6": 0.28793946386074476,
+      "v9": 0.2909517929623114,
+      "diff": 0.0030123291015666243,
+      "verdict": "rounding-safe"
+    },
+    {
+      "field": "orbital_dem_test.configs[3].median_shift_m.worst",
+      "v6": 1.5766574869786556,
+      "v9": 1.5782070170079585,
+      "diff": 0.0015495300293029146,
+      "verdict": "rounding-safe"
+    },
+    {
+      "field": "orbital_dem_test.configs[3].n_seeds",
+      "v6": 20,
+      "v9": 20,
+      "diff": 0,
+      "verdict": "identical"
+    },
+    {
+      "field": "orbital_dem_test.configs[3].per_station_rms_m.mean",
+      "v6": 0.9692946060268215,
+      "v9": 0.9661732558646486,
+      "diff": -0.0031213501621728534,
+      "verdict": "rounding-safe"
+    },
+    {
+      "field": "orbital_dem_test.configs[3].per_station_rms_m.worst",
+      "v6": 1.4032713962687833,
+      "v9": 1.4015595096594562,
+      "diff": -0.0017118866093270846,
+      "verdict": "rounding-safe"
+    },
+    {
+      "field": "orbital_dem_test.configs[3].sigma_m",
+      "v6": 1.0,
+      "v9": 1.0,
+      "diff": 0.0,
+      "verdict": "identical"
+    },
+    {
+      "field": "orbital_dem_test.configs[3].thick_thin_contrast_m.baseline",
+      "v6": 9.9515,
+      "v9": 9.9465,
+      "diff": -0.004999999999999005,
+      "verdict": "rounding-safe"
+    },
+    {
+      "field": "orbital_dem_test.configs[3].thick_thin_contrast_m.mean",
+      "v6": 10.021900692267653,
+      "v9": 10.00931130014401,
+      "diff": -0.012589392123643961,
+      "verdict": "explained: 1 cm quantisation of the delivered cloud"
+    },
+    {
+      "field": "orbital_dem_test.configs[3].thick_thin_contrast_m.worst",
+      "v6": 7.429384549105976,
+      "v9": 7.422084134066907,
+      "diff": -0.007300415039068753,
+      "verdict": "explained: 1 cm quantisation of the delivered cloud"
+    },
+    {
+      "field": "orbital_dem_test.configs[4].dome_m",
+      "v6": 0.0,
+      "v9": 0.0,
+      "diff": 0.0,
+      "verdict": "identical"
+    },
+    {
+      "field": "orbital_dem_test.configs[4].frac_error_gt_1p5.mean",
+      "v6": 0.4588768115942029,
+      "v9": 0.4577898550724638,
+      "diff": -0.0010869565217391242,
+      "verdict": "rounding-safe"
+    },
+    {
+      "field": "orbital_dem_test.configs[4].frac_error_gt_1p5.worst",
+      "v6": 0.7898550724637681,
+      "v9": 0.7898550724637681,
+      "diff": 0.0,
+      "verdict": "identical"
+    },
+    {
+      "field": "orbital_dem_test.configs[4].frac_false_negative_roof",
+      "v6": 0.25,
+      "v9": 0.25,
+      "diff": 0.0,
+      "verdict": "identical"
+    },
+    {
+      "field": "orbital_dem_test.configs[4].grid_m",
+      "v6": 5.0,
+      "v9": 5.0,
+      "diff": 0.0,
+      "verdict": "identical"
+    },
+    {
+      "field": "orbital_dem_test.configs[4].median_shift_m.mean",
+      "v6": 0.48782961963021343,
+      "v9": 0.4905046455701559,
+      "diff": 0.0026750259399424547,
+      "verdict": "rounding-safe"
+    },
+    {
+      "field": "orbital_dem_test.configs[4].median_shift_m.worst",
+      "v6": 2.758476033787014,
+      "v9": 2.7611766105692404,
+      "diff": 0.0027005767822263493,
+      "verdict": "rounding-safe"
+    },
+    {
+      "field": "orbital_dem_test.configs[4].n_seeds",
+      "v6": 20,
+      "v9": 20,
+      "diff": 0,
+      "verdict": "identical"
+    },
+    {
+      "field": "orbital_dem_test.configs[4].per_station_rms_m.mean",
+      "v6": 1.9171774067767047,
+      "v9": 1.9153283249717394,
+      "diff": -0.0018490818049652358,
+      "verdict": "rounding-safe"
+    },
+    {
+      "field": "orbital_dem_test.configs[4].per_station_rms_m.worst",
+      "v6": 2.793742390482693,
+      "v9": 2.7928535129782657,
+      "diff": -0.0008888775044271213,
+      "verdict": "rounding-safe"
+    },
+    {
+      "field": "orbital_dem_test.configs[4].sigma_m",
+      "v6": 2.0,
+      "v9": 2.0,
+      "diff": 0.0,
+      "verdict": "identical"
+    },
+    {
+      "field": "orbital_dem_test.configs[4].thick_thin_contrast_m.baseline",
+      "v6": 9.9515,
+      "v9": 9.9465,
+      "diff": -0.004999999999999005,
+      "verdict": "rounding-safe"
+    },
+    {
+      "field": "orbital_dem_test.configs[4].thick_thin_contrast_m.mean",
+      "v6": 9.673864522032583,
+      "v9": 9.659058238146486,
+      "diff": -0.01480628388609695,
+      "verdict": "explained: 1 cm quantisation of the delivered cloud"
+    },
+    {
+      "field": "orbital_dem_test.configs[4].thick_thin_contrast_m.worst",
+      "v6": 4.841195381881391,
+      "v9": 4.837603920699735,
+      "diff": -0.003591461181656541,
+      "verdict": "rounding-safe"
+    },
+    {
+      "field": "orbital_dem_test.configs[5].dome_m",
+      "v6": 0.0,
+      "v9": 0.0,
+      "diff": 0.0,
+      "verdict": "identical"
+    },
+    {
+      "field": "orbital_dem_test.configs[5].frac_error_gt_1p5.mean",
+      "v6": 0.5996376811594204,
+      "v9": 0.5989130434782609,
+      "diff": -0.0007246376811594901,
+      "verdict": "rounding-safe"
+    },
+    {
+      "field": "orbital_dem_test.configs[5].frac_error_gt_1p5.worst",
+      "v6": 0.8840579710144928,
+      "v9": 0.8840579710144928,
+      "diff": 0.0,
+      "verdict": "identical"
+    },
+    {
+      "field": "orbital_dem_test.configs[5].frac_false_negative_roof",
+      "v6": 0.2826086956521739,
+      "v9": 0.2826086956521739,
+      "diff": 0.0,
+      "verdict": "identical"
+    },
+    {
+      "field": "orbital_dem_test.configs[5].grid_m",
+      "v6": 20.0,
+      "v9": 20.0,
+      "diff": 0.0,
+      "verdict": "identical"
+    },
+    {
+      "field": "orbital_dem_test.configs[5].median_shift_m.mean",
+      "v6": 0.5897517193726092,
+      "v9": 0.5980442176673122,
+      "diff": 0.008292498294703021,
+      "verdict": "explained: 1 cm quantisation of the delivered cloud"
+    },
+    {
+      "field": "orbital_dem_test.configs[5].median_shift_m.worst",
+      "v6": 3.925005720394717,
+      "v9": 3.927552769917103,
+      "diff": 0.0025470495223860468,
+      "verdict": "rounding-safe"
+    },
+    {
+      "field": "orbital_dem_test.configs[5].n_seeds",
+      "v6": 20,
+      "v9": 20,
+      "diff": 0,
+      "verdict": "identical"
+    },
+    {
+      "field": "orbital_dem_test.configs[5].per_station_rms_m.mean",
+      "v6": 2.902730681137033,
+      "v9": 2.9024722986134224,
+      "diff": -0.0002583825236106563,
+      "verdict": "rounding-safe"
+    },
+    {
+      "field": "orbital_dem_test.configs[5].per_station_rms_m.worst",
+      "v6": 4.200356247197425,
+      "v9": 4.200354424419645,
+      "diff": -1.8227777802692913e-06,
+      "verdict": "rounding-safe"
+    },
+    {
+      "field": "orbital_dem_test.configs[5].sigma_m",
+      "v6": 3.0,
+      "v9": 3.0,
+      "diff": 0.0,
+      "verdict": "identical"
+    },
+    {
+      "field": "orbital_dem_test.configs[5].thick_thin_contrast_m.baseline",
+      "v6": 9.9515,
+      "v9": 9.9465,
+      "diff": -0.004999999999999005,
+      "verdict": "rounding-safe"
+    },
+    {
+      "field": "orbital_dem_test.configs[5].thick_thin_contrast_m.mean",
+      "v6": 9.184385877854353,
+      "v9": 9.158130251701499,
+      "diff": -0.026255626152854816,
+      "verdict": "explained: 1 cm quantisation of the delivered cloud"
+    },
+    {
+      "field": "orbital_dem_test.configs[5].thick_thin_contrast_m.worst",
+      "v6": 1.9618585673015474,
+      "v9": 1.9281162293815441,
+      "diff": -0.03374233792000325,
+      "verdict": "explained: 1 cm quantisation of the delivered cloud"
+    },
+    {
+      "field": "orbital_dem_test.configs[6].dome_m",
+      "v6": 1.0,
+      "v9": 1.0,
+      "diff": 0.0,
+      "verdict": "identical"
+    },
+    {
+      "field": "orbital_dem_test.configs[6].frac_error_gt_1p5.mean",
+      "v6": 0.0,
+      "v9": 0.0,
+      "diff": 0.0,
+      "verdict": "identical"
+    },
+    {
+      "field": "orbital_dem_test.configs[6].frac_error_gt_1p5.worst",
+      "v6": 0.0,
+      "v9": 0.0,
+      "diff": 0.0,
+      "verdict": "identical"
+    },
+    {
+      "field": "orbital_dem_test.configs[6].frac_false_negative_roof",
+      "v6": 0.021739130434782608,
+      "v9": 0.021739130434782608,
+      "diff": 0.0,
+      "verdict": "identical"
+    },
+    {
+      "field": "orbital_dem_test.configs[6].grid_m",
+      "v6": 0.5,
+      "v9": 0.5,
+      "diff": 0.0,
+      "verdict": "identical"
+    },
+    {
+      "field": "orbital_dem_test.configs[6].median_shift_m.mean",
+      "v6": -0.48063907060097755,
+      "v9": -0.4806412068314465,
+      "diff": -2.136230468963163e-06,
+      "verdict": "rounding-safe"
+    },
+    {
+      "field": "orbital_dem_test.configs[6].median_shift_m.worst",
+      "v6": 0.48063907060097755,
+      "v9": 0.4806412068314465,
+      "diff": 2.136230468963163e-06,
+      "verdict": "rounding-safe"
+    },
+    {
+      "field": "orbital_dem_test.configs[6].n_seeds",
+      "v6": 1,
+      "v9": 1,
+      "diff": 0,
+      "verdict": "identical"
+    },
+    {
+      "field": "orbital_dem_test.configs[6].per_station_rms_m.mean",
+      "v6": 0.4015932134578402,
+      "v9": 0.4015961536114348,
+      "diff": 2.940153594588324e-06,
+      "verdict": "rounding-safe"
+    },
+    {
+      "field": "orbital_dem_test.configs[6].per_station_rms_m.worst",
+      "v6": 0.4015932134578402,
+      "v9": 0.4015961536114348,
+      "diff": 2.940153594588324e-06,
+      "verdict": "rounding-safe"
+    },
+    {
+      "field": "orbital_dem_test.configs[6].sigma_m",
+      "v6": 0.0,
+      "v9": 0.0,
+      "diff": 0.0,
+      "verdict": "identical"
+    },
+    {
+      "field": "orbital_dem_test.configs[6].thick_thin_contrast_m.baseline",
+      "v6": 9.9515,
+      "v9": 9.9465,
+      "diff": -0.004999999999999005,
+      "verdict": "rounding-safe"
+    },
+    {
+      "field": "orbital_dem_test.configs[6].thick_thin_contrast_m.mean",
+      "v6": 10.22671170755767,
+      "v9": 10.22170682474517,
+      "diff": -0.0050048828125,
+      "verdict": "explained: 1 cm quantisation of the delivered cloud"
+    },
+    {
+      "field": "orbital_dem_test.configs[6].thick_thin_contrast_m.worst",
+      "v6": 10.22671170755767,
+      "v9": 10.22170682474517,
+      "diff": -0.0050048828125,
+      "verdict": "explained: 1 cm quantisation of the delivered cloud"
+    },
+    {
+      "field": "orbital_dem_test.configs[7].dome_m",
+      "v6": 2.0,
+      "v9": 2.0,
+      "diff": 0.0,
+      "verdict": "identical"
+    },
+    {
+      "field": "orbital_dem_test.configs[7].frac_error_gt_1p5.mean",
+      "v6": 0.0,
+      "v9": 0.0,
+      "diff": 0.0,
+      "verdict": "identical"
+    },
+    {
+      "field": "orbital_dem_test.configs[7].frac_error_gt_1p5.worst",
+      "v6": 0.0,
+      "v9": 0.0,
+      "diff": 0.0,
+      "verdict": "identical"
+    },
+    {
+      "field": "orbital_dem_test.configs[7].frac_false_negative_roof",
+      "v6": 0.03260869565217391,
+      "v9": 0.03260869565217391,
+      "diff": 0.0,
+      "verdict": "identical"
+    },
+    {
+      "field": "orbital_dem_test.configs[7].grid_m",
+      "v6": 0.5,
+      "v9": 0.5,
+      "diff": 0.0,
+      "verdict": "identical"
+    },
+    {
+      "field": "orbital_dem_test.configs[7].median_shift_m.mean",
+      "v6": -0.8819208731948347,
+      "v9": -0.8769181266128037,
+      "diff": 0.005002746582031037,
+      "verdict": "explained: 1 cm quantisation of the delivered cloud"
+    },
+    {
+      "field": "orbital_dem_test.configs[7].median_shift_m.worst",
+      "v6": 0.8819208731948347,
+      "v9": 0.8769181266128037,
+      "diff": -0.005002746582031037,
+      "verdict": "explained: 1 cm quantisation of the delivered cloud"
+    },
+    {
+      "field": "orbital_dem_test.configs[7].n_seeds",
+      "v6": 1,
+      "v9": 1,
+      "diff": 0,
+      "verdict": "identical"
+    },
+    {
+      "field": "orbital_dem_test.configs[7].per_station_rms_m.mean",
+      "v6": 0.8031841911823651,
+      "v9": 0.803187129084499,
+      "diff": 2.937902133903769e-06,
+      "verdict": "rounding-safe"
+    },
+    {
+      "field": "orbital_dem_test.configs[7].per_station_rms_m.worst",
+      "v6": 0.8031841911823651,
+      "v9": 0.803187129084499,
+      "diff": 2.937902133903769e-06,
+      "verdict": "rounding-safe"
+    },
+    {
+      "field": "orbital_dem_test.configs[7].sigma_m",
+      "v6": 0.0,
+      "v9": 0.0,
+      "diff": 0.0,
+      "verdict": "identical"
+    },
+    {
+      "field": "orbital_dem_test.configs[7].thick_thin_contrast_m.baseline",
+      "v6": 9.9515,
+      "v9": 9.9465,
+      "diff": -0.004999999999999005,
+      "verdict": "rounding-safe"
+    },
+    {
+      "field": "orbital_dem_test.configs[7].thick_thin_contrast_m.mean",
+      "v6": 10.452920363357535,
+      "v9": 10.447915480545035,
+      "diff": -0.0050048828125,
+      "verdict": "explained: 1 cm quantisation of the delivered cloud"
+    },
+    {
+      "field": "orbital_dem_test.configs[7].thick_thin_contrast_m.worst",
+      "v6": 10.452920363357535,
+      "v9": 10.447915480545035,
+      "diff": -0.0050048828125,
+      "verdict": "explained: 1 cm quantisation of the delivered cloud"
+    },
+    {
+      "field": "orbital_dem_test.configs[8].dome_m",
+      "v6": 2.0,
+      "v9": 2.0,
+      "diff": 0.0,
+      "verdict": "identical"
+    },
+    {
+      "field": "orbital_dem_test.configs[8].frac_error_gt_1p5.mean",
+      "v6": 0.2375,
+      "v9": 0.23713768115942027,
+      "diff": -0.0003623188405797173,
+      "verdict": "rounding-safe"
+    },
+    {
+      "field": "orbital_dem_test.configs[8].frac_error_gt_1p5.worst",
+      "v6": 0.6014492753623188,
+      "v9": 0.605072463768116,
+      "diff": 0.0036231884057971175,
+      "verdict": "rounding-safe"
+    },
+    {
+      "field": "orbital_dem_test.configs[8].frac_false_negative_roof",
+      "v6": 0.2028985507246377,
+      "v9": 0.2028985507246377,
+      "diff": 0.0,
+      "verdict": "identical"
+    },
+    {
+      "field": "orbital_dem_test.configs[8].grid_m",
+      "v6": 5.0,
+      "v9": 5.0,
+      "diff": 0.0,
+      "verdict": "identical"
+    },
+    {
+      "field": "orbital_dem_test.configs[8].median_shift_m.mean",
+      "v6": -0.6149926233454981,
+      "v9": -0.6119764034926917,
+      "diff": 0.0030162198528064232,
+      "verdict": "rounding-safe"
+    },
+    {
+      "field": "orbital_dem_test.configs[8].median_shift_m.worst",
+      "v6": 1.417702211086171,
+      "v9": 1.4144029557150724,
+      "diff": -0.0032992553710986527,
+      "verdict": "rounding-safe"
+    },
+    {
+      "field": "orbital_dem_test.configs[8].n_seeds",
+      "v6": 20,
+      "v9": 20,
+      "diff": 0,
+      "verdict": "identical"
+    },
+    {
+      "field": "orbital_dem_test.configs[8].per_station_rms_m.mean",
+      "v6": 1.2139459575811873,
+      "v9": 1.2085133183683896,
+      "diff": -0.005432639212797685,
+      "verdict": "explained: 1 cm quantisation of the delivered cloud"
+    },
+    {
+      "field": "orbital_dem_test.configs[8].per_station_rms_m.worst",
+      "v6": 1.9377244189988958,
+      "v9": 1.9311576696317128,
+      "diff": -0.006566749367183045,
+      "verdict": "explained: 1 cm quantisation of the delivered cloud"
+    },
+    {
+      "field": "orbital_dem_test.configs[8].sigma_m",
+      "v6": 1.0,
+      "v9": 1.0,
+      "diff": 0.0,
+      "verdict": "identical"
+    },
+    {
+      "field": "orbital_dem_test.configs[8].thick_thin_contrast_m.baseline",
+      "v6": 9.9515,
+      "v9": 9.9465,
+      "diff": -0.004999999999999005,
+      "verdict": "rounding-safe"
+    },
+    {
+      "field": "orbital_dem_test.configs[8].thick_thin_contrast_m.mean",
+      "v6": 10.46246620333579,
+      "v9": 10.455583665970313,
+      "diff": -0.0068825373654775035,
+      "verdict": "explained: 1 cm quantisation of the delivered cloud"
+    },
+    {
+      "field": "orbital_dem_test.configs[8].thick_thin_contrast_m.worst",
+      "v6": 7.899867250171951,
+      "v9": 7.89552147075301,
+      "diff": -0.004345779418940765,
+      "verdict": "rounding-safe"
+    },
+    {
+      "field": "orbital_dem_test.corr_len_m",
+      "v6": 25.0,
+      "v9": 25.0,
+      "diff": 0.0,
+      "verdict": "identical"
+    },
+    {
+      "field": "orbital_dem_test.n_intact",
+      "v6": 276,
+      "v9": 276,
+      "diff": 0,
+      "verdict": "identical"
+    },
+    {
+      "field": "orbital_dem_test.planetary_aperture_context.apc_outer_median_m",
+      "v6": 120.0,
+      "v9": 120.0,
+      "diff": 0.0,
+      "verdict": "identical"
+    },
+    {
+      "field": "orbital_dem_test.planetary_aperture_context.mare_pit_inner_median_m",
+      "v6": 100.0,
+      "v9": 100.0,
+      "diff": 0.0,
+      "verdict": "identical"
+    },
+    {
+      "field": "orbital_dem_test.skylight_anchor_resolvable_3post.1.0.S1",
+      "v6": false,
+      "v9": false,
+      "diff": "",
+      "verdict": "identical"
+    },
+    {
+      "field": "orbital_dem_test.skylight_anchor_resolvable_3post.1.0.S2",
+      "v6": true,
+      "v9": true,
+      "diff": "",
+      "verdict": "identical"
+    },
+    {
+      "field": "orbital_dem_test.skylight_anchor_resolvable_3post.1.0.S3",
+      "v6": true,
+      "v9": true,
+      "diff": "",
+      "verdict": "identical"
+    },
+    {
+      "field": "orbital_dem_test.skylight_anchor_resolvable_3post.2.0.S1",
+      "v6": false,
+      "v9": false,
+      "diff": "",
+      "verdict": "identical"
+    },
+    {
+      "field": "orbital_dem_test.skylight_anchor_resolvable_3post.2.0.S2",
+      "v6": false,
+      "v9": false,
+      "diff": "",
+      "verdict": "identical"
+    },
+    {
+      "field": "orbital_dem_test.skylight_anchor_resolvable_3post.2.0.S3",
+      "v6": true,
+      "v9": true,
+      "diff": "",
+      "verdict": "identical"
+    },
+    {
+      "field": "orbital_dem_test.skylight_anchor_resolvable_3post.20.0.S1",
+      "v6": false,
+      "v9": false,
+      "diff": "",
+      "verdict": "identical"
+    },
+    {
+      "field": "orbital_dem_test.skylight_anchor_resolvable_3post.20.0.S2",
+      "v6": false,
+      "v9": false,
+      "diff": "",
+      "verdict": "identical"
+    },
+    {
+      "field": "orbital_dem_test.skylight_anchor_resolvable_3post.20.0.S3",
+      "v6": false,
+      "v9": false,
+      "diff": "",
+      "verdict": "identical"
+    },
+    {
+      "field": "orbital_dem_test.skylight_anchor_resolvable_3post.5.0.S1",
+      "v6": false,
+      "v9": false,
+      "diff": "",
+      "verdict": "identical"
+    },
+    {
+      "field": "orbital_dem_test.skylight_anchor_resolvable_3post.5.0.S2",
+      "v6": false,
+      "v9": false,
+      "diff": "",
+      "verdict": "identical"
+    },
+    {
+      "field": "orbital_dem_test.skylight_anchor_resolvable_3post.5.0.S3",
+      "v6": false,
+      "v9": false,
+      "diff": "",
+      "verdict": "identical"
+    },
+    {
+      "field": "planetary_summary.demonstrated_min_span_m",
+      "v6": 6.07,
+      "v9": 6.07,
+      "diff": 0.0,
+      "verdict": "identical"
+    },
+    {
+      "field": "planetary_summary.kappa_env_earth",
+      "v6": 0.0034,
+      "v9": 0.0034,
+      "diff": 0.0,
+      "verdict": "identical"
+    },
+    {
+      "field": "planetary_summary.mars.aperture_median_m",
+      "v6": 120.0,
+      "v9": 120.0,
+      "diff": 0.0,
+      "verdict": "identical"
+    },
+    {
+      "field": "planetary_summary.mars.counts.ge_10m",
+      "v6": 131,
+      "v9": 131,
+      "diff": 0,
+      "verdict": "identical"
+    },
+    {
+      "field": "planetary_summary.mars.counts.ge_20m",
+      "v6": 131,
+      "v9": 131,
+      "diff": 0,
+      "verdict": "identical"
+    },
+    {
+      "field": "planetary_summary.mars.counts.ge_50m",
+      "v6": 120,
+      "v9": 120,
+      "diff": 0,
+      "verdict": "identical"
+    },
+    {
+      "field": "planetary_summary.mars.counts.ge_5m",
+      "v6": 131,
+      "v9": 131,
+      "diff": 0,
+      "verdict": "identical"
+    },
+    {
+      "field": "planetary_summary.mars.counts.ge_narrowest",
+      "v6": 131,
+      "v9": 131,
+      "diff": 0,
+      "verdict": "identical"
+    },
+    {
+      "field": "planetary_summary.mars.n_dimensioned",
+      "v6": 131,
+      "v9": 131,
+      "diff": 0,
+      "verdict": "identical"
+    },
+    {
+      "field": "planetary_summary.mars.n_total",
+      "v6": 1062,
+      "v9": 1062,
+      "diff": 0,
+      "verdict": "identical"
+    },
+    {
+      "field": "planetary_summary.moon.aperture_median_m",
+      "v6": 29.0,
+      "v9": 29.0,
+      "diff": 0.0,
+      "verdict": "identical"
+    },
+    {
+      "field": "planetary_summary.moon.counts.ge_10m",
+      "v6": 258,
+      "v9": 258,
+      "diff": 0,
+      "verdict": "identical"
+    },
+    {
+      "field": "planetary_summary.moon.counts.ge_20m",
+      "v6": 190,
+      "v9": 190,
+      "diff": 0,
+      "verdict": "identical"
+    },
+    {
+      "field": "planetary_summary.moon.counts.ge_50m",
+      "v6": 63,
+      "v9": 63,
+      "diff": 0,
+      "verdict": "identical"
+    },
+    {
+      "field": "planetary_summary.moon.counts.ge_5m",
+      "v6": 266,
+      "v9": 266,
+      "diff": 0,
+      "verdict": "identical"
+    },
+    {
+      "field": "planetary_summary.moon.counts.ge_narrowest",
+      "v6": 265,
+      "v9": 265,
+      "diff": 0,
+      "verdict": "identical"
+    },
+    {
+      "field": "planetary_summary.moon.n_dimensioned",
+      "v6": 266,
+      "v9": 266,
+      "diff": 0,
+      "verdict": "identical"
+    },
+    {
+      "field": "planetary_summary.moon.n_total",
+      "v6": 278,
+      "v9": 278,
+      "diff": 0,
+      "verdict": "identical"
+    },
+    {
+      "field": "planetary_summary.span_scale.mars",
+      "v6": 1.63,
+      "v9": 1.63,
+      "diff": 0.0,
+      "verdict": "identical"
+    },
+    {
+      "field": "planetary_summary.span_scale.moon",
+      "v6": 2.46,
+      "v9": 2.46,
+      "diff": 0.0,
+      "verdict": "identical"
+    },
+    {
+      "field": "uncertainty_budget.horizontal_rim_rms_m",
+      "v6": 1.7331442353132371,
+      "v9": 1.7331442353132371,
+      "diff": 0.0,
+      "verdict": "identical"
+    },
+    {
+      "field": "uncertainty_budget.sigma_dem_basis",
+      "v6": "MEASURED upper bound: std of (photogrammetric DEM minus ArcticDEM v4.1 2 m) over the survey footprint, 0.29 m, including ArcticDEM's own error and snow/temporal change (analysis/national_dem_check.py). Supersedes the assumed 2x-GSD value; doming bounded at 0.13 m, tilt 0.42 m/km.",
+      "v9": "MEASURED upper bound: std of (photogrammetric DEM minus ArcticDEM v4.1 2 m) over the survey footprint, 0.29 m, including ArcticDEM's own error and snow/temporal change (analysis/national_dem_check.py). Supersedes the assumed 2x-GSD value; doming bounded at 0.13 m, tilt 0.42 m/km.",
+      "diff": "",
+      "verdict": "identical"
+    },
+    {
+      "field": "uncertainty_budget.sigma_dem_z_m",
+      "v6": 0.29,
+      "v9": 0.29,
+      "diff": 0.0,
+      "verdict": "identical"
+    },
+    {
+      "field": "uncertainty_budget.sigma_lidar_basis",
+      "v6": "Ouster range precision (~3 cm) plus aggregated-map surface thickness (~10 cm at the 10 cm voxel working copy).",
+      "v9": "Ouster range precision (~3 cm) plus aggregated-map surface thickness (~10 cm at the 10 cm voxel working copy).",
+      "diff": "",
+      "verdict": "identical"
+    },
+    {
+      "field": "uncertainty_budget.sigma_lidar_z_m",
+      "v6": 0.1,
+      "v9": 0.1,
+      "diff": 0.0,
+      "verdict": "identical"
+    },
+    {
+      "field": "uncertainty_budget.sigma_reg_z_m",
+      "v6": 1.46,
+      "v9": 1.45,
+      "diff": -0.010000000000000009,
+      "verdict": "explained: S3 floor check on new voxel copy"
+    },
+    {
+      "field": "uncertainty_budget.sigma_tau_m",
+      "v6": 1.49,
+      "v9": 1.48,
+      "diff": -0.010000000000000009,
+      "verdict": "explained: S3 floor check on new voxel copy"
+    }
+  ]
+}

@@ -1,0 +1,72 @@
+{
+  "matrix": [
+    [
+      1.0,
+      0.0,
+      0.0,
+      0.0
+    ],
+    [
+      0.0,
+      1.0,
+      0.0,
+      0.0
+    ],
+    [
+      0.0,
+      0.0,
+      1.0,
+      -66.0
+    ],
+    [
+      0.0,
+      0.0,
+      0.0,
+      1.0
+    ]
+  ],
+  "dz_m": -66.0,
+  "dz_source": "median of nearest-neighbour (new minus old) vertical differences over the tube footprint, datum_transfer.json",
+  "composition": "applied AFTER the registration chain: T_ortho<-slam = Tz(dz) @ T_aerial<-slam (transform_ed_slice / transform_flf_ed_chain / transform_slf_ed_chain)",
+  "maps_written": [
+    "flf_10cm_ed_ortho.pcd",
+    "flf_30cm_ed_ortho.pcd",
+    "slf_10cm_ed_ortho.pcd",
+    "slf_30cm_ed_ortho.pcd",
+    "tube_10cm_ed_ortho.pcd",
+    "tube_30cm_ed_ortho.pcd"
+  ],
+  "checks": {
+    "dz_median_m": -66.0,
+    "dz_std_m": 0.020136892819091493,
+    "std_limit_m": 0.05,
+    "horizontal_shifts": [
+      {
+        "grid": "grid_0.5m",
+        "method": "phase",
+        "dx_m": 9.123130658271202e-06,
+        "dy_m": -1.316190741428032e-05
+      },
+      {
+        "grid": "grid_0.5m",
+        "method": "brute",
+        "dx_m": 0.0,
+        "dy_m": 0.0
+      },
+      {
+        "grid": "grid_0.25m",
+        "method": "phase",
+        "dx_m": -1.842444385838707e-05,
+        "dy_m": -3.0737923089797485e-05
+      },
+      {
+        "grid": "grid_0.25m",
+        "method": "brute",
+        "dx_m": 0.0,
+        "dy_m": 0.0
+      }
+    ],
+    "worst_abs_horizontal_m": 3.0737923089797485e-05,
+    "shift_limit_m": 0.5
+  }
+}

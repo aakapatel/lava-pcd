@@ -38,9 +38,17 @@ ROOT = Path(__file__).resolve().parents[1]
 import os
 OUT = Path(os.environ.get("ANALYSIS_OUT", str(ROOT / "analysis_out")))
 TUBE_PCD = Path(os.environ.get("SHOWCASE_TUBE_PCD", str(ROOT / "maps/flf_10cm_aerial.pcd")))
-FIGS = (ROOT.parent / "_Nature__Autonomous_aerial_reconnaissance_of_a_basaltic_"
-        "lava_tube_reveals_interior_morphology_and_roof_thickness_distribution_"
-        "for_planetary_subsurface" / "figures")
+FIGS = Path(os.environ.get("FIGS_DIR", str(
+    ROOT.parent / "_Nature__Autonomous_aerial_reconnaissance_of_a_basaltic_"
+    "lava_tube_reveals_interior_morphology_and_roof_thickness_distribution_"
+    "for_planetary_subsurface" / "figures")))   # FIGS_DIR: review copies (v9)
+# Elevation-axis label follows the vertical datum recorded by the run
+# (ANALYSIS_OUT/datum.json, written by seed_v9_ortho.py); legacy runs carry
+# WGS84 ellipsoidal heights and say so.
+_DATUM = (json.loads((OUT / "datum.json").read_text())
+          if (OUT / "datum.json").exists() else {})
+ELEV_LABEL = _DATUM.get("elevation_axis_label", "elevation (m, WGS84 ellipsoidal)")
+ELEV_LABEL_2L = ELEV_LABEL.replace(" (", "\n(")   # two-line form for short axes
 
 plt.rcParams.update({
     "font.size": 8, "axes.titlesize": 8.5, "axes.labelsize": 8,
@@ -84,7 +92,12 @@ rclass = np.array([r["class"] for r in rrows])
 (cs, cx, cy, cz, ctx, cty), _ = cols(OUT / "centreline.csv", "s", "x", "y", "z", "tx", "ty")
 holes = json.load(open(OUT / "aerial_holes.json"))["holes"][:3]
 
-dem = np.load(OUT / "dem_grid_full_surface_and_subsurface_merged.npz")
+# DEM cache name follows run_roof's convention (dem_grid_<ROOF_DEM_PCD stem>)
+DEM_NPZ = "dem_grid_%s.npz" % Path(os.environ.get(
+    "ROOF_DEM_PCD", "full_surface_and_subsurface_merged.pcd")).stem
+SURFACE_PCD = Path(os.environ.get("SHOWCASE_SURFACE_PCD",
+                                  str(ROOT / "maps/merged_surface_10cm.pcd")))
+dem = np.load(OUT / DEM_NPZ)
 DEMZ, XMIN, YMIN, RES = dem["z"], float(dem["xmin"]), float(dem["ymin"]), float(dem["res"])
 NX, NY = DEMZ.shape   # DEM cache is x-major: DEMZ[ix, iy]
 
@@ -211,21 +224,38 @@ def panel_c(ax):
     # skylights
     for j, h in enumerate(holes):
         i = np.argmin(np.hypot(rx - h["centroid"][0], ry - h["centroid"][1]))
-        ax.annotate(f"S{j+1}", (rs[i], rzdem[i] + 2.2), ha="center",
+        # the surface DEM has no cell inside an opening (v9 surface-only crop):
+        # anchor the marker on the nearest station that has a DEM value
+        zs = rzdem[i] if np.isfinite(rzdem[i]) else \
+            rzdem[np.isfinite(rzdem)][np.argmin(np.abs(rs[np.isfinite(rzdem)] - rs[i]))]
+        ax.annotate(f"S{j+1}", (rs[i], zs + 2.2), ha="center",
                     color=SKY_C, fontsize=8, fontweight="bold")
-        ax.plot([rs[i]], [rzdem[i] + 0.8], marker="v", ms=4, color=SKY_C)
+        ax.plot([rs[i]], [zs + 0.8], marker="v", ms=4, color=SKY_C)
     ax.text(152, rzdem[np.argmin(np.abs(rs - 152))] + 3.0, "surface (DEM)",
             fontsize=7)
-    ax.text(178, 229.5, "conduit void", fontsize=7, color="0.3")
-    ax.annotate("roof, coloured by $\\tau$", (300, 242.5), (248, 248.5),
+    # annotation anchors computed from the profile itself (the earlier
+    # hardcoded elevations were tied to the ellipsoidal datum)
+    fin = np.isfinite(rzdem)
+    zref = lambda s0: float(np.interp(s0, rs[fin], rzdem[fin]))
+    i178 = np.argmin(np.abs(rs - 178))
+    ax.text(178, 0.5 * (zfloor[i178] + rzceil[i178]), "conduit void",
+            fontsize=7, color="0.3")
+    i300 = np.argmin(np.abs(rs - 300))
+    # right-aligned inside the axes (the v8.1 build clipped this label at the
+    # right edge)
+    ax.annotate("roof, coloured by $\\tau$",
+                (300, 0.5 * (rzceil[i300] + rzdem[i300])),
+                (299, zref(248) + 7.0), ha="right",
                 fontsize=7, arrowprops=dict(arrowstyle="-", color="0.3", lw=0.6))
-    ax.annotate("mapped, excluded by screen", (55, 238.5), (8, 246.5),
+    i55 = np.argmin(np.abs(rs - 55))
+    ax.annotate("mapped, excluded by screen",
+                (55, 0.5 * (rzceil[i55] + rzdem[i55])), (8, zref(8) + 10.5),
                 fontsize=6.5, color="0.35",
                 arrowprops=dict(arrowstyle="-", color="0.5", lw=0.6))
     ax.set_xlim(0, rs[-1])
-    ax.set_ylim(zfloor.min() - 1.5, rzdem.max() + 5.5)
+    ax.set_ylim(np.nanmin(zfloor) - 1.5, np.nanmax(rzdem) + 5.5)
     ax.set_xlabel("along-tube distance $s$ (m)")
-    ax.set_ylabel("elevation (m, local)")
+    ax.set_ylabel(ELEV_LABEL_2L)
     ax.text(0.995, 0.03, "vertical exaggeration 3$\\times$",
             transform=ax.transAxes, ha="right", fontsize=6.5, color="0.35")
     ax.set_aspect(3.0)
@@ -252,7 +282,7 @@ def panel_d(ax):
         keep = (np.abs(d_al) < half) & (np.abs(d_lat) < LAT)
         return d_lat[keep], xyz[keep, 2], (rgb[keep] if rgb is not None else None)
 
-    sxyz, srgb = load_xyz_rgb(ROOT / "maps/merged_surface_10cm.pcd")
+    sxyz, srgb = load_xyz_rgb(SURFACE_PCD)
     # keep only the surface skin (the split leaves stray deep points near DEM gaps)
     skin = sxyz[:, 2] > dem_at(sxyz[:, 0], sxyz[:, 1]) - 2.0
     su, sz, sc = slab(sxyz[skin], 2.5, srgb[skin])
@@ -274,7 +304,7 @@ def panel_d(ax):
     ax.text(LAT - 1.5, tz.min() + 2.0, "conduit\n(interior lidar)", fontsize=6.5,
             color="#0072B2", ha="right")
     ax.set_xlabel("across-tube distance (m)")
-    ax.set_ylabel("elevation (m, local)")
+    ax.set_ylabel(ELEV_LABEL_2L)
     ax.set_aspect("equal")
     ax.set_xlim(-LAT, LAT)
     ax.set_ylim(np.percentile(tz, 0.5) - 1.0, sz.max() + 2.0)

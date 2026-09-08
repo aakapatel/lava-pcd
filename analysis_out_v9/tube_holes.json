@@ -1,0 +1,59 @@
+{
+  "origin": [
+    0.0,
+    0.0,
+    0.0
+  ],
+  "up": [
+    0.0,
+    0.19996001199600144,
+    0.9798040587804069
+  ],
+  "mode": "ceiling",
+  "resolution": 1.0,
+  "source_path": "/Users/aakapatel/Documents/Claude/Projects/Nature Journal Article | Autonomous lava tube mapping/lavatube_maps_data_analysis/maps/tube_10cm.pcd",
+  "holes": [
+    {
+      "id": 0,
+      "centroid": [
+        12.865376063755576,
+        3.57540227653548,
+        4.474261140548365
+      ],
+      "radius": 2.111004122822376,
+      "area": 14.0,
+      "n_cells": 14,
+      "semi_major": 2.5625738852291935,
+      "semi_minor": 1.9398158191982267,
+      "orientation": 3.0229055301032077
+    },
+    {
+      "id": 1,
+      "centroid": [
+        35.11140780978732,
+        4.1135962953322815,
+        3.8171023747030537
+      ],
+      "radius": 1.692568750643269,
+      "area": 9.0,
+      "n_cells": 9,
+      "semi_major": 2.449489742783178,
+      "semi_minor": 1.247219128924647,
+      "orientation": 2.0344439357957027
+    },
+    {
+      "id": 2,
+      "centroid": [
+        71.62251892089844,
+        10.565475428428122,
+        6.147677378977825
+      ],
+      "radius": 3.5682482323055424,
+      "area": 40.0,
+      "n_cells": 40,
+      "semi_major": 7.6375067096266385,
+      "semi_minor": 3.9127377757056148,
+      "orientation": 0.5076652649765299
+    }
+  ]
+}

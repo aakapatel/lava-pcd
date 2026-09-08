@@ -1,0 +1,70 @@
+{
+  "file": "/home/aakapatel/Nature Journal Article Autonomous lava tube mapping/Birgir_data_and_papers_08_sep/20250828_Raufarholshellir_Pointcloud_ISN16.laz",
+  "las_version": "1.2",
+  "point_format": 2,
+  "point_count": 590319423,
+  "scales": [
+    0.01,
+    0.01,
+    0.01
+  ],
+  "offsets": [
+    2580000.0,
+    180000.0,
+    0.0
+  ],
+  "mins": [
+    2581211.44,
+    183557.71,
+    151.09
+  ],
+  "maxs": [
+    2583017.71,
+    185759.07,
+    251.74
+  ],
+  "crs_epsg": 8088,
+  "crs_name": "ISN2016 / Lambert 2016",
+  "reprojection": {
+    "target": "EPSG:32627",
+    "pyproj_description": "Inverse of Iceland Lambert 2016 + ISN2016 to WGS 84 (1) + UTM zone 27N",
+    "pyproj_definition": "proj=pipeline step inv proj=lcc lat_0=65 lon_0=-19 lat_1=64.25 lat_2=65.75 x_0=2700000 y_0=300000 ellps=GRS80 step proj=utm zone=27 ellps=WGS84",
+    "pyproj_accuracy_m": 1.0,
+    "pyproj_version": "3.7.2",
+    "proj_version": "9.5.1"
+  },
+  "local_origin": [
+    479158.0,
+    7089826.0,
+    0.0
+  ],
+  "bbox_crop_local": [
+    1299.11,
+    1598.4,
+    409.98,
+    721.56
+  ],
+  "bbox_dem_local": [
+    1200.7193603515625,
+    1520.7193603515625,
+    500.17303466796875,
+    881.6730346679688
+  ],
+  "bbox_union_local": [
+    1200.7193603515625,
+    1598.4,
+    409.98,
+    881.6730346679688
+  ],
+  "voxel_m": 0.1,
+  "points_read": 590319423,
+  "points_in_union_bbox": 51621132,
+  "points_crop": 25640666,
+  "points_dem": 33448227,
+  "points_10cm": 21922741,
+  "z_range_union_local": [
+    162.35,
+    184.58
+  ],
+  "seconds": 381.7
+}

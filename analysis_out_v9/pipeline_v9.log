@@ -1,0 +1,1430 @@
+
+=== 22:39:46 env MORPHO_SKEL_PCD=maps/flf_30cm_ed_ortho.pcd MORPHO_SECT_PCD=maps/flf_10cm_ed_ortho.pcd .venv/bin/python analysis/run_morphometry.py
+[1/4] loading clouds ...
+  sections cloud: 2813845 pts
+[2/4] L1-medial skeleton ...
+  skeleton: |Q|=60000, |X|=4071
+  h=8.0: 40 iters, last max move 1.6510 m
+  h=12.0: 40 iters, last max move 0.6270 m
+  h=16.0: 40 iters, last max move 1.3249 m
+  polyline: 602 nodes, diameter path 417 nodes, length 348.9 m
+  centreline flipped: s=0 at the entrance/skylight end
+  centreline: 302 stations, 301.0 m
+[3/4] cross-sections ...
+{
+  "total_centreline_m": 301.0,
+  "n_stations": 302,
+  "n_valid_sections": 296,
+  "min_coverage": 0.5,
+  "area_m2": {
+    "min": 5.1,
+    "max": 81.4,
+    "median": 48.0,
+    "q25": 36.0,
+    "q75": 59.2,
+    "p5": 13.4,
+    "p95": 75.8,
+    "mean_boot_ci95": [
+      45.2,
+      49.2
+    ]
+  },
+  "height_m": {
+    "min": 3.53,
+    "median": 8.09,
+    "max": 11.41
+  },
+  "eta": {
+    "median": 1.53,
+    "q25": 1.31,
+    "q75": 1.84
+  },
+  "width_m": {
+    "min": 6.07,
+    "median": 10.53,
+    "max": 31.6
+  },
+  "width_min_m": 6.07,
+  "sinuosity_50m": {
+    "mean": 1.032,
+    "max": 1.079
+  }
+}
+[4/4] renders ...
+done
+
+=== 22:44:23 env ROOF_TUBE_PCD=maps/flf_10cm_ed_ortho.pcd .venv/bin/python analysis/run_roof.py
+building DEM ...
+{
+  "n_stations": 302,
+  "n_intact": 276,
+  "n_skylight": 18,
+  "n_no_dem": 4,
+  "n_low_coverage": 0,
+  "n_multipass": 0,
+  "n_inconsistent": 4,
+  "tau_m": {
+    "min": 0.04,
+    "max": 14.14,
+    "median": 6.02,
+    "q25": 3.24,
+    "q75": 9.0,
+    "median_ci95": [
+      5.73,
+      6.39
+    ],
+    "sigma": 1.49
+  },
+  "kappa_env": 0.0034,
+  "kappa_env_station": {
+    "s": 51.0,
+    "tau": 0.04,
+    "span": 12.21
+  },
+  "shielding_g_cm2": {
+    "median": 1564.0,
+    "min": 11.0,
+    "atmosphere_ratio_median": 1.51
+  },
+  "rho_basalt": 2600.0
+}
+done
+
+=== 22:44:25 env VALID_TUBE_PCD=maps/flf_10cm_ed_ortho.pcd VALID_AERIAL_PCD=maps/aerial_isn16_ortho_10cm.pcd .venv/bin/python analysis/validate_ed_registration.py
+S3 floor-through-skylight residual (aerial minus tube floor):
+{
+  "n": 360,
+  "median_m": 0.8738021850585938,
+  "rms_m": 1.346913198113121,
+  "p10_m": -1.232403564453125,
+  "p90_m": 1.3371871948242189,
+  "annulus_outside_cone": {
+    "n": 327,
+    "median_m": 0.8983306884765625,
+    "rms_m": 1.351579299890805,
+    "p10_m": -0.07890319824218747,
+    "p90_m": 1.3727249145507814
+  }
+}
+two-SLAM ceiling agreement: worst zone |mean| 0.23 m, worst std 0.48 m
+sigma_reg_z = 1.45 m (anchor 1.35 + drift 0.53 in quadrature)
+updated budget: sigma_tau = 1.48 m
+
+=== 22:44:26 env ROOF_TUBE_PCD=maps/flf_10cm_ed_ortho.pcd .venv/bin/python analysis/run_roof.py
+DEM loaded from cache
+{
+  "n_stations": 302,
+  "n_intact": 276,
+  "n_skylight": 18,
+  "n_no_dem": 4,
+  "n_low_coverage": 0,
+  "n_multipass": 0,
+  "n_inconsistent": 4,
+  "tau_m": {
+    "min": 0.04,
+    "max": 14.14,
+    "median": 6.02,
+    "q25": 3.24,
+    "q75": 9.0,
+    "median_ci95": [
+      5.73,
+      6.39
+    ],
+    "sigma": 1.48
+  },
+  "kappa_env": 0.0034,
+  "kappa_env_station": {
+    "s": 51.0,
+    "tau": 0.04,
+    "span": 12.21
+  },
+  "shielding_g_cm2": {
+    "median": 1564.0,
+    "min": 11.0,
+    "atmosphere_ratio_median": 1.51
+  },
+  "rho_basalt": 2600.0
+}
+done
+
+=== 22:44:27 .venv/bin/python analysis/run_planetary.py
+columns: ['body', 'feature_id', 'lat', 'lon_east_0_360', 'aperture_long_axis_m', 'aperture_short_axis_m', 'inner_long_axis_m', 'inner_short_axis_m', 'depth_m', 'depth_is_minimum', 'type', 'source', 'source_detail', 'notes']
+{
+  "kappa_env_earth": 0.0034,
+  "span_scale": {
+    "mars": 1.63,
+    "moon": 2.46
+  },
+  "equivalent_kappa": {
+    "note": "a roof at the terrestrial envelope tau/L supports a span larger by span_scale at the same tau and strength"
+  },
+  "mars": {
+    "n_total": 1062,
+    "n_dimensioned": 131,
+    "aperture_median_m": 120.0,
+    "counts": {
+      "ge_5m": 131,
+      "ge_10m": 131,
+      "ge_20m": 131,
+      "ge_50m": 120,
+      "ge_narrowest": 131
+    }
+  },
+  "moon": {
+    "n_total": 278,
+    "n_dimensioned": 266,
+    "aperture_median_m": 29.0,
+    "counts": {
+      "ge_5m": 266,
+      "ge_10m": 258,
+      "ge_20m": 190,
+      "ge_50m": 63,
+      "ge_narrowest": 265
+    }
+  },
+  "demonstrated_min_span_m": 6.07
+}
+
+=== 22:44:28 env SLF_CHAIN_REUSE=1 SLF_F1_PCD=maps/flf_30cm_ed_ortho.pcd SLF_F2_PCD=maps/slf_30cm_ed_ortho.pcd .venv/bin/python analysis/chain_slf_to_ed.py
+SLF_CHAIN_REUSE=1: reusing transform_slf_ed_chain.json, no GICP, no map rewrite
+{
+  "n_stations": 302,
+  "s_range": [
+    0.0,
+    301.0
+  ],
+  "median": 0.08089874267578523,
+  "rms": 0.37065534739214995,
+  "p5": -0.20594867706299738,
+  "p95": 0.7124800338745155,
+  "note": "flight1 minus flight2 p99 ceiling in 2.5 m columns along the v6 centreline, both flights in the registered frame; coverage limited to the reach flight 2 mapped"
+}
+
+=== 22:44:28 .venv/bin/python analysis/compare_bases.py
+{
+  "n_matched": 274,
+  "median_horiz_offset_m": 0.47234202592690905,
+  "dtau": {
+    "median": -0.23999999999999977,
+    "rms": 0.8584926847568486,
+    "p5": -1.4220499999999998,
+    "p95": 0.17339999999999942
+  },
+  "dceil": {
+    "median": -65.795,
+    "rms": 65.59676813028737
+  },
+  "dtau_zones": {
+    "s0-80": {
+      "mean": -0.34268253968253953,
+      "std": 0.487575499254131,
+      "n": 63
+    },
+    "s80-160": {
+      "mean": -0.3491739130434782,
+      "std": 0.847789400915686,
+      "n": 69
+    },
+    "s160-240": {
+      "mean": -0.5626625000000001,
+      "std": 0.8084153162785511,
+      "n": 80
+    },
+    "s240-360": {
+      "mean": -0.406741935483871,
+      "std": 0.7371714453601133,
+      "n": 62
+    }
+  },
+  "morphometry": {
+    "centreline_m": [
+      356.0,
+      301.0
+    ],
+    "area_median": [
+      48.9,
+      48.0
+    ],
+    "width_median": [
+      10.46,
+      10.53
+    ],
+    "height_median": [
+      8.05,
+      8.09
+    ]
+  },
+  "note": "A = onboard DLIO basis (analysis_out_ed); B = offline FAST-LIO2 chained basis (analysis_out_v6, primary). Both share the slice-based registration datum; differences measure estimator sensitivity of the full pipeline, not the datum."
+}
+
+=== 22:44:28 .venv/bin/python analysis/orbital_dem_test.py
+[
+ {
+  "config": "control 0.5 m / 0 m",
+  "grid_m": 0.5,
+  "sigma_m": 0.0,
+  "dome_m": 0.0,
+  "n_seeds": 1,
+  "median_shift_m": {
+   "mean": -2.746582023149813e-06,
+   "worst": 2.746582023149813e-06
+  },
+  "per_station_rms_m": {
+   "mean": 0.00018962557009040825,
+   "worst": 0.00018962557009040825
+  },
+  "frac_error_gt_1p5": {
+   "mean": 0.0,
+   "worst": 0.0
+  },
+  "frac_false_negative_roof": 0.0,
+  "thick_thin_contrast_m": {
+   "baseline": 9.9465,
+   "mean": 9.946496337890608,
+   "worst": 9.946496337890608
+  }
+ },
+ {
+  "config": "HiRISE-like 1 m / 0.3 m",
+  "grid_m": 1.0,
+  "sigma_m": 0.3,
+  "dome_m": 0.0,
+  "n_seeds": 20,
+  "median_shift_m": {
+   "mean": 0.09055969655892397,
+   "worst": 0.42887323841877745
+  },
+  "per_station_rms_m": {
+   "mean": 0.28833608646329123,
+   "worst": 0.4186125507658035
+  },
+  "frac_error_gt_1p5": {
+   "mean": 0.0,
+   "worst": 0.0
+  },
+  "frac_false_negative_roof": 0.021739130434782608,
+  "thick_thin_contrast_m": {
+   "baseline": 9.9465,
+   "mean": 9.964320024867664,
+   "worst": 9.230669040183415
+  }
+ },
+ {
+  "config": "HiRISE-like 2 m / 0.5 m",
+  "grid_m": 2.0,
+  "sigma_m": 0.5,
+  "dome_m": 0.0,
+  "n_seeds": 20,
+  "median_shift_m": {
+   "mean": 0.13892381585792607,
+   "worst": 0.6928287786571197
+  },
+  "per_station_rms_m": {
+   "mean": 0.4826034514161489,
+   "worst": 0.6981941855998974
+  },
+  "frac_error_gt_1p5": {
+   "mean": 0.0012681159420289856,
+   "worst": 0.014492753623188406
+  },
+  "frac_false_negative_roof": 0.03260869565217391,
+  "thick_thin_contrast_m": {
+   "baseline": 9.9465,
+   "mean": 10.020028859179668,
+   "worst": 8.836302483951528
+  }
+ },
+ {
+  "config": "LROC-NAC-like 5 m / 1 m",
+  "grid_m": 5.0,
+  "sigma_m": 1.0,
+  "dome_m": 0.0,
+  "n_seeds": 20,
+  "median_shift_m": {
+   "mean": 0.2909517929623114,
+   "worst": 1.5782070170079585
+  },
+  "per_station_rms_m": {
+   "mean": 0.9661732558646486,
+   "worst": 1.4015595096594562
+  },
+  "frac_error_gt_1p5": {
+   "mean": 0.13858695652173914,
+   "worst": 0.3333333333333333
+  },
+  "frac_false_negative_roof": 0.14492753623188406,
+  "thick_thin_contrast_m": {
+   "baseline": 9.9465,
+   "mean": 10.00931130014401,
+   "worst": 7.422084134066907
+  }
+ },
+ {
+  "config": "LROC-NAC-like 5 m / 2 m",
+  "grid_m": 5.0,
+  "sigma_m": 2.0,
+  "dome_m": 0.0,
+  "n_seeds": 20,
+  "median_shift_m": {
+   "mean": 0.4905046455701559,
+   "worst": 2.7611766105692404
+  },
+  "per_station_rms_m": {
+   "mean": 1.9153283249717394,
+   "worst": 2.7928535129782657
+  },
+  "frac_error_gt_1p5": {
+   "mean": 0.4577898550724638,
+   "worst": 0.7898550724637681
+  },
+  "frac_false_negative_roof": 0.25,
+  "thick_thin_contrast_m": {
+   "baseline": 9.9465,
+   "mean": 9.659058238146486,
+   "worst": 4.837603920699735
+  }
+ },
+ {
+  "config": "CTX-like 20 m / 3 m",
+  "grid_m": 20.0,
+  "sigma_m": 3.0,
+  "dome_m": 0.0,
+  "n_seeds": 20,
+  "median_shift_m": {
+   "mean": 0.5980442176673122,
+   "worst": 3.927552769917103
+  },
+  "per_station_rms_m": {
+   "mean": 2.9024722986134224,
+   "worst": 4.200354424419645
+  },
+  "frac_error_gt_1p5": {
+   "mean": 0.5989130434782609,
+   "worst": 0.8840579710144928
+  },
+  "frac_false_negative_roof": 0.2826086956521739,
+  "thick_thin_contrast_m": {
+   "baseline": 9.9465,
+   "mean": 9.158130251701499,
+   "worst": 1.9281162293815441
+  }
+ },
+ {
+  "config": "doming 1 m (0.5 m grid)",
+  "grid_m": 0.5,
+  "sigma_m": 0.0,
+  "dome_m": 1.0,
+  "n_seeds": 1,
+  "median_shift_m": {
+   "mean": -0.4806412068314465,
+   "worst": 0.4806412068314465
+  },
+  "per_station_rms_m": {
+   "mean": 0.4015961536114348,
+   "worst": 0.4015961536114348
+  },
+  "frac_error_gt_1p5": {
+   "mean": 0.0,
+   "worst": 0.0
+  },
+  "frac_false_negative_roof": 0.021739130434782608,
+  "thick_thin_contrast_m": {
+   "baseline": 9.9465,
+   "mean": 10.22170682474517,
+   "worst": 10.22170682474517
+  }
+ },
+ {
+  "config": "doming 2 m (0.5 m grid)",
+  "grid_m": 0.5,
+  "sigma_m": 0.0,
+  "dome_m": 2.0,
+  "n_seeds": 1,
+  "median_shift_m": {
+   "mean": -0.8769181266128037,
+   "worst": 0.8769181266128037
+  },
+  "per_station_rms_m": {
+   "mean": 0.803187129084499,
+   "worst": 0.803187129084499
+  },
+  "frac_error_gt_1p5": {
+   "mean": 0.0,
+   "worst": 0.0
+  },
+  "frac_false_negative_roof": 0.03260869565217391,
+  "thick_thin_contrast_m": {
+   "baseline": 9.9465,
+   "mean": 10.447915480545035,
+   "worst": 10.447915480545035
+  }
+ },
+ {
+  "config": "LROC-NAC-like 5 m / 1 m + doming 2 m",
+  "grid_m": 5.0,
+  "sigma_m": 1.0,
+  "dome_m": 2.0,
+  "n_seeds": 20,
+  "median_shift_m": {
+   "mean": -0.6119764034926917,
+   "worst": 1.4144029557150724
+  },
+  "per_station_rms_m": {
+   "mean": 1.2085133183683896,
+   "worst": 1.9311576696317128
+  },
+  "frac_error_gt_1p5": {
+   "mean": 0.23713768115942027,
+   "worst": 0.605072463768116
+  },
+  "frac_false_negative_roof": 0.2028985507246377,
+  "thick_thin_contrast_m": {
+   "baseline": 9.9465,
+   "mean": 10.455583665970313,
+   "worst": 7.89552147075301
+  }
+ }
+]
+anchors: {"1.0": {"S1": false, "S2": true, "S3": true}, "2.0": {"S1": false, "S2": false, "S3": true}, "5.0": {"S1": false, "S2": false, "S3": false}, "20.0": {"S1": false, "S2": false, "S3": false}}
+
+=== 22:44:39 .venv/bin/python analysis/national_dem_check.py
+{
+  "note": "Independent surface check (review items E47/R2.9/R3.12): photogrammetric DEM vs national products over the survey footprint. Datum offset absorbs geoid/ellipsoid and reference differences; std and doming measure shape error, upper-bounded by snow/temporal change. CRS hypothesis for the local frame: EPSG:32627 with origin [479158.0, 7089826.0].",
+  "arcticdem": {
+    "product": "ArcticDEM v4.1 2 m (ellipsoidal)",
+    "n": 30550,
+    "best_shift_m": [
+      2.0,
+      -2.0
+    ],
+    "datum_offset_m": -65.39656066894531,
+    "std_raw_m": 0.2814088009091892,
+    "tilt_m_per_km": 0.42937601677121223,
+    "std_after_plane_m": 0.2780275964979627,
+    "doming_amplitude_m": 0.12910043345226768,
+    "std_after_quadratic_m": 0.2760219903420779
+  },
+  "islandsdem": {
+    "product": "IslandsDEM v1.0 10 m (orthometric)",
+    "n": 30550,
+    "best_shift_m": [
+      0.0,
+      0.0
+    ],
+    "datum_offset_m": 0.6269454956054688,
+    "std_raw_m": 0.355456894757309,
+    "tilt_m_per_km": 0.5752203260227142,
+    "std_after_plane_m": 0.3498020426702857,
+    "doming_amplitude_m": 0.13370396747238694,
+    "std_after_quadratic_m": 0.3481931603075434
+  }
+}
+
+=== 22:45:59 .venv/bin/python analysis/run_review_stats.py
+{
+  "terrain": {
+    "variance": {
+      "tau": 15.560873506301197,
+      "z_dem": 10.963092379489607,
+      "z_ceil": 2.8741734459147246
+    },
+    "dem_share": 0.7045293681649831,
+    "corr_tau_zdem": 0.9053459634043661,
+    "const_ceiling_control": {
+      "r": 0.9053459634043665,
+      "r2": 0.8152974930001698,
+      "rms_residual_m": 1.6953266197759855
+    },
+    "skylight_runs": [
+      {
+        "run_s": [
+          29.0,
+          30.0
+        ],
+        "d_zdem": -5.283369958947134,
+        "d_zceil": 0.27324667954596293,
+        "d_tau": -5.556597198744264
+      },
+      {
+        "run_s": [
+          35.0,
+          36.0
+        ],
+        "d_zdem": -5.138471004243314,
+        "d_zceil": 0.8009421499292557,
+        "d_tau": -5.939389533239037
+      },
+      {
+        "run_s": [
+          54.0,
+          56.0
+        ],
+        "d_zdem": -4.975071684587789,
+        "d_zceil": 2.2603602150537654,
+        "d_tau": -7.235459677419356
+      },
+      {
+        "run_s": [
+          89.0,
+          99.0
+        ],
+        "d_zdem": -3.60851375598088,
+        "d_zceil": 2.224367523923462,
+        "d_tau": -5.832866327751195
+      }
+    ],
+    "ceiling_thinning": {
+      "slope_m_per_m": -0.11637679148335921,
+      "ci95": [
+        -0.14899966334630033,
+        -0.09332139342316259
+      ],
+      "n": 108,
+      "note": "z_ceil vs distance to nearest skylight, stations within 40 m"
+    },
+    "tau_hist_2m": {
+      "counts": [
+        47,
+        30,
+        59,
+        44,
+        34,
+        22,
+        38,
+        2
+      ],
+      "edges": [
+        0,
+        2,
+        4,
+        6,
+        8,
+        10,
+        12,
+        14,
+        16
+      ]
+    },
+    "reach_median": {
+      "0-50": 1.8305,
+      "50-100": 1.539,
+      "100-150": 4.670999999999999,
+      "150-200": 6.47,
+      "200-250": 7.981,
+      "250-300": 12.932500000000001
+    },
+    "near_skylight_median": {
+      "lt10": 1.3559999999999999,
+      "10to20": 2.6654999999999998,
+      "20to30": 4.1080000000000005
+    },
+    "zceil_range": 10.558999999999997,
+    "zdem_range": 12.650000000000006,
+    "net_centreline": {
+      "start": 166.597,
+      "end": 168.219
+    }
+  },
+  "stats": {
+    "corr_len_1e_m": 50,
+    "corr_len_zero_m": 102,
+    "n_eff": 3.3678118322056174,
+    "median": 6.015499999999999,
+    "ci_iid": [
+      5.7255,
+      6.392
+    ],
+    "ci_block": {
+      "20": [
+        3.5,
+        8.316
+      ],
+      "30": [
+        3.14,
+        8.650500000000001
+      ],
+      "50": [
+        2.429,
+        8.9755
+      ]
+    },
+    "sigma_tau_systematic_m": 1.48,
+    "note": "sigma_tau is dominated by the common registration datum term and does not average down"
+  },
+  "shielding": {
+    "2200": {
+      "median_g_cm2": 1323.41,
+      "frac_gt_100": 0.9782608695652174,
+      "frac_gt_500": 0.8043478260869565,
+      "frac_gt_1000": 0.6884057971014492
+    },
+    "2600": {
+      "median_g_cm2": 1564.0299999999997,
+      "frac_gt_100": 0.9855072463768116,
+      "frac_gt_500": 0.8369565217391305,
+      "frac_gt_1000": 0.7210144927536232
+    },
+    "3000": {
+      "median_g_cm2": 1804.65,
+      "frac_gt_100": 0.9855072463768116,
+      "frac_gt_500": 0.8659420289855072,
+      "frac_gt_1000": 0.7427536231884058
+    }
+  },
+  "envelope": {
+    "beta": 0.5,
+    "rho_mid": 2600.0,
+    "tau_threshold_m": 1.48,
+    "sigma_req_MPa": {
+      "median": 0.21420442638115217,
+      "p90": 0.7722372732584468,
+      "p95": 1.564736533929792,
+      "max": 2.046197514422284,
+      "drop_one": 1.9669246461949268,
+      "n": 248,
+      "sensitivity_tau_gt_0p5": {
+        "n": 270,
+        "max": 3.7041471999999995,
+        "drop_one": 3.086551582369942
+      },
+      "note": "required tensile strength per intact station under the clamped-strip model, covers thinner than sigma_tau excluded; quote the p95, not the max (single-station tail)"
+    },
+    "tau_over_L": {
+      "min": 0.0034398034398034397,
+      "second": 0.0071661237785016286,
+      "p5": 0.08840808562535268,
+      "p25": 0.2970107203110933,
+      "median": 0.5450740034892101
+    },
+    "kappa_sensitivity": {
+      "single_min": 0.0034398034398034397,
+      "drop_one": 0.0071661237785016286,
+      "p5": 0.08840808562535268,
+      "median": 0.5450740034892101
+    },
+    "Lmax_sqrt_model": {
+      "earth": {
+        "1MPa": {
+          "at_tau_6m": 22.049038962903623,
+          "at_tau_14m": 33.132777038676906
+        },
+        "5MPa": {
+          "at_tau_6m": 49.303149959593966,
+          "at_tau_14m": 74.08714174182575
+        },
+        "10MPa": {
+          "at_tau_6m": 69.7251833405723,
+          "at_tau_14m": 104.77504064874782
+        }
+      },
+      "mars": {
+        "1MPa": {
+          "at_tau_6m": 35.8539669476657,
+          "at_tau_14m": 53.87724584403653
+        },
+        "5MPa": {
+          "at_tau_6m": 80.17190735801114,
+          "at_tau_14m": 120.47318414773372
+        },
+        "10MPa": {
+          "at_tau_6m": 113.38019870701869,
+          "at_tau_14m": 170.3748109239964
+        }
+      },
+      "moon": {
+        "1MPa": {
+          "at_tau_6m": 54.25835982257736,
+          "at_tau_14m": 81.53326507837141
+        },
+        "5MPa": {
+          "at_tau_6m": 121.32538091092641,
+          "at_tau_14m": 182.31392314274822
+        },
+        "10MPa": {
+          "at_tau_6m": 171.57999914431394,
+          "at_tau_14m": 257.8308227179206
+        }
+      }
+    },
+    "span_scale": {
+      "mars": 1.6261011197806923,
+      "moon": 2.4608038433722332
+    }
+  },
+  "moon_pits": {
+    "by_type": {
+      "pit (mare)": {
+        "n": 16,
+        "n_outer": 15,
+        "n_inner": 13,
+        "outer_median": 175.0,
+        "inner_median": 100.0,
+        "inner_min": 14.0,
+        "inner_max": 175.0,
+        "depth_median": 40.0,
+        "inner_ge_narrowest": 13
+      },
+      "pit (impact melt)": {
+        "n": 257,
+        "n_outer": 246,
+        "n_inner": 248,
+        "outer_median": 26.5,
+        "inner_median": 15.5,
+        "inner_min": 4.0,
+        "inner_max": 385.0,
+        "depth_median": 9.0,
+        "inner_ge_narrowest": 224
+      },
+      "pit (highland)": {
+        "n": 5,
+        "n_outer": 5,
+        "n_inner": 5,
+        "outer_median": 63.0,
+        "inner_median": 37.0,
+        "inner_min": 19.0,
+        "inner_max": 45.0,
+        "depth_median": 27.0,
+        "inner_ge_narrowest": 5
+      }
+    },
+    "all_inner": {
+      "n": 266,
+      "median": 16.0,
+      "frac_lt_narrowest": 0.09022556390977443,
+      "frac_lt_10": 0.20676691729323307
+    },
+    "narrowest_section_m": 6.07
+  },
+  "mars_pits": {
+    "n_total": 1062,
+    "n_apc": 132,
+    "n_sky_type": 354,
+    "n_apc_dimensioned": 131,
+    "apc_median": 120.0,
+    "note": "'sky' candidates (n=354) carry no published dimensions; the dimensioned set is APCs only"
+  },
+  "scale_ruler": {
+    "aerial": {
+      "S1S2": 22.44303252543745,
+      "S1S3": 57.0158232316613,
+      "S2S3": 34.72537768761215
+    },
+    "dlio_map": {
+      "S1S2": 22.262242449736465,
+      "S1S3": 59.19512886471778,
+      "S2S3": 37.149960414064104
+    },
+    "flf_map": {
+      "S1S2": 22.566634742691296,
+      "S1S3": 57.25951107980929,
+      "S2S3": 34.96859623453815
+    },
+    "dlio_minus_aerial": {
+      "S1S2": -0.18079007570098327,
+      "S1S3": 2.1793056330564795,
+      "S2S3": 2.424582726451952
+    },
+    "flf_minus_aerial": {
+      "S1S2": 0.1236022172538469,
+      "S1S3": 0.24368784814799227,
+      "S2S3": 0.24321854692599487
+    },
+    "dlio_minus_flf": {
+      "S1S2": -0.30439229295483017,
+      "S1S3": 1.9356177849084872,
+      "S2S3": 2.181364179525957
+    },
+    "hole_semi_major": {
+      "aerial": [
+        2.2791297913328066,
+        1.4142135623730951,
+        4.668308414005641
+      ],
+      "dlio": [
+        2.5625738852291935,
+        2.449489742783178,
+        7.6375067096266385
+      ],
+      "flf": [
+        2.1838568563966754,
+        2.0976176963403033,
+        5.167915807619661
+      ]
+    },
+    "note": "inter-hole distances are rigid-transform invariant; agreement between the two independent SLAM maps against a common offset to the aerial model implicates the rim-centroid definition (S3 is a 9-15 m elongated opening seen from opposite sides), not map scale"
+  },
+  "volume": {
+    "total_m3": 14066.5674,
+    "per_m": 46.57803774834437,
+    "n_sections": 302,
+    "note": "enclosed cross-section area integrated at 1 m stations; floor bounded by top of breakdown, so a lower bound on the void volume"
+  }
+}
+
+=== 22:46:00 .venv/bin/python analysis/collect_paper_numbers.py
+{
+  "reg_mode": "slice_manual_ed",
+  "reg_matches": 3,
+  "reg_rim_rms_m": 1.7331442353132371,
+  "reg_vres_mm": [
+    -5240,
+    -5864,
+    -3582
+  ],
+  "reg_sigma_tau_m": 1.48,
+  "reg_sigma_reg_z_m": 1.45,
+  "vertical_q90_diffs_m": [
+    -0.043,
+    -1.369,
+    0.471
+  ],
+  "scale_ruler_diff_m": [
+    -0.181,
+    2.179,
+    2.425
+  ],
+  "centreline_length_m": 301.0,
+  "n_stations": 302,
+  "n_valid_sections": 296,
+  "area": {
+    "min": 5.1,
+    "max": 81.4,
+    "median": 48.0,
+    "q25": 36.0,
+    "q75": 59.2,
+    "p5": 13.4,
+    "p95": 75.8,
+    "mean_boot_ci95": [
+      45.2,
+      49.2
+    ]
+  },
+  "height": {
+    "min": 3.53,
+    "median": 8.09,
+    "max": 11.41
+  },
+  "eta": {
+    "median": 1.53,
+    "q25": 1.31,
+    "q75": 1.84
+  },
+  "width": {
+    "min": 6.07,
+    "median": 10.53,
+    "max": 31.6
+  },
+  "sinuosity": {
+    "mean": 1.032,
+    "max": 1.079
+  },
+  "tau": {
+    "min": 0.04,
+    "max": 14.14,
+    "median": 6.02,
+    "q25": 3.24,
+    "q75": 9.0,
+    "median_ci95": [
+      5.73,
+      6.39
+    ],
+    "sigma": 1.48
+  },
+  "n_tau_clean": 276,
+  "n_multipass": 0,
+  "n_skylight_stations": 18,
+  "n_no_dem": 4,
+  "tau_s_range_m": [
+    0.0,
+    301.0
+  ],
+  "min_tau_over_L_retired": 0.0034,
+  "min_tau_over_L_station": {
+    "s": 51.0,
+    "tau": 0.04,
+    "span": 12.21
+  },
+  "shielding": {
+    "median": 1564.0,
+    "min": 11.0,
+    "atmosphere_ratio_median": 1.51
+  },
+  "stats": {
+    "corr_len_1e_m": 50,
+    "corr_len_zero_m": 102,
+    "n_eff": 3.3678118322056174,
+    "median": 6.015499999999999,
+    "ci_iid": [
+      5.7255,
+      6.392
+    ],
+    "ci_block": {
+      "20": [
+        3.5,
+        8.316
+      ],
+      "30": [
+        3.14,
+        8.650500000000001
+      ],
+      "50": [
+        2.429,
+        8.9755
+      ]
+    },
+    "sigma_tau_systematic_m": 1.48,
+    "note": "sigma_tau is dominated by the common registration datum term and does not average down"
+  },
+  "terrain": {
+    "variance": {
+      "tau": 15.560873506301197,
+      "z_dem": 10.963092379489607,
+      "z_ceil": 2.8741734459147246
+    },
+    "dem_share": 0.7045293681649831,
+    "corr_tau_zdem": 0.9053459634043661,
+    "const_ceiling_control": {
+      "r": 0.9053459634043665,
+      "r2": 0.8152974930001698,
+      "rms_residual_m": 1.6953266197759855
+    },
+    "skylight_runs": [
+      {
+        "run_s": [
+          29.0,
+          30.0
+        ],
+        "d_zdem": -5.283369958947134,
+        "d_zceil": 0.27324667954596293,
+        "d_tau": -5.556597198744264
+      },
+      {
+        "run_s": [
+          35.0,
+          36.0
+        ],
+        "d_zdem": -5.138471004243314,
+        "d_zceil": 0.8009421499292557,
+        "d_tau": -5.939389533239037
+      },
+      {
+        "run_s": [
+          54.0,
+          56.0
+        ],
+        "d_zdem": -4.975071684587789,
+        "d_zceil": 2.2603602150537654,
+        "d_tau": -7.235459677419356
+      },
+      {
+        "run_s": [
+          89.0,
+          99.0
+        ],
+        "d_zdem": -3.60851375598088,
+        "d_zceil": 2.224367523923462,
+        "d_tau": -5.832866327751195
+      }
+    ],
+    "ceiling_thinning": {
+      "slope_m_per_m": -0.11637679148335921,
+      "ci95": [
+        -0.14899966334630033,
+        -0.09332139342316259
+      ],
+      "n": 108,
+      "note": "z_ceil vs distance to nearest skylight, stations within 40 m"
+    },
+    "tau_hist_2m": {
+      "counts": [
+        47,
+        30,
+        59,
+        44,
+        34,
+        22,
+        38,
+        2
+      ],
+      "edges": [
+        0,
+        2,
+        4,
+        6,
+        8,
+        10,
+        12,
+        14,
+        16
+      ]
+    },
+    "reach_median": {
+      "0-50": 1.8305,
+      "50-100": 1.539,
+      "100-150": 4.670999999999999,
+      "150-200": 6.47,
+      "200-250": 7.981,
+      "250-300": 12.932500000000001
+    },
+    "near_skylight_median": {
+      "lt10": 1.3559999999999999,
+      "10to20": 2.6654999999999998,
+      "20to30": 4.1080000000000005
+    },
+    "zceil_range": 10.558999999999997,
+    "zdem_range": 12.650000000000006,
+    "net_centreline": {
+      "start": 166.597,
+      "end": 168.219
+    }
+  },
+  "envelope": {
+    "beta": 0.5,
+    "rho_mid": 2600.0,
+    "tau_threshold_m": 1.48,
+    "sigma_req_MPa": {
+      "median": 0.21420442638115217,
+      "p90": 0.7722372732584468,
+      "p95": 1.564736533929792,
+      "max": 2.046197514422284,
+      "drop_one": 1.9669246461949268,
+      "n": 248,
+      "sensitivity_tau_gt_0p5": {
+        "n": 270,
+        "max": 3.7041471999999995,
+        "drop_one": 3.086551582369942
+      },
+      "note": "required tensile strength per intact station under the clamped-strip model, covers thinner than sigma_tau excluded; quote the p95, not the max (single-station tail)"
+    },
+    "tau_over_L": {
+      "min": 0.0034398034398034397,
+      "second": 0.0071661237785016286,
+      "p5": 0.08840808562535268,
+      "p25": 0.2970107203110933,
+      "median": 0.5450740034892101
+    },
+    "kappa_sensitivity": {
+      "single_min": 0.0034398034398034397,
+      "drop_one": 0.0071661237785016286,
+      "p5": 0.08840808562535268,
+      "median": 0.5450740034892101
+    },
+    "Lmax_sqrt_model": {
+      "earth": {
+        "1MPa": {
+          "at_tau_6m": 22.049038962903623,
+          "at_tau_14m": 33.132777038676906
+        },
+        "5MPa": {
+          "at_tau_6m": 49.303149959593966,
+          "at_tau_14m": 74.08714174182575
+        },
+        "10MPa": {
+          "at_tau_6m": 69.7251833405723,
+          "at_tau_14m": 104.77504064874782
+        }
+      },
+      "mars": {
+        "1MPa": {
+          "at_tau_6m": 35.8539669476657,
+          "at_tau_14m": 53.87724584403653
+        },
+        "5MPa": {
+          "at_tau_6m": 80.17190735801114,
+          "at_tau_14m": 120.47318414773372
+        },
+        "10MPa": {
+          "at_tau_6m": 113.38019870701869,
+          "at_tau_14m": 170.3748109239964
+        }
+      },
+      "moon": {
+        "1MPa": {
+          "at_tau_6m": 54.25835982257736,
+          "at_tau_14m": 81.53326507837141
+        },
+        "5MPa": {
+          "at_tau_6m": 121.32538091092641,
+          "at_tau_14m": 182.31392314274822
+        },
+        "10MPa": {
+          "at_tau_6m": 171.57999914431394,
+          "at_tau_14m": 257.8308227179206
+        }
+      }
+    },
+    "span_scale": {
+      "mars": 1.6261011197806923,
+      "moon": 2.4608038433722332
+    }
+  },
+  "shielding_sensitivity": {
+    "2200": {
+      "median_g_cm2": 1323.41,
+      "frac_gt_100": 0.9782608695652174,
+      "frac_gt_500": 0.8043478260869565,
+      "frac_gt_1000": 0.6884057971014492
+    },
+    "2600": {
+      "median_g_cm2": 1564.0299999999997,
+      "frac_gt_100": 0.9855072463768116,
+      "frac_gt_500": 0.8369565217391305,
+      "frac_gt_1000": 0.7210144927536232
+    },
+    "3000": {
+      "median_g_cm2": 1804.65,
+      "frac_gt_100": 0.9855072463768116,
+      "frac_gt_500": 0.8659420289855072,
+      "frac_gt_1000": 0.7427536231884058
+    }
+  },
+  "registration_validation": {
+    "floor_through_skylight_s3": {
+      "n": 360,
+      "median_m": 0.8738021850585938,
+      "rms_m": 1.346913198113121,
+      "p10_m": -1.232403564453125,
+      "p90_m": 1.3371871948242189,
+      "annulus_outside_cone": {
+        "n": 327,
+        "median_m": 0.8983306884765625,
+        "rms_m": 1.351579299890805,
+        "p10_m": -0.07890319824218747,
+        "p90_m": 1.3727249145507814
+      }
+    },
+    "rim_horizontal_rms_m": 1.7331442353132371,
+    "two_slam_zones": {
+      "s0-80": {
+        "mean": -0.23240130147375915,
+        "std": 0.32202807834612057,
+        "n": 80
+      },
+      "s80-160": {
+        "mean": -0.13521942607767415,
+        "std": 0.12814573299629553,
+        "n": 80
+      },
+      "s160-240": {
+        "mean": -0.16641896855827448,
+        "std": 0.4783144751890448,
+        "n": 80
+      },
+      "s240-340": {
+        "mean": -0.10124656946425091,
+        "std": 0.12767163126176656,
+        "n": 99
+      }
+    },
+    "n_negative_tau_stations": 4,
+    "sigma_reg_components": {
+      "anchor_floor_rms_m": 1.346913198113121,
+      "drift_rss_m": 0.5317848268821408
+    },
+    "sigma_reg_z_m": 1.45,
+    "note": "sigma_reg = quadrature(anchor floor RMS at S3, worst-zone two-SLAM RSS). PROVISIONAL until Ed's per-slice residuals arrive; validated against measurements the registration was not fitted to on our side."
+  },
+  "span_scale": {
+    "mars": 1.63,
+    "moon": 2.46
+  },
+  "mars": {
+    "n_total": 1062,
+    "n_dimensioned": 131,
+    "aperture_median_m": 120.0,
+    "counts": {
+      "ge_5m": 131,
+      "ge_10m": 131,
+      "ge_20m": 131,
+      "ge_50m": 120,
+      "ge_narrowest": 131
+    }
+  },
+  "moon": {
+    "n_total": 278,
+    "n_dimensioned": 266,
+    "aperture_median_m": 29.0,
+    "counts": {
+      "ge_5m": 266,
+      "ge_10m": 258,
+      "ge_20m": 190,
+      "ge_50m": 63,
+      "ge_narrowest": 265
+    }
+  },
+  "note": "Tube map = offline FAST-LIO2 first_long_flight carried into the Llewellin slice-registered frame by map-to-map GICP (transform_flf_ed_chain.json); onboard DLIO map processed identically as cross-check (analysis_out_ed, basis_comparison). Surface DEM = aerial_isn16_ortho_dem.pcd. tau uses intact stations (tau>0, non-skylight, non-multipass, non-inconsistent)."
+}
+
+=== 22:46:00 .venv/bin/python analysis/geotiff_sensitivity.py
+{
+  "geotiff": "/home/aakapatel/Nature Journal Article Autonomous lava tube mapping/Birgir_data_and_papers_08_sep/20250828_Raufarholshellir_DEM_ISN16.tif",
+  "geotiff_res_m": 0.06159509999999815,
+  "n_intact": 276,
+  "tau_geotiff_minus_tau_percellmax": {
+    "n": 276,
+    "mean": -0.06452189525659473,
+    "median": -0.05189086914062058,
+    "std": 0.05670503473201976,
+    "p5": -0.16674957275389957,
+    "p95": -0.0006509399414137418,
+    "min": -0.3947277832031275,
+    "max": 0.04417175292967568
+  },
+  "z_geotiff_minus_z_percellmax": {
+    "n": 276,
+    "mean": -0.06451464887978384,
+    "median": -0.05189086914062102,
+    "std": 0.056690591211117164,
+    "p5": -0.16674957275390057,
+    "p95": -0.0006509399414156292,
+    "min": -0.3947277832031375,
+    "max": 0.044171752929685226
+  },
+  "headline": {
+    "median_tau_percellmax": 6.015499999999999,
+    "median_tau_geotiff": 5.982826538085945,
+    "max_tau_percellmax": 14.14,
+    "max_tau_geotiff": 14.127114257812508,
+    "q25_q75_percellmax": [
+      3.2375,
+      9.004999999999999
+    ],
+    "q25_q75_geotiff": [
+      3.1015721130371148,
+      8.909466796875009
+    ],
+    "n_geotiff_nonpositive": 1
+  },
+  "note": "sensitivity only: Metashape's interpolated DEM sampled at the station against our 0.5 m per-cell maximum; negative difference = the per-cell maximum sits higher than the interpolated surface"
+}
+
+=== 22:46:00 .venv/bin/python analysis/regression_v9_vs_v6.py
+Summary: {'identical': 427, 'CHANGED': 116, 'rounding-safe': 163, 'datum (dz)': 4, 'CHANGED (non-numeric)': 10, 'datum-derived': 4}
+CHANGED paper_numbers.envelope.kappa_sensitivity.drop_one: 0.007980456026058633 -> 0.0071661237785016286 (-0.0008143322475570045)
+CHANGED paper_numbers.envelope.sigma_req_MPa.sensitivity_tau_gt_0p5.drop_one: 3.057099754293893 -> 3.086551582369942 (0.029451828076048958)
+CHANGED paper_numbers.envelope.tau_over_L.second: 0.007980456026058633 -> 0.0071661237785016286 (-0.0008143322475570045)
+CHANGED paper_numbers.envelope.tau_threshold_m: 1.49 -> 1.48 (-0.010000000000000009)
+CHANGED paper_numbers.n_no_dem: 0 -> 4 (4)
+CHANGED paper_numbers.n_skylight_stations: 22 -> 18 (-4)
+CHANGED paper_numbers.reg_sigma_reg_z_m: 1.46 -> 1.45 (-0.010000000000000009)
+CHANGED paper_numbers.reg_sigma_tau_m: 1.49 -> 1.48 (-0.010000000000000009)
+CHANGED paper_numbers.registration_validation.floor_through_skylight_s3.annulus_outside_cone.median_m: 0.9071502685546875 -> 0.8983306884765625 (-0.008819580078125)
+CHANGED paper_numbers.registration_validation.floor_through_skylight_s3.annulus_outside_cone.n: 321 -> 327 (6)
+CHANGED paper_numbers.registration_validation.floor_through_skylight_s3.annulus_outside_cone.p10_m: -0.06867218017578125 -> -0.07890319824218747 (-0.010231018066406222)
+CHANGED paper_numbers.registration_validation.floor_through_skylight_s3.annulus_outside_cone.rms_m: 1.3602545239430572 -> 1.351579299890805 (-0.008675224052252295)
+CHANGED paper_numbers.registration_validation.floor_through_skylight_s3.median_m: 0.8868675231933594 -> 0.8738021850585938 (-0.013065338134765625)
+CHANGED paper_numbers.registration_validation.floor_through_skylight_s3.n: 352 -> 360 (8)
+CHANGED paper_numbers.registration_validation.floor_through_skylight_s3.p10_m: -1.1876602172851562 -> -1.232403564453125 (-0.044743347167968794)
+CHANGED paper_numbers.registration_validation.floor_through_skylight_s3.p90_m: 1.342333221435547 -> 1.3371871948242189 (-0.005146026611328125)
+CHANGED paper_numbers.registration_validation.floor_through_skylight_s3.rms_m: 1.3561264565921034 -> 1.346913198113121 (-0.009213258478982356)
+CHANGED paper_numbers.registration_validation.sigma_reg_components.anchor_floor_rms_m: 1.3561264565921034 -> 1.346913198113121 (-0.009213258478982356)
+CHANGED paper_numbers.registration_validation.sigma_reg_z_m: 1.46 -> 1.45 (-0.010000000000000009)
+CHANGED paper_numbers.shielding.atmosphere_ratio_median: 1.52 -> 1.51 (-0.010000000000000009)
+CHANGED paper_numbers.stats.median: 6.025499999999999 -> 6.015499999999999 (-0.009999999999999787)
+CHANGED paper_numbers.stats.sigma_tau_systematic_m: 1.49 -> 1.48 (-0.010000000000000009)
+CHANGED paper_numbers.terrain.ceiling_thinning.ci95[0]: -0.169879848859671 -> -0.14899966334630033 (0.020880185513370675)
+CHANGED paper_numbers.terrain.ceiling_thinning.ci95[1]: -0.10926285931154604 -> -0.09332139342316259 (0.015941465888383452)
+CHANGED paper_numbers.terrain.ceiling_thinning.slope_m_per_m: -0.13450967100605574 -> -0.11637679148335921 (0.01813287952269653)
+CHANGED paper_numbers.terrain.near_skylight_median.10to20: 2.24 -> 2.6654999999999998 (0.42549999999999955)
+CHANGED paper_numbers.terrain.near_skylight_median.20to30: 4.63 -> 4.1080000000000005 (-0.5219999999999994)
+CHANGED paper_numbers.terrain.skylight_runs[0].d_tau: -5.60040125065138 -> -5.556597198744264 (0.04380405190711656)
+CHANGED paper_numbers.terrain.skylight_runs[0].d_zceil: 0.3956722251172664 -> 0.27324667954596293 (-0.12242554557130347)
+CHANGED paper_numbers.terrain.skylight_runs[0].d_zdem: -5.204760291818673 -> -5.283369958947134 (-0.07860966712846107)
+CHANGED paper_numbers.terrain.skylight_runs[0].run_s[1]: 36.0 -> 30.0 (-6.0)
+CHANGED paper_numbers.terrain.skylight_runs[1].d_tau: -7.238945340501794 -> -5.939389533239037 (1.2995558072627569)
+CHANGED paper_numbers.terrain.skylight_runs[1].d_zceil: 2.260360215053794 -> 0.8009421499292557 (-1.459418065124538)
+CHANGED paper_numbers.terrain.skylight_runs[1].d_zdem: -4.978557347670261 -> -5.138471004243314 (-0.15991365657305323)
+CHANGED paper_numbers.terrain.skylight_runs[1].run_s[0]: 54.0 -> 35.0 (-19.0)
+CHANGED paper_numbers.terrain.skylight_runs[1].run_s[1]: 56.0 -> 36.0 (-20.0)
+CHANGED paper_numbers.terrain.skylight_runs[2].d_tau: -5.834465011961724 -> -7.235459677419356 (-1.400994665457632)
+CHANGED paper_numbers.terrain.skylight_runs[2].d_zceil: 2.224367523923405 -> 2.2603602150537654 (0.0359926911303603)
+CHANGED paper_numbers.terrain.skylight_runs[2].d_zdem: -3.610059808612533 -> -4.975071684587789 (-1.3650118759752559)
+CHANGED paper_numbers.terrain.skylight_runs[2].run_s[0]: 89.0 -> 54.0 (-35.0)
+CHANGED paper_numbers.terrain.skylight_runs[2].run_s[1]: 99.0 -> 56.0 (-43.0)
+CHANGED paper_numbers.terrain.skylight_runs[3].d_tau: None -> -5.832866327751195 ()
+CHANGED paper_numbers.terrain.skylight_runs[3].d_zceil: None -> 2.224367523923462 ()
+CHANGED paper_numbers.terrain.skylight_runs[3].d_zdem: None -> -3.60851375598088 ()
+CHANGED paper_numbers.terrain.skylight_runs[3].run_s[0]: None -> 89.0 ()
+CHANGED paper_numbers.terrain.skylight_runs[3].run_s[1]: None -> 99.0 ()
+CHANGED review_stats.envelope.kappa_sensitivity.drop_one: 0.007980456026058633 -> 0.0071661237785016286 (-0.0008143322475570045)
+CHANGED review_stats.envelope.sigma_req_MPa.sensitivity_tau_gt_0p5.drop_one: 3.057099754293893 -> 3.086551582369942 (0.029451828076048958)
+CHANGED review_stats.envelope.tau_over_L.second: 0.007980456026058633 -> 0.0071661237785016286 (-0.0008143322475570045)
+CHANGED review_stats.envelope.tau_threshold_m: 1.49 -> 1.48 (-0.010000000000000009)
+CHANGED review_stats.stats.median: 6.025499999999999 -> 6.015499999999999 (-0.009999999999999787)
+CHANGED review_stats.stats.sigma_tau_systematic_m: 1.49 -> 1.48 (-0.010000000000000009)
+CHANGED review_stats.terrain.ceiling_thinning.ci95[0]: -0.169879848859671 -> -0.14899966334630033 (0.020880185513370675)
+CHANGED review_stats.terrain.ceiling_thinning.ci95[1]: -0.10926285931154604 -> -0.09332139342316259 (0.015941465888383452)
+CHANGED review_stats.terrain.ceiling_thinning.slope_m_per_m: -0.13450967100605574 -> -0.11637679148335921 (0.01813287952269653)
+CHANGED review_stats.terrain.near_skylight_median.10to20: 2.24 -> 2.6654999999999998 (0.42549999999999955)
+CHANGED review_stats.terrain.near_skylight_median.20to30: 4.63 -> 4.1080000000000005 (-0.5219999999999994)
+CHANGED review_stats.terrain.skylight_runs[0].d_tau: -5.60040125065138 -> -5.556597198744264 (0.04380405190711656)
+CHANGED review_stats.terrain.skylight_runs[0].d_zceil: 0.3956722251172664 -> 0.27324667954596293 (-0.12242554557130347)
+CHANGED review_stats.terrain.skylight_runs[0].d_zdem: -5.204760291818673 -> -5.283369958947134 (-0.07860966712846107)
+CHANGED review_stats.terrain.skylight_runs[0].run_s[1]: 36.0 -> 30.0 (-6.0)
+CHANGED review_stats.terrain.skylight_runs[1].d_tau: -7.238945340501794 -> -5.939389533239037 (1.2995558072627569)
+CHANGED review_stats.terrain.skylight_runs[1].d_zceil: 2.260360215053794 -> 0.8009421499292557 (-1.459418065124538)
+CHANGED review_stats.terrain.skylight_runs[1].d_zdem: -4.978557347670261 -> -5.138471004243314 (-0.15991365657305323)
+CHANGED review_stats.terrain.skylight_runs[1].run_s[0]: 54.0 -> 35.0 (-19.0)
+CHANGED review_stats.terrain.skylight_runs[1].run_s[1]: 56.0 -> 36.0 (-20.0)
+CHANGED review_stats.terrain.skylight_runs[2].d_tau: -5.834465011961724 -> -7.235459677419356 (-1.400994665457632)
+CHANGED review_stats.terrain.skylight_runs[2].d_zceil: 2.224367523923405 -> 2.2603602150537654 (0.0359926911303603)
+CHANGED review_stats.terrain.skylight_runs[2].d_zdem: -3.610059808612533 -> -4.975071684587789 (-1.3650118759752559)
+CHANGED review_stats.terrain.skylight_runs[2].run_s[0]: 89.0 -> 54.0 (-35.0)
+CHANGED review_stats.terrain.skylight_runs[2].run_s[1]: 99.0 -> 56.0 (-43.0)
+CHANGED review_stats.terrain.skylight_runs[3].d_tau: None -> -5.832866327751195 ()
+CHANGED review_stats.terrain.skylight_runs[3].d_zceil: None -> 2.224367523923462 ()
+CHANGED review_stats.terrain.skylight_runs[3].d_zdem: None -> -3.60851375598088 ()
+CHANGED review_stats.terrain.skylight_runs[3].run_s[0]: None -> 89.0 ()
+CHANGED review_stats.terrain.skylight_runs[3].run_s[1]: None -> 99.0 ()
+CHANGED roof_summary.n_no_dem: 0 -> 4 (4)
+CHANGED roof_summary.n_skylight: 22 -> 18 (-4)
+CHANGED roof_summary.shielding_g_cm2.atmosphere_ratio_median: 1.52 -> 1.51 (-0.010000000000000009)
+CHANGED roof_summary.shielding_g_cm2.median: 1567.0 -> 1564.0 (-3.0)
+CHANGED registration_validation.floor_through_skylight_s3.annulus_outside_cone.median_m: 0.9071502685546875 -> 0.8983306884765625 (-0.008819580078125)
+CHANGED registration_validation.floor_through_skylight_s3.annulus_outside_cone.n: 321 -> 327 (6)
+CHANGED registration_validation.floor_through_skylight_s3.annulus_outside_cone.p10_m: -0.06867218017578125 -> -0.07890319824218747 (-0.010231018066406222)
+CHANGED registration_validation.floor_through_skylight_s3.annulus_outside_cone.rms_m: 1.3602545239430572 -> 1.351579299890805 (-0.008675224052252295)
+CHANGED registration_validation.floor_through_skylight_s3.median_m: 0.8868675231933594 -> 0.8738021850585938 (-0.013065338134765625)
+CHANGED registration_validation.floor_through_skylight_s3.n: 352 -> 360 (8)
+CHANGED registration_validation.floor_through_skylight_s3.p10_m: -1.1876602172851562 -> -1.232403564453125 (-0.044743347167968794)
+CHANGED registration_validation.floor_through_skylight_s3.p90_m: 1.342333221435547 -> 1.3371871948242189 (-0.005146026611328125)
+CHANGED registration_validation.floor_through_skylight_s3.rms_m: 1.3561264565921034 -> 1.346913198113121 (-0.009213258478982356)
+CHANGED registration_validation.sigma_reg_components.anchor_floor_rms_m: 1.3561264565921034 -> 1.346913198113121 (-0.009213258478982356)
+CHANGED registration_validation.sigma_reg_z_m: 1.46 -> 1.45 (-0.010000000000000009)
+CHANGED basis_comparison.dtau.median: -0.2320000000000002 -> -0.23999999999999977 (-0.007999999999999563)
+CHANGED basis_comparison.dtau.p5: -1.4165999999999999 -> -1.4220499999999998 (-0.005449999999999955)
+CHANGED basis_comparison.dtau_zones.s160-240.mean: -0.5546625000000001 -> -0.5626625000000001 (-0.008000000000000007)
+CHANGED basis_comparison.dtau_zones.s240-360.mean: -0.3961129032258064 -> -0.406741935483871 (-0.010629032258064608)
+CHANGED basis_comparison.dtau_zones.s80-160.mean: -0.3420869565217391 -> -0.3491739130434782 (-0.0070869565217391295)
+CHANGED national_dem_check.arcticdem.n: 30559 -> 30550 (-9)
+CHANGED national_dem_check.arcticdem.std_after_plane_m: 0.2895446329465095 -> 0.2780275964979627 (-0.011517036448546791)
+CHANGED national_dem_check.arcticdem.std_after_quadratic_m: 0.28769400460104827 -> 0.2760219903420779 (-0.011672014258970353)
+CHANGED national_dem_check.arcticdem.std_raw_m: 0.29258773151551676 -> 0.2814088009091892 (-0.011178930606327575)
+CHANGED national_dem_check.arcticdem.tilt_m_per_km: 0.4214086587717027 -> 0.42937601677121223 (0.007967357999509539)
+CHANGED national_dem_check.islandsdem.n: 30559 -> 30550 (-9)
+CHANGED national_dem_check.islandsdem.std_after_plane_m: 0.3584985379354869 -> 0.3498020426702857 (-0.00869649526520122)
+CHANGED national_dem_check.islandsdem.std_after_quadratic_m: 0.3569381753032524 -> 0.3481931603075434 (-0.00874501499570901)
+CHANGED national_dem_check.islandsdem.std_raw_m: 0.36350261295258723 -> 0.355456894757309 (-0.008045718195278218)
+CHANGED national_dem_check.islandsdem.tilt_m_per_km: 0.5487352532500188 -> 0.5752203260227142 (0.026485072772695406)
+CHANGED orbital_dem_test.baseline.median: 6.025499999999999 -> 6.015499999999999 (-0.009999999999999787)
+CHANGED orbital_dem_test.configs[0].thick_thin_contrast_m.mean: 9.951508850097639 -> 9.946496337890608 (-0.00501251220703125)
+CHANGED orbital_dem_test.configs[0].thick_thin_contrast_m.worst: 9.951508850097639 -> 9.946496337890608 (-0.00501251220703125)
+CHANGED orbital_dem_test.configs[3].thick_thin_contrast_m.mean: 10.021900692267653 -> 10.00931130014401 (-0.012589392123643961)
+CHANGED orbital_dem_test.configs[3].thick_thin_contrast_m.worst: 7.429384549105976 -> 7.422084134066907 (-0.007300415039068753)
+CHANGED orbital_dem_test.configs[4].thick_thin_contrast_m.mean: 9.673864522032583 -> 9.659058238146486 (-0.01480628388609695)
+CHANGED orbital_dem_test.configs[5].median_shift_m.mean: 0.5897517193726092 -> 0.5980442176673122 (0.008292498294703021)
+CHANGED orbital_dem_test.configs[5].thick_thin_contrast_m.mean: 9.184385877854353 -> 9.158130251701499 (-0.026255626152854816)
+CHANGED orbital_dem_test.configs[5].thick_thin_contrast_m.worst: 1.9618585673015474 -> 1.9281162293815441 (-0.03374233792000325)
+CHANGED orbital_dem_test.configs[6].thick_thin_contrast_m.mean: 10.22671170755767 -> 10.22170682474517 (-0.0050048828125)
+CHANGED orbital_dem_test.configs[6].thick_thin_contrast_m.worst: 10.22671170755767 -> 10.22170682474517 (-0.0050048828125)
+CHANGED orbital_dem_test.configs[7].median_shift_m.mean: -0.8819208731948347 -> -0.8769181266128037 (0.005002746582031037)
+CHANGED orbital_dem_test.configs[7].median_shift_m.worst: 0.8819208731948347 -> 0.8769181266128037 (-0.005002746582031037)
+CHANGED orbital_dem_test.configs[7].thick_thin_contrast_m.mean: 10.452920363357535 -> 10.447915480545035 (-0.0050048828125)
+CHANGED orbital_dem_test.configs[7].thick_thin_contrast_m.worst: 10.452920363357535 -> 10.447915480545035 (-0.0050048828125)
+CHANGED orbital_dem_test.configs[8].per_station_rms_m.mean: 1.2139459575811873 -> 1.2085133183683896 (-0.005432639212797685)
+CHANGED orbital_dem_test.configs[8].per_station_rms_m.worst: 1.9377244189988958 -> 1.9311576696317128 (-0.006566749367183045)
+CHANGED orbital_dem_test.configs[8].thick_thin_contrast_m.mean: 10.46246620333579 -> 10.455583665970313 (-0.0068825373654775035)
+CHANGED uncertainty_budget.sigma_reg_z_m: 1.46 -> 1.45 (-0.010000000000000009)
+CHANGED uncertainty_budget.sigma_tau_m: 1.49 -> 1.48 (-0.010000000000000009)
+
+=== 22:46:00 pipeline done

@@ -25,9 +25,10 @@ import os
 OUT = Path(os.environ.get("ANALYSIS_OUT", str(ROOT / "analysis_out")))
 TUBE_PCD = Path(os.environ.get("SKEL3D_TUBE_PCD", str(ROOT / "maps/flf_10cm_aerial.pcd")))
 REN = OUT / "renders"
-FIGS = (ROOT.parent / "_Nature__Autonomous_aerial_reconnaissance_of_a_basaltic_"
-        "lava_tube_reveals_interior_morphology_and_roof_thickness_distribution_"
-        "for_planetary_subsurface" / "figures")
+FIGS = Path(os.environ.get("FIGS_DIR", str(
+    ROOT.parent / "_Nature__Autonomous_aerial_reconnaissance_of_a_basaltic_"
+    "lava_tube_reveals_interior_morphology_and_roof_thickness_distribution_"
+    "for_planetary_subsurface" / "figures")))   # FIGS_DIR: review copies (v9)
 W, H = 3840, 1700
 RIB_EVERY = 20  # stations
 RIB_HALF = 0.5  # m slab half-width

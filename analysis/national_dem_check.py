@@ -40,8 +40,14 @@ ORIGIN = np.array([479158.0, 7089826.0])
 SRC_EPSG = 32627          # hypothesis: WGS84 / UTM 27N
 
 
+# DEM cache name follows run_roof's convention (dem_grid_<ROOF_DEM_PCD stem>);
+# default unchanged (the v6 merged-cloud cache).
+DEM_NPZ = "dem_grid_%s.npz" % Path(os.environ.get(
+    "ROOF_DEM_PCD", "full_surface_and_subsurface_merged.pcd")).stem
+
+
 def load_ours():
-    d = np.load(OUT / "dem_grid_full_surface_and_subsurface_merged.npz")
+    d = np.load(OUT / DEM_NPZ)
     z = d["z"].astype(np.float64)          # x-major: z[ix, iy]
     return z, float(d["xmin"]), float(d["ymin"]), float(d["res"])
 

@@ -1,0 +1,35 @@
+{
+  "kappa_env_earth": 0.0034,
+  "span_scale": {
+    "mars": 1.63,
+    "moon": 2.46
+  },
+  "equivalent_kappa": {
+    "note": "a roof at the terrestrial envelope tau/L supports a span larger by span_scale at the same tau and strength"
+  },
+  "mars": {
+    "n_total": 1062,
+    "n_dimensioned": 131,
+    "aperture_median_m": 120.0,
+    "counts": {
+      "ge_5m": 131,
+      "ge_10m": 131,
+      "ge_20m": 131,
+      "ge_50m": 120,
+      "ge_narrowest": 131
+    }
+  },
+  "moon": {
+    "n_total": 278,
+    "n_dimensioned": 266,
+    "aperture_median_m": 29.0,
+    "counts": {
+      "ge_5m": 266,
+      "ge_10m": 258,
+      "ge_20m": 190,
+      "ge_50m": 63,
+      "ge_narrowest": 265
+    }
+  },
+  "demonstrated_min_span_m": 6.07
+}

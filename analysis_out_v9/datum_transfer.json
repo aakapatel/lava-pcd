@@ -1,0 +1,292 @@
+{
+  "inputs": {
+    "old": "/home/aakapatel/Nature Journal Article Autonomous lava tube mapping/lavatube_maps_data_analysis/maps/aerial_crop.pcd",
+    "new": "/home/aakapatel/Nature Journal Article Autonomous lava tube mapping/lavatube_maps_data_analysis/maps/aerial_isn16_ortho_crop.pcd",
+    "footprint_halfwidth_m": 40.0,
+    "centreline": "/home/aakapatel/Nature Journal Article Autonomous lava tube mapping/lavatube_maps_data_analysis/analysis_out_v6/centreline.csv"
+  },
+  "density": {
+    "old_pts": 25640431,
+    "new_pts": 25640666,
+    "shared_bbox_local": [
+      1299.114013671875,
+      1598.3978271484375,
+      409.9800109863281,
+      721.5599365234375
+    ],
+    "shared_bbox_area_m2": 93250.82831748948,
+    "old_per_m2": 274.9619650852051,
+    "new_per_m2": 274.9644851700584,
+    "ratio_new_over_old": 1.0000091652125505
+  },
+  "nearest_neighbour": {
+    "n_sampled": 400000,
+    "n_matched": 399980,
+    "match_radius_m": 0.05,
+    "dz_new_minus_old": {
+      "n": 399980,
+      "mean": -66.00482808762631,
+      "median": -66.0,
+      "std": 0.020136892819091493,
+      "p5": -66.010009765625,
+      "p95": -66.0,
+      "min": -70.88999938964844,
+      "max": -63.25999450683594
+    },
+    "plane_fit": {
+      "slope_x_m_per_km": 0.012817313787247054,
+      "slope_y_m_per_km": -0.025065226809213394,
+      "intercept_at_centroid_m": -66.00482808762632,
+      "std_after_plane_m": 0.020095846137932274
+    },
+    "nn_2d_distance_m": {
+      "n": 399980,
+      "mean": 0.004868961549476719,
+      "median": 0.004720271313717116,
+      "std": 0.0023048489297338996,
+      "p5": 0.0013441598843716577,
+      "p95": 0.008951383637718658,
+      "min": 0.0,
+      "max": 0.048058664999797954
+    }
+  },
+  "horizontal_shift": {
+    "grid_0.5m": {
+      "dx_m": 9.123130658271202e-06,
+      "dy_m": -1.316190741428032e-05,
+      "peak_cell": [
+        0,
+        0
+      ],
+      "brute_force_best_shift_m": [
+        0.0,
+        0.0
+      ],
+      "brute_force_std_at_best_m": 0.006288109451538668,
+      "brute_force_std_at_zero_m": 0.0063
+    },
+    "grid_0.25m": {
+      "dx_m": -1.842444385838707e-05,
+      "dy_m": -3.0737923089797485e-05,
+      "peak_cell": [
+        0,
+        0
+      ],
+      "brute_force_best_shift_m": [
+        0.0,
+        0.0
+      ],
+      "brute_force_std_at_best_m": 0.007025265523871661,
+      "brute_force_std_at_zero_m": 0.007
+    }
+  },
+  "dem_difference_same_grid": {
+    "grid_0.5m": {
+      "n_cells": 57150,
+      "new_minus_old": {
+        "n": 57150,
+        "mean": -66.00484217766389,
+        "median": -66.0,
+        "std": 0.006288109451538668,
+        "p5": -66.010009765625,
+        "p95": -66.0,
+        "min": -66.36000061035156,
+        "max": -65.86000061035156
+      },
+      "frac_abs_gt_0p10": 8.748906386701662e-05,
+      "frac_abs_gt_0p30": 1.7497812773403324e-05
+    },
+    "grid_0.25m": {
+      "n_cells": 227340,
+      "new_minus_old": {
+        "n": 227340,
+        "mean": -66.00485370012117,
+        "median": -66.0,
+        "std": 0.007025265523871661,
+        "p5": -66.010009765625,
+        "p95": -66.0,
+        "min": -66.69999694824219,
+        "max": -65.3699951171875
+      },
+      "frac_abs_gt_0p10": 9.237265769332278e-05,
+      "frac_abs_gt_0p30": 3.079088589777426e-05
+    }
+  },
+  "dem_difference_at_v6_stations": {
+    "n": 144,
+    "mean": -66.00548595852322,
+    "median": -66.00999450683594,
+    "std": 0.005631141816039257,
+    "p5": -66.010009765625,
+    "p95": -66.0,
+    "min": -66.03001403808594,
+    "max": -65.99000549316406,
+    "note": "new minus old per-cell-max DEM at the v6 centreline stations inside the aerial_crop bbox, same grid"
+  },
+  "new_percell_max_vs_geotiff": {
+    "geotiff": {
+      "crs": "EPSG:8088",
+      "res": [
+        0.06159509999999815,
+        0.06159509999999971
+      ],
+      "nodata": -9999.0,
+      "dtype": "float32"
+    },
+    "n_cells": 57158,
+    "percell_max_minus_geotiff": {
+      "n": 57158,
+      "mean": 0.06231824907647032,
+      "median": 0.05072021484375,
+      "std": 0.07162835126162714,
+      "p5": 0.01806640625,
+      "p95": 0.136688232421875,
+      "min": -3.4402923583984375,
+      "max": 2.9219207763671875
+    },
+    "by_local_slope": {
+      "slope_q0_q25": {
+        "n": 14290,
+        "median_bias": 0.03679656982421875
+      },
+      "slope_q25_q50": {
+        "n": 14289,
+        "median_bias": 0.04302978515625
+      },
+      "slope_q50_q75": {
+        "n": 14289,
+        "median_bias": 0.0534515380859375
+      },
+      "slope_q75_max": {
+        "n": 14290,
+        "median_bias": 0.08367156982421875
+      }
+    },
+    "at_v6_stations": {
+      "n": 144,
+      "mean": 0.07059478759765625,
+      "median": 0.0590057373046875,
+      "std": 0.04928189272275983,
+      "p5": 0.0216644287109375,
+      "p95": 0.18254928588867167,
+      "min": 0.0081634521484375,
+      "max": 0.3137969970703125
+    },
+    "note": "positive = our 0.5 m per-cell maximum sits above Metashape's interpolated 6 cm DEM at the same cell"
+  },
+  "geotiff_sensitivity": {
+    "geotiff": "/home/aakapatel/Nature Journal Article Autonomous lava tube mapping/Birgir_data_and_papers_08_sep/20250828_Raufarholshellir_DEM_ISN16.tif",
+    "geotiff_res_m": 0.06159509999999815,
+    "n_intact": 276,
+    "tau_geotiff_minus_tau_percellmax": {
+      "n": 276,
+      "mean": -0.06452189525659473,
+      "median": -0.05189086914062058,
+      "std": 0.05670503473201976,
+      "p5": -0.16674957275389957,
+      "p95": -0.0006509399414137418,
+      "min": -0.3947277832031275,
+      "max": 0.04417175292967568
+    },
+    "z_geotiff_minus_z_percellmax": {
+      "n": 276,
+      "mean": -0.06451464887978384,
+      "median": -0.05189086914062102,
+      "std": 0.056690591211117164,
+      "p5": -0.16674957275390057,
+      "p95": -0.0006509399414156292,
+      "min": -0.3947277832031375,
+      "max": 0.044171752929685226
+    },
+    "headline": {
+      "median_tau_percellmax": 6.015499999999999,
+      "median_tau_geotiff": 5.982826538085945,
+      "max_tau_percellmax": 14.14,
+      "max_tau_geotiff": 14.127114257812508,
+      "q25_q75_percellmax": [
+        3.2375,
+        9.004999999999999
+      ],
+      "q25_q75_geotiff": [
+        3.1015721130371148,
+        8.909466796875009
+      ],
+      "n_geotiff_nonpositive": 1
+    },
+    "note": "sensitivity only: Metashape's interpolated DEM sampled at the station against our 0.5 m per-cell maximum; negative difference = the per-cell maximum sits higher than the interpolated surface"
+  },
+  "v9_summary": {
+    "dz_applied_m": -66.0,
+    "regression_counts": {
+      "identical": 427,
+      "explained: 1 cm quantisation of the delivered cloud": 34,
+      "rounding-safe": 163,
+      "explained: S3 floor check on new voxel copy": 30,
+      "explained: aperture bookkeeping": 52,
+      "datum (dz)": 4,
+      "datum-derived": 4,
+      "explained: in-aperture cells removed": 10
+    },
+    "national_dem_offsets_ours_minus_m": {
+      "arcticdem_ellipsoidal": {
+        "v6": 0.6100006103515625,
+        "v9": -65.39656066894531
+      },
+      "islandsdem_orthometric": {
+        "v6": 66.63253784179688,
+        "v9": 0.6269454956054688
+      }
+    },
+    "arcticdem_shape_std_m": {
+      "v6": 0.29258773151551676,
+      "v9": 0.2814088009091892
+    },
+    "station_classes": {
+      "v6": {
+        "n_stations": 302,
+        "n_intact": 276,
+        "n_skylight": 22,
+        "n_no_dem": 0,
+        "n_low_coverage": 0,
+        "n_multipass": 0,
+        "n_inconsistent": 4
+      },
+      "v9": {
+        "n_stations": 302,
+        "n_intact": 276,
+        "n_skylight": 18,
+        "n_no_dem": 4,
+        "n_low_coverage": 0,
+        "n_multipass": 0,
+        "n_inconsistent": 4
+      }
+    },
+    "tau_m": {
+      "v6": {
+        "min": 0.04,
+        "max": 14.15,
+        "median": 6.03,
+        "q25": 3.24,
+        "q75": 9.01,
+        "median_ci95": [
+          5.74,
+          6.4
+        ],
+        "sigma": 1.49
+      },
+      "v9": {
+        "min": 0.04,
+        "max": 14.14,
+        "median": 6.02,
+        "q25": 3.24,
+        "q75": 9.0,
+        "median_ci95": [
+          5.73,
+          6.39
+        ],
+        "sigma": 1.48
+      }
+    },
+    "headline_table_md": "analysis_out_v9/regression_vs_v6.md"
+  }
+}

@@ -26,9 +26,17 @@ import os
 
 ROOT = Path(__file__).resolve().parents[1]
 OUT = Path(os.environ.get("ANALYSIS_OUT", str(ROOT / "analysis_out")))
-FIGS = (ROOT.parent / "_Nature__Autonomous_aerial_reconnaissance_of_a_basaltic_"
-        "lava_tube_reveals_interior_morphology_and_roof_thickness_distribution_"
-        "for_planetary_subsurface" / "figures")
+FIGS = Path(os.environ.get("FIGS_DIR", str(
+    ROOT.parent / "_Nature__Autonomous_aerial_reconnaissance_of_a_basaltic_"
+    "lava_tube_reveals_interior_morphology_and_roof_thickness_distribution_"
+    "for_planetary_subsurface" / "figures")))   # FIGS_DIR: review copies (v9)
+# Elevation-axis label follows the vertical datum recorded by the run
+# (ANALYSIS_OUT/datum.json, written by seed_v9_ortho.py); legacy runs carry
+# WGS84 ellipsoidal heights and say so.
+_DATUM = (json.loads((OUT / "datum.json").read_text())
+          if (OUT / "datum.json").exists() else {})
+ELEV_LABEL = _DATUM.get("elevation_axis_label", "elevation (m, WGS84 ellipsoidal)")
+ELEV_LABEL_2L = ELEV_LABEL.replace(" (", "\n(")   # two-line form for short axes
 
 C = dict(  # shared palette (Okabe-Ito based)
     tube="#0072B2", surface="#E69F00", skylight="#D55E00",
@@ -159,7 +167,7 @@ def fig_morphometry():
     ax.plot(np.arange(len(P)), P[:, 2], lw=1.1, color=C["tube"])
     for lo, hi in bands:
         ax.axvspan(lo, hi, color=C["skylight"], alpha=0.15, lw=0)
-    ax.set_ylabel("centreline z (m)")
+    ax.set_ylabel("centreline " + ELEV_LABEL_2L)
     ax.set_xlabel("$s$ (m)")
     desc = np.percentile(P[:, 2], 99) - np.percentile(P[:, 2], 1)
     net = P[-1, 2] - P[0, 2]

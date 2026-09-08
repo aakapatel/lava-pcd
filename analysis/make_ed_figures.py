@@ -42,9 +42,19 @@ MAPS = ROOT / "maps"
 # ANALYSIS_OUT points at the Ed run).
 SHELL_PCD = Path(os.environ.get("EDFIG_SHELL_PCD", str(MAPS / "flf_30cm_aerial.pcd")))
 SECT_PCD = Path(os.environ.get("EDFIG_SECT_PCD", str(MAPS / "flf_10cm_aerial.pcd")))
-FIGS = (ROOT.parent / "_Nature__Autonomous_aerial_reconnaissance_of_a_basaltic_"
-        "lava_tube_reveals_interior_morphology_and_roof_thickness_distribution_"
-        "for_planetary_subsurface" / "figures")
+# surface working copy for the S3 floor panel (v9: the orthometric re-delivery)
+AERIAL_PCD = Path(os.environ.get("EDFIG_AERIAL_PCD", str(MAPS / "aerial_10cm.pcd")))
+FIGS = Path(os.environ.get("FIGS_DIR", str(
+    ROOT.parent / "_Nature__Autonomous_aerial_reconnaissance_of_a_basaltic_"
+    "lava_tube_reveals_interior_morphology_and_roof_thickness_distribution_"
+    "for_planetary_subsurface" / "figures")))   # FIGS_DIR: review copies (v9)
+# Elevation-axis label follows the vertical datum recorded by the run
+# (ANALYSIS_OUT/datum.json, written by seed_v9_ortho.py); legacy runs carry
+# WGS84 ellipsoidal heights and say so.
+_DATUM = (json.loads((OUT / "datum.json").read_text())
+          if (OUT / "datum.json").exists() else {})
+ELEV_LABEL = _DATUM.get("elevation_axis_label", "elevation (m, WGS84 ellipsoidal)")
+ELEV_LABEL_2L = ELEV_LABEL.replace(" (", "\n(")   # two-line form for short axes
 
 C = dict(  # shared palette (Okabe-Ito based), identical to make_figures.py
     tube="#0072B2", surface="#E69F00", skylight="#D55E00",
@@ -188,7 +198,7 @@ def fig_registration():
                 parts.append(q[near_s3(q)])
         return np.vstack(parts)
 
-    aer = load_near(MAPS / "aerial_10cm.pcd")
+    aer = load_near(AERIAL_PCD)
     tub = load_near(SECT_PCD)
     surf = np.percentile(aer[:, 2], 90)
     a_in = aer[aer[:, 2] < surf - 3.0]
@@ -225,6 +235,9 @@ def fig_registration():
     t = cKDTree(np.c_[bx, by])
     dist, idx = t.query(np.c_[ex, ey])
     bz_m = np.where(dist < 2.0, bz[idx], np.nan)
+    # the 4-DOF baseline lives in the legacy (ellipsoidal) frame; carry it
+    # into the run's datum with the applied shift (0 for legacy runs)
+    bz_m = bz_m + float(_DATUM.get("dz_applied_m", 0.0))
 
     ax = fig.add_subplot(gs[1, :])
     ax.plot(es, ed_dem, lw=1.1, color=C["surface"], label="surface DEM")
@@ -232,7 +245,7 @@ def fig_registration():
             label="ceiling, rim-centroid solve (4-DOF)")
     ax.plot(es, ez, lw=1.1, color=C["tube"],
             label="ceiling, slice registration")
-    ax.set_ylabel("elevation (m)")
+    ax.set_ylabel(ELEV_LABEL)
     ymax = np.nanmax(ed_dem)
     ax.set_ylim(None, ymax + 5.5)
     ax.set_title("c  Interior ceiling against the surface under the two "
@@ -277,7 +290,7 @@ def fig_consistency():
         m = klass == cls
         if m.any():
             ax.scatter(s[m], z_ceil[m], s=4, color=col, label=cls, lw=0)
-    ax.set_ylabel("elevation (m)")
+    ax.set_ylabel(ELEV_LABEL)
     ax.set_title("a  Surface elevation and interior ceiling along the tube",
                  loc="left")
     ax.legend(frameon=False, ncols=5, loc="lower left", fontsize=6.5)
@@ -363,7 +376,7 @@ def fig_centreline():
     ax.set_xlim(cu.min() - 25, cu.max() + 25)
     ax.set_ylim(P[:, 2].min() - 15, P[:, 2].max() + 15)
     ax.set_xlabel("along principal axis (m)")
-    ax.set_ylabel("elevation (m)")
+    ax.set_ylabel(ELEV_LABEL_2L)
     rel = np.percentile(P[:, 2], 99) - np.percentile(P[:, 2], 1)
     net = P[-1, 2] - P[0, 2]
     trend = ("no net descent" if abs(net) < 3

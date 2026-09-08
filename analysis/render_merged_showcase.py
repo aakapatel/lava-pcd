@@ -36,13 +36,18 @@ OUT = Path(os.environ.get("ANALYSIS_OUT", str(ROOT / "analysis_out")))
 REN = OUT / "renders"
 REN.mkdir(exist_ok=True)
 
-SURFACE = ROOT / "maps/merged_surface_10cm.pcd"
+# surface working copy env-selectable (v9: orthometric re-delivery, same extent)
+SURFACE = Path(os.environ.get("SHOWCASE_SURFACE_PCD",
+                              str(ROOT / "maps/merged_surface_10cm.pcd")))
 TUBE = Path(os.environ.get("SHOWCASE_TUBE_PCD", str(ROOT / "maps/flf_10cm_aerial.pcd")))
 W, H = 3840, 2160
 CMAP = os.environ.get("SHOWCASE_CMAP", "inferno")
 DEPTH_MAX = float(os.environ.get("SHOWCASE_DEPTH_MAX", "14"))  # m, colour scale
 
-dem = np.load(OUT / "dem_grid_full_surface_and_subsurface_merged.npz")
+# DEM cache name follows run_roof's convention (dem_grid_<ROOF_DEM_PCD stem>)
+DEM_NPZ = "dem_grid_%s.npz" % Path(os.environ.get(
+    "ROOF_DEM_PCD", "full_surface_and_subsurface_merged.pcd")).stem
+dem = np.load(OUT / DEM_NPZ)
 DEMZ, XMIN, YMIN, RES = dem["z"], float(dem["xmin"]), float(dem["ymin"]), float(dem["res"])
 NX, NY = DEMZ.shape   # DEM cache is x-major: DEMZ[ix, iy]
 # fill DEM gaps by nearest valid cell so depth-below-surface never goes NaN

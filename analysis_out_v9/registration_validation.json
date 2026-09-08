@@ -1,0 +1,46 @@
+{
+  "floor_through_skylight_s3": {
+    "n": 360,
+    "median_m": 0.8738021850585938,
+    "rms_m": 1.346913198113121,
+    "p10_m": -1.232403564453125,
+    "p90_m": 1.3371871948242189,
+    "annulus_outside_cone": {
+      "n": 327,
+      "median_m": 0.8983306884765625,
+      "rms_m": 1.351579299890805,
+      "p10_m": -0.07890319824218747,
+      "p90_m": 1.3727249145507814
+    }
+  },
+  "rim_horizontal_rms_m": 1.7331442353132371,
+  "two_slam_zones": {
+    "s0-80": {
+      "mean": -0.23240130147375915,
+      "std": 0.32202807834612057,
+      "n": 80
+    },
+    "s80-160": {
+      "mean": -0.13521942607767415,
+      "std": 0.12814573299629553,
+      "n": 80
+    },
+    "s160-240": {
+      "mean": -0.16641896855827448,
+      "std": 0.4783144751890448,
+      "n": 80
+    },
+    "s240-340": {
+      "mean": -0.10124656946425091,
+      "std": 0.12767163126176656,
+      "n": 99
+    }
+  },
+  "n_negative_tau_stations": 4,
+  "sigma_reg_components": {
+    "anchor_floor_rms_m": 1.346913198113121,
+    "drift_rss_m": 0.5317848268821408
+  },
+  "sigma_reg_z_m": 1.45,
+  "note": "sigma_reg = quadrature(anchor floor RMS at S3, worst-zone two-SLAM RSS). PROVISIONAL until Ed's per-slice residuals arrive; validated against measurements the registration was not fitted to on our side."
+}

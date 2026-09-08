@@ -65,7 +65,12 @@ def main() -> None:
 
     tube_pcd = Path(os.environ.get("VALID_TUBE_PCD",
                                    str(ROOT / "maps/tube_10cm_ed.pcd")))
-    aer = load(ROOT / "maps/aerial_10cm.pcd", keep=near_s3)
+    # v9: the surface working copy is env-selectable so the orthometric
+    # re-delivery can be validated against the orthometric tube maps
+    # (default unchanged: the ellipsoidal aerial_10cm.pcd).
+    aerial_pcd = Path(os.environ.get("VALID_AERIAL_PCD",
+                                     str(ROOT / "maps/aerial_10cm.pcd")))
+    aer = load(aerial_pcd, keep=near_s3)
     tube = load(tube_pcd, keep=near_s3)
 
     # Aerial below-rim (through-skylight) points: below the local surface.

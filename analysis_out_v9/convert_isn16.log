@@ -1,0 +1,191 @@
+{
+  "file": "/home/aakapatel/Nature Journal Article Autonomous lava tube mapping/Birgir_data_and_papers_08_sep/20250828_Raufarholshellir_Pointcloud_ISN16.laz",
+  "las_version": "1.2",
+  "point_format": 2,
+  "point_count": 590319423,
+  "scales": [
+    0.01,
+    0.01,
+    0.01
+  ],
+  "offsets": [
+    2580000.0,
+    180000.0,
+    0.0
+  ],
+  "mins": [
+    2581211.44,
+    183557.71,
+    151.09
+  ],
+  "maxs": [
+    2583017.71,
+    185759.07,
+    251.74
+  ],
+  "crs_epsg": 8088,
+  "crs_name": "ISN2016 / Lambert 2016",
+  "reprojection": {
+    "target": "EPSG:32627",
+    "pyproj_description": "Inverse of Iceland Lambert 2016 + ISN2016 to WGS 84 (1) + UTM zone 27N",
+    "pyproj_definition": "proj=pipeline step inv proj=lcc lat_0=65 lon_0=-19 lat_1=64.25 lat_2=65.75 x_0=2700000 y_0=300000 ellps=GRS80 step proj=utm zone=27 ellps=WGS84",
+    "pyproj_accuracy_m": 1.0,
+    "pyproj_version": "3.7.2",
+    "proj_version": "9.5.1"
+  },
+  "local_origin": [
+    479158.0,
+    7089826.0,
+    0.0
+  ],
+  "bbox_crop_local": [
+    1299.11,
+    1598.4,
+    409.98,
+    721.56
+  ],
+  "bbox_dem_local": [
+    1200.7193603515625,
+    1520.7193603515625,
+    500.17303466796875,
+    881.6730346679688
+  ],
+  "bbox_union_local": [
+    1200.7193603515625,
+    1598.4,
+    409.98,
+    881.6730346679688
+  ],
+  "voxel_m": 0.1
+}
+      5.0 M read, union    0.0 M, crop   0.0 M, dem   0.0 M,      2 s
+     10.0 M read, union    0.0 M, crop   0.0 M, dem   0.0 M,      5 s
+     15.0 M read, union    0.0 M, crop   0.0 M, dem   0.0 M,      7 s
+     20.0 M read, union    0.0 M, crop   0.0 M, dem   0.0 M,     10 s
+     25.0 M read, union    0.0 M, crop   0.0 M, dem   0.0 M,     12 s
+     30.0 M read, union    0.0 M, crop   0.0 M, dem   0.0 M,     15 s
+     35.0 M read, union    0.0 M, crop   0.0 M, dem   0.0 M,     17 s
+     40.0 M read, union    0.0 M, crop   0.0 M, dem   0.0 M,     20 s
+     45.0 M read, union    0.0 M, crop   0.0 M, dem   0.0 M,     22 s
+     50.0 M read, union    0.0 M, crop   0.0 M, dem   0.0 M,     25 s
+     55.0 M read, union    0.0 M, crop   0.0 M, dem   0.0 M,     27 s
+     60.0 M read, union    0.0 M, crop   0.0 M, dem   0.0 M,     30 s
+     65.0 M read, union    0.0 M, crop   0.0 M, dem   0.0 M,     32 s
+     70.0 M read, union    0.0 M, crop   0.0 M, dem   0.0 M,     35 s
+     75.0 M read, union    0.0 M, crop   0.0 M, dem   0.0 M,     37 s
+     80.0 M read, union    0.0 M, crop   0.0 M, dem   0.0 M,     40 s
+     85.0 M read, union    0.0 M, crop   0.0 M, dem   0.0 M,     42 s
+     90.0 M read, union    0.0 M, crop   0.0 M, dem   0.0 M,     45 s
+     95.0 M read, union    0.0 M, crop   0.0 M, dem   0.0 M,     47 s
+    100.0 M read, union    0.0 M, crop   0.0 M, dem   0.0 M,     49 s
+    105.0 M read, union    0.0 M, crop   0.0 M, dem   0.0 M,     52 s
+    110.0 M read, union    0.0 M, crop   0.0 M, dem   0.0 M,     54 s
+    115.0 M read, union    0.0 M, crop   0.0 M, dem   0.0 M,     57 s
+    120.0 M read, union    0.0 M, crop   0.0 M, dem   0.0 M,     59 s
+    125.0 M read, union    0.0 M, crop   0.0 M, dem   0.0 M,     62 s
+    130.0 M read, union    0.0 M, crop   0.0 M, dem   0.0 M,     64 s
+    135.0 M read, union    0.0 M, crop   0.0 M, dem   0.0 M,     67 s
+    140.0 M read, union    0.0 M, crop   0.0 M, dem   0.0 M,     69 s
+    145.0 M read, union    0.0 M, crop   0.0 M, dem   0.0 M,     72 s
+    150.0 M read, union    0.0 M, crop   0.0 M, dem   0.0 M,     74 s
+    155.0 M read, union    0.0 M, crop   0.0 M, dem   0.0 M,     77 s
+    160.0 M read, union    0.0 M, crop   0.0 M, dem   0.0 M,     79 s
+    165.0 M read, union    0.0 M, crop   0.0 M, dem   0.0 M,     82 s
+    170.0 M read, union    0.0 M, crop   0.0 M, dem   0.0 M,     84 s
+    175.0 M read, union    0.0 M, crop   0.0 M, dem   0.0 M,     87 s
+    180.0 M read, union    0.0 M, crop   0.0 M, dem   0.0 M,     89 s
+    185.0 M read, union    0.0 M, crop   0.0 M, dem   0.0 M,     92 s
+    190.0 M read, union    0.0 M, crop   0.0 M, dem   0.0 M,     94 s
+    195.0 M read, union    0.0 M, crop   0.0 M, dem   0.0 M,     96 s
+    200.0 M read, union    0.0 M, crop   0.0 M, dem   0.0 M,     99 s
+    205.0 M read, union    0.0 M, crop   0.0 M, dem   0.0 M,    101 s
+    210.0 M read, union    0.0 M, crop   0.0 M, dem   0.0 M,    104 s
+    215.0 M read, union    0.0 M, crop   0.0 M, dem   0.0 M,    106 s
+    220.0 M read, union    0.0 M, crop   0.0 M, dem   0.0 M,    109 s
+    225.0 M read, union    0.0 M, crop   0.0 M, dem   0.0 M,    111 s
+    230.0 M read, union    0.0 M, crop   0.0 M, dem   0.0 M,    114 s
+    235.0 M read, union    0.0 M, crop   0.0 M, dem   0.0 M,    116 s
+    240.0 M read, union    0.0 M, crop   0.0 M, dem   0.0 M,    119 s
+    245.0 M read, union    0.0 M, crop   0.0 M, dem   0.0 M,    121 s
+    250.0 M read, union    0.0 M, crop   0.0 M, dem   0.0 M,    124 s
+    255.0 M read, union    0.0 M, crop   0.0 M, dem   0.0 M,    126 s
+    260.0 M read, union    0.0 M, crop   0.0 M, dem   0.0 M,    129 s
+    265.0 M read, union    0.0 M, crop   0.0 M, dem   0.0 M,    131 s
+    270.0 M read, union    0.0 M, crop   0.0 M, dem   0.0 M,    134 s
+    275.0 M read, union    0.0 M, crop   0.0 M, dem   0.0 M,    136 s
+    280.0 M read, union    0.0 M, crop   0.0 M, dem   0.0 M,    138 s
+    285.0 M read, union    0.0 M, crop   0.0 M, dem   0.0 M,    141 s
+    290.0 M read, union    0.0 M, crop   0.0 M, dem   0.0 M,    143 s
+    295.0 M read, union    0.0 M, crop   0.0 M, dem   0.0 M,    146 s
+    300.0 M read, union    0.0 M, crop   0.0 M, dem   0.0 M,    148 s
+    305.0 M read, union    0.0 M, crop   0.0 M, dem   0.0 M,    151 s
+    310.0 M read, union    0.0 M, crop   0.0 M, dem   0.0 M,    153 s
+    315.0 M read, union    0.0 M, crop   0.0 M, dem   0.0 M,    156 s
+    320.0 M read, union    0.0 M, crop   0.0 M, dem   0.0 M,    158 s
+    325.0 M read, union    0.0 M, crop   0.0 M, dem   0.0 M,    161 s
+    330.0 M read, union    0.0 M, crop   0.0 M, dem   0.0 M,    163 s
+    335.0 M read, union    0.0 M, crop   0.0 M, dem   0.0 M,    166 s
+    340.0 M read, union    0.0 M, crop   0.0 M, dem   0.0 M,    168 s
+    345.0 M read, union    0.0 M, crop   0.0 M, dem   0.0 M,    171 s
+    350.0 M read, union    0.0 M, crop   0.0 M, dem   0.0 M,    173 s
+    355.0 M read, union    0.0 M, crop   0.0 M, dem   0.0 M,    176 s
+    360.0 M read, union    0.0 M, crop   0.0 M, dem   0.0 M,    178 s
+    365.0 M read, union    0.0 M, crop   0.0 M, dem   0.0 M,    181 s
+    370.0 M read, union    0.0 M, crop   0.0 M, dem   0.0 M,    183 s
+    375.0 M read, union    0.0 M, crop   0.0 M, dem   0.0 M,    186 s
+    380.0 M read, union    0.0 M, crop   0.0 M, dem   0.0 M,    188 s
+    385.0 M read, union    0.0 M, crop   0.0 M, dem   0.0 M,    191 s
+    390.0 M read, union    0.6 M, crop   0.0 M, dem   0.0 M,    193 s
+    395.0 M read, union    1.1 M, crop   0.0 M, dem   0.1 M,    196 s
+    400.0 M read, union    3.3 M, crop   0.0 M, dem   0.1 M,    200 s
+    405.0 M read, union    3.3 M, crop   0.0 M, dem   0.1 M,    202 s
+    410.0 M read, union    4.1 M, crop   0.8 M, dem   0.1 M,    205 s
+    415.0 M read, union    4.9 M, crop   1.7 M, dem   0.1 M,    208 s
+    420.0 M read, union    5.5 M, crop   2.2 M, dem   0.1 M,    211 s
+    425.0 M read, union    6.0 M, crop   2.7 M, dem   0.1 M,    214 s
+    430.0 M read, union    6.2 M, crop   2.9 M, dem   0.1 M,    216 s
+    435.0 M read, union    8.1 M, crop   2.9 M, dem   2.0 M,    220 s
+    440.0 M read, union   12.9 M, crop   2.9 M, dem   6.6 M,    226 s
+    445.0 M read, union   17.9 M, crop   3.7 M, dem  11.4 M,    231 s
+    450.0 M read, union   20.6 M, crop   4.6 M, dem  14.1 M,    235 s
+    455.0 M read, union   20.8 M, crop   4.6 M, dem  14.3 M,    238 s
+    460.0 M read, union   23.6 M, crop   4.6 M, dem  17.1 M,    242 s
+    465.0 M read, union   24.4 M, crop   5.4 M, dem  17.5 M,    245 s
+    470.0 M read, union   29.4 M, crop  10.4 M, dem  21.9 M,    251 s
+    475.0 M read, union   34.4 M, crop  15.4 M, dem  26.2 M,    257 s
+    480.0 M read, union   39.4 M, crop  20.4 M, dem  28.6 M,    263 s
+    485.0 M read, union   43.9 M, crop  22.1 M, dem  31.5 M,    268 s
+    490.0 M read, union   44.6 M, crop  22.1 M, dem  32.1 M,    271 s
+    495.0 M read, union   48.8 M, crop  22.9 M, dem  33.4 M,    287 s
+    500.0 M read, union   48.8 M, crop  22.9 M, dem  33.4 M,    302 s
+    505.0 M read, union   48.8 M, crop  22.9 M, dem  33.4 M,    304 s
+    510.0 M read, union   48.8 M, crop  22.9 M, dem  33.4 M,    307 s
+    515.0 M read, union   48.8 M, crop  22.9 M, dem  33.4 M,    309 s
+    520.0 M read, union   48.8 M, crop  22.9 M, dem  33.4 M,    312 s
+    525.0 M read, union   48.8 M, crop  22.9 M, dem  33.4 M,    314 s
+    530.0 M read, union   48.8 M, crop  22.9 M, dem  33.4 M,    317 s
+    535.0 M read, union   48.8 M, crop  22.9 M, dem  33.4 M,    319 s
+    540.0 M read, union   48.8 M, crop  22.9 M, dem  33.4 M,    321 s
+    545.0 M read, union   48.8 M, crop  22.9 M, dem  33.4 M,    324 s
+    550.0 M read, union   50.5 M, crop  24.6 M, dem  33.4 M,    337 s
+    555.0 M read, union   51.4 M, crop  25.5 M, dem  33.4 M,    352 s
+    560.0 M read, union   51.6 M, crop  25.6 M, dem  33.4 M,    366 s
+    565.0 M read, union   51.6 M, crop  25.6 M, dem  33.4 M,    369 s
+    570.0 M read, union   51.6 M, crop  25.6 M, dem  33.4 M,    371 s
+    575.0 M read, union   51.6 M, crop  25.6 M, dem  33.4 M,    374 s
+    580.0 M read, union   51.6 M, crop  25.6 M, dem  33.4 M,    376 s
+    585.0 M read, union   51.6 M, crop  25.6 M, dem  33.4 M,    379 s
+    590.0 M read, union   51.6 M, crop  25.6 M, dem  33.4 M,    381 s
+    590.3 M read, union   51.6 M, crop  25.6 M, dem  33.4 M,    381 s
+{
+  "points_read": 590319423,
+  "points_in_union_bbox": 51621132,
+  "points_crop": 25640666,
+  "points_dem": 33448227,
+  "points_10cm": 21922741,
+  "z_range_union_local": [
+    162.35,
+    184.58
+  ],
+  "seconds": 381.7
+}
