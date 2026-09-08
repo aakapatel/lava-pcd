@@ -1,0 +1,321 @@
+2026-09-08T23:11:08+02:00 rasterised Ellis p4-5 and Map p1-2 at 300 dpi into analysis_out_v9/scans1970
+2026-09-08T23:16:44+02:00 map sheet stitched: page2 (u,v) -> page1 (u+2986, v-445); canvas y offset +445 (stitched = page1 y + 445)
+{
+ "offset_1970_vs_lidar": {
+  "note": "nearest horizontal distance from each lidar station (every 10 m) to the georeferenced 1970 map-sheet medial line; the first 90 m are constrained by the tie points, beyond that the comparison is independent",
+  "all": {
+   "n": 31,
+   "median": 5.660086857852406,
+   "mean": 5.885212507127514,
+   "min": 0.6473132948387025,
+   "max": 11.637217288051913,
+   "p10": 2.3936107283755983,
+   "p90": 10.934617474977003
+  },
+  "beyond_tie_points": {
+   "n": 21,
+   "median": 6.766256219654804,
+   "mean": 7.074184778682229,
+   "min": 0.6473132948387025,
+   "max": 11.637217288051913,
+   "p10": 2.727740395121712,
+   "p90": 10.937693335168698
+  },
+  "within_2pct_envelope_frac": 0.0967741935483871,
+  "within_2pct_envelope_frac_beyond_tie_points": 0.14285714285714285,
+  "max_offset_s": 220.0,
+  "max_offset_m": 11.637217288051913,
+  "offset_at_s": [
+   {
+    "s": 0.0,
+    "offset_m": 1.2733001109353748
+   },
+   {
+    "s": 50.0,
+    "offset_m": 3.830738854474916
+   },
+   {
+    "s": 100.0,
+    "offset_m": 4.764795043740864
+   },
+   {
+    "s": 150.0,
+    "offset_m": 0.6473132948387025
+   },
+   {
+    "s": 200.0,
+    "offset_m": 7.568186171910598
+   },
+   {
+    "s": 250.0,
+    "offset_m": 10.142618911653349
+   },
+   {
+    "s": 300.0,
+    "offset_m": 6.339086299951311
+   }
+  ]
+ },
+ "width_comparison": {
+  "n_stations": 206,
+  "ratio_1970_over_lidar": {
+   "n": 206,
+   "median": 0.8647071348732887,
+   "mean": 0.8359512987837862,
+   "min": 0.27568901154236747,
+   "max": 1.2597731527364826,
+   "p10": 0.5500431694544944,
+   "p90": 1.0331071762849426
+  },
+  "width_lidar_m": {
+   "n": 206,
+   "median": 10.6775,
+   "mean": 11.544599029126212,
+   "min": 6.9998,
+   "max": 31.5976,
+   "p10": 8.39995,
+   "p90": 15.1223
+  },
+  "width_1970_m": {
+   "n": 206,
+   "median": 9.511111111111111,
+   "mean": 9.386839266450917,
+   "min": 3.7333333333333334,
+   "max": 13.333333333333334,
+   "p10": 5.777777777777778,
+   "p90": 12.533333333333333
+  },
+  "note": "1970 width = wall separation of the map-sheet plan measured perpendicular to its medial line at the point nearest each lidar station; lidar width = morphometry.csv p1-p99 horizontal extent"
+ }
+}
+map tie residuals m [0.7  0.13 2.17 1.37] rms 1.33
+map free-scale px/m 11.249 bar 11.25
+danger point local [1191.3  893.5] 1970 arc 447.0
+fig3 rms 3.75
+fig4 A_Munger_1954 rms 13.8 offset median 14.1
+fig4 B_Cambridgeshire_1969 rms 11.18 offset median 11.2
+fig4 C_SMCC_1970 rms 5.26 offset median 3.2
+/home/aakapatel/Nature Journal Article Autonomous lava tube mapping/lavatube_maps_data_analysis/analysis/run_morphometry.py:253: RuntimeWarning: All-NaN slice encountered
+  vceil = np.nanmax(np.where(up_bins, zmax_in, np.nan))
+Traceback (most recent call last):
+  File "/home/aakapatel/Nature Journal Article Autonomous lava tube mapping/lavatube_maps_data_analysis/analysis/road_crossing.py", line 427, in <module>
+    main()
+  File "/home/aakapatel/Nature Journal Article Autonomous lava tube mapping/lavatube_maps_data_analysis/analysis/road_crossing.py", line 226, in main
+    while cells and all(c["maps"][k]["n_returns"] == 0 for k in MAP_FILES):
+                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/aakapatel/Nature Journal Article Autonomous lava tube mapping/lavatube_maps_data_analysis/analysis/road_crossing.py", line 226, in <genexpr>
+    while cells and all(c["maps"][k]["n_returns"] == 0 for k in MAP_FILES):
+                        ^
+NameError: cannot access free variable 'c' where it is not associated with a value in enclosing scope
+crest band s [323.0, 328.0] crossing [1252.2  826.3]
+embankment cache {'crest_m': 181.67, 'flow_surface_west_m': 180.72, 'flow_surface_east_m': 179.55, 'height_above_mean_flow_m': 1.53, 'height_above_west_m': 0.95, 'height_above_east_m': 2.12, 'crest_full_width_m': 34.0}
+embankment geotiff {'crest_m': 181.62, 'flow_surface_west_m': 180.68, 'flow_surface_east_m': 179.5, 'height_above_mean_flow_m': 1.53, 'height_above_west_m': 0.94, 'height_above_east_m': 2.11, 'crest_full_width_m': 33.0}
+last return s {'flf': 327.5, 'tube': 327.5, 'slf': 327.5}
+crest band {
+"flf": {
+"n_cells": 2,
+"n_cells_sparse": 0,
+"returns_total": 6128,
+"returns_min": 2838,
+"returns_max": 3290,
+"overburden_cache_min": 12.609970092773438,
+"overburden_cache_max": 13.765762329101562,
+"overburden_cache_median": 13.1878662109375,
+"overburden_geotiff_min": 12.5687255859375,
+"overburden_geotiff_max": 13.703140258789062,
+"ceiling_boot_std_median": 0.023843810420133026,
+"ceiling_boot_std_max": 0.037415357510260476
+},
+"tube": {
+"n_cells": 2,
+"n_cells_sparse": 0,
+"returns_total": 8699,
+"returns_min": 4296,
+"returns_max": 4403,
+"overburden_cache_min": 12.746902465820312,
+"overburden_cache_max": 14.074005126953125,
+"overburden_cache_median": 13.410453796386719,
+"overburden_geotiff_min": 12.705657958984375,
+"overburden_geotiff_max": 14.011383056640625,
+"ceiling_boot_std_median": 0.024302526668851465,
+"ceiling_boot_std_max": 0.03102674282158689
+},
+"slf": {
+"n_cells": 2,
+"n_cells_sparse": 0,
+"returns_total": 7840,
+"returns_min": 3903,
+"returns_max": 3937,
+"overburden_cache_min": 12.490814208984375,
+"overburden_cache_max": 13.714889526367188,
+"overburden_cache_median": 13.102851867675781,
+"overburden_geotiff_min": 12.449569702148438,
+"overburden_geotiff_max": 13.652267456054688,
+"ceiling_boot_std_median": 0.024431325395366764,
+"ceiling_boot_std_max": 0.029110262678134487
+}
+}
+danger point {
+"local_m": [
+1191.26,
+893.54
+],
+"dist_to_extended_axis_m": 90.27659750856965,
+"nearest_axis_s": 328.75,
+"beyond_last_return_by_map_m": {
+"flf": 91.11492577297844,
+"tube": 91.11492577297844,
+"slf": 91.11492577297844
+},
+"arc_along_1970_medial_m": 447.0234694742106,
+"dem_cache": NaN,
+"dem_geotiff": 183.30703735351562,
+"overburden_measurable": false
+}
+wrote analysis_out_v9/fig_road_crossing.pdf
+crest band s [323.0, 328.0] crossing [1252.2  826.3]
+embankment cache {'crest_m': 181.67, 'flow_surface_west_m': 180.72, 'flow_surface_east_m': 179.55, 'height_above_mean_flow_m': 1.53, 'height_above_west_m': 0.95, 'height_above_east_m': 2.12, 'height_above_flank_trend_m': 1.57, 'crest_width_m': 18.5}
+embankment geotiff {'crest_m': 181.62, 'flow_surface_west_m': 180.68, 'flow_surface_east_m': 179.5, 'height_above_mean_flow_m': 1.53, 'height_above_west_m': 0.94, 'height_above_east_m': 2.11, 'height_above_flank_trend_m': 1.61, 'crest_width_m': 18.5}
+last return s {'flf': 327.5, 'tube': 327.5, 'slf': 327.5}
+crest band {
+"flf": {
+"n_cells": 2,
+"n_cells_roof_not_sampled": 0,
+"n_cells_sparse": 0,
+"returns_total": 6128,
+"returns_min": 2838,
+"returns_max": 3290,
+"overburden_cache_min": 12.609970092773438,
+"overburden_cache_max": 13.765762329101562,
+"overburden_cache_median": 13.1878662109375,
+"overburden_geotiff_min": 12.5687255859375,
+"overburden_geotiff_max": 13.703140258789062,
+"ceiling_boot_std_median": 0.023843810420133026,
+"ceiling_boot_std_max": 0.037415357510260476
+},
+"tube": {
+"n_cells": 2,
+"n_cells_roof_not_sampled": 0,
+"n_cells_sparse": 0,
+"returns_total": 8699,
+"returns_min": 4296,
+"returns_max": 4403,
+"overburden_cache_min": 12.746902465820312,
+"overburden_cache_max": 14.074005126953125,
+"overburden_cache_median": 13.410453796386719,
+"overburden_geotiff_min": 12.705657958984375,
+"overburden_geotiff_max": 14.011383056640625,
+"ceiling_boot_std_median": 0.024302526668851465,
+"ceiling_boot_std_max": 0.03102674282158689
+},
+"slf": {
+"n_cells": 2,
+"n_cells_roof_not_sampled": 0,
+"n_cells_sparse": 0,
+"returns_total": 7840,
+"returns_min": 3903,
+"returns_max": 3937,
+"overburden_cache_min": 12.490814208984375,
+"overburden_cache_max": 13.714889526367188,
+"overburden_cache_median": 13.102851867675781,
+"overburden_geotiff_min": 12.449569702148438,
+"overburden_geotiff_max": 13.652267456054688,
+"ceiling_boot_std_median": 0.024431325395366764,
+"ceiling_boot_std_max": 0.029110262678134487
+}
+}
+danger point {
+"local_m": [
+1191.26,
+893.54
+],
+"dist_to_extended_axis_m": 90.27659750856965,
+"nearest_axis_s": 328.75,
+"beyond_last_return_by_map_m": {
+"flf": 91.11492577297844,
+"tube": 91.11492577297844,
+"slf": 91.11492577297844
+},
+"arc_along_1970_medial_m": 447.0234694742106,
+"dem_cache": NaN,
+"dem_geotiff": 183.30703735351562,
+crest band s [323.0, 328.0] crossing [1252.2  826.3]
+embankment cache {'crest_m': 181.67, 'flow_surface_west_m': 180.72, 'flow_surface_east_m': 179.55, 'height_above_mean_flow_m': 1.53, 'height_above_west_m': 0.95, 'height_above_east_m': 2.12, 'height_above_flank_trend_m': 1.57, 'crest_width_m': 18.5}
+embankment geotiff {'crest_m': 181.62, 'flow_surface_west_m': 180.68, 'flow_surface_east_m': 179.5, 'height_above_mean_flow_m': 1.53, 'height_above_west_m': 0.94, 'height_above_east_m': 2.11, 'height_above_flank_trend_m': 1.61, 'crest_width_m': 18.5}
+last return s {'flf': 327.5, 'tube': 327.5, 'slf': 327.5}
+crest band {
+"flf": {
+"n_cells": 2,
+"n_cells_roof_not_sampled": 0,
+"n_cells_sparse": 0,
+"returns_total": 6128,
+"returns_min": 2838,
+"returns_max": 3290,
+"overburden_cache_min": 12.609970092773438,
+"overburden_cache_max": 13.765762329101562,
+"overburden_cache_median": 13.1878662109375,
+"overburden_geotiff_min": 12.5687255859375,
+"overburden_geotiff_max": 13.703140258789062,
+"ceiling_boot_std_median": 0.023843810420133026,
+"ceiling_boot_std_max": 0.037415357510260476
+},
+"tube": {
+"n_cells": 2,
+"n_cells_roof_not_sampled": 0,
+"n_cells_sparse": 0,
+"returns_total": 8699,
+"returns_min": 4296,
+"returns_max": 4403,
+"overburden_cache_min": 12.746902465820312,
+"overburden_cache_max": 14.074005126953125,
+"overburden_cache_median": 13.410453796386719,
+"overburden_geotiff_min": 12.705657958984375,
+"overburden_geotiff_max": 14.011383056640625,
+"ceiling_boot_std_median": 0.024302526668851465,
+"ceiling_boot_std_max": 0.03102674282158689
+},
+"slf": {
+"n_cells": 2,
+"n_cells_roof_not_sampled": 0,
+"n_cells_sparse": 0,
+"returns_total": 7840,
+"returns_min": 3903,
+"returns_max": 3937,
+"overburden_cache_min": 12.490814208984375,
+"overburden_cache_max": 13.714889526367188,
+"overburden_cache_median": 13.102851867675781,
+"overburden_geotiff_min": 12.449569702148438,
+"overburden_geotiff_max": 13.652267456054688,
+"ceiling_boot_std_median": 0.024431325395366764,
+"ceiling_boot_std_max": 0.029110262678134487
+}
+}
+danger point {
+"local_m": [
+1191.26,
+893.54
+],
+"dist_to_extended_axis_m": 90.27659750856965,
+"nearest_axis_s": 328.75,
+"beyond_last_return_by_map_m": {
+"flf": 91.11492577297844,
+"tube": 91.11492577297844,
+"slf": 91.11492577297844
+},
+"arc_along_1970_medial_m": 447.0234694742106,
+"dem_cache": NaN,
+"dem_geotiff": 183.30703735351562,
+"overburden_measurable": false
+}
+wrote analysis_out_v9/fig_road_crossing.pdf
+---- summary (2026-09-08) ----
+survey1970_compare.py: map sheet tie residuals 0.70/0.13/2.17/1.37 m (RMS 1.33); bar 11.25 px/m, feet bar 11.24, free fit 11.249; north arrow lands N 6.2 E
+  danger point local (1191.3, 893.5), 447 m along the 1970 medial, 112 m from our centreline, 28 m from the modern road
+  1970 medial crosses the modern road at (1254.9, 817.4), 1970 arc 337 m; our s=301 station is 6.6 m from the 1970 medial at 1970 arc 306 m
+  offsets (every 10 m): median 5.7 m, max 11.6 m at s=220; beyond the tie reach median 6.8 m; within Ellis 2%: 10% of stations
+  widths 1970/lidar: median 0.86 (p10-p90 0.55-1.03), n=206
+  Fig.3 shape fit RMS 3.75 m; Fig.4: A 13.8, B 11.2, C 5.3 m
+road_crossing.py: maps end at x=1252 (points west of that are stray outliers: DLIO 43, FAST-LIO 36, second flight 106 points, z 83-253 m)
+  crest band s 323-328 at (1252.2, 826.3); overburden under crest: FAST-LIO 12.6-13.8, DLIO 12.7-14.1, second flight 12.5-13.7 m (2838-4403 returns per cell, bootstrap std 0.02-0.04 m)
+  embankment: crest 181.67, flow west 180.72, east 179.55 -> 1.53 m above mean flow (0.95 W / 2.12 E), crest width 18.5 m (GeoTIFF identical to 0.05 m)
+  1970 danger point 91 m beyond the last return: not measurable

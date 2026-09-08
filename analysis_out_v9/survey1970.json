@@ -1,0 +1,412 @@
+{
+  "map_sheet_1970": {
+    "source": "/home/aakapatel/Nature Journal Article Autonomous lava tube mapping/Birgir_data_and_papers_08_sep/Map_Raufarholshellir.pdf",
+    "stitch": {
+      "page2_scale": 1.0011126819703329,
+      "page2_rotation_deg": -0.7112214204681458,
+      "page2_translation_px": [
+        2940.4977562996205,
+        13.710735243355316
+      ],
+      "canvas_oy": 460
+    },
+    "scale": {
+      "px_per_m_metres_bar": 11.25,
+      "px_per_m_feet_bar": 11.242344706911636,
+      "px_per_m_free_fit": 11.248557330096812,
+      "sheet_scale_1_to": 1049.8687664041995
+    },
+    "tie_points": {
+      "names": [
+        "entrance line midpoint -> s=0 station",
+        "collapse 1 -> S1",
+        "collapse 2 -> S2",
+        "collapse 3 -> S3"
+      ],
+      "sheet_px": [
+        [
+          1051.5,
+          2495.0
+        ],
+        [
+          1352.0,
+          2703.0
+        ],
+        [
+          1551.0,
+          2897.0
+        ],
+        [
+          1835.0,
+          3103.0
+        ]
+      ],
+      "local_m": [
+        [
+          1374.0513,
+          582.938
+        ],
+        [
+          1374.704922762784,
+          614.8415416370739
+        ],
+        [
+          1379.2806803385417,
+          636.8112386067709
+        ],
+        [
+          1381.214013671875,
+          671.4779052734375
+        ]
+      ],
+      "residual_m": [
+        0.701,
+        0.129,
+        2.172,
+        1.37
+      ],
+      "rms_m": 1.3323329286604737,
+      "residual_m_free_scale": [
+        0.707,
+        0.131,
+        2.173,
+        1.364
+      ]
+    },
+    "transform": {
+      "scale_m_per_px": 0.08888888888888889,
+      "px_per_m": 11.25,
+      "rotation_deg": 123.15355632248327,
+      "translation_m": [
+        1239.3379602565956,
+        382.71648917552557
+      ],
+      "convention": "p_local = s * R @ (x_px, -y_px) + t"
+    },
+    "north_arrow_bearing_in_local_frame_deg": 6.156784327727595,
+    "road_line": {
+      "fit_px": "y = a x + b",
+      "a": 0.1547642583773601,
+      "b": 1853.7008295540315,
+      "dash_rms_px": 23.921641394280915,
+      "dash_rms_m": 2.126368123936081,
+      "local_polyline": [
+        [
+          1317.94,
+          603.94
+        ],
+        [
+          1302.47,
+          638.1
+        ],
+        [
+          1287.0,
+          672.27
+        ],
+        [
+          1271.54,
+          706.43
+        ],
+        [
+          1256.07,
+          740.6
+        ],
+        [
+          1240.6,
+          774.76
+        ],
+        [
+          1225.14,
+          808.93
+        ],
+        [
+          1209.67,
+          843.09
+        ],
+        [
+          1194.2,
+          877.26
+        ],
+        [
+          1178.74,
+          911.43
+        ]
+      ]
+    },
+    "danger_point": {
+      "sheet_px": [
+        5107.0,
+        2690.0
+      ],
+      "local_m": [
+        1191.26,
+        893.54
+      ],
+      "arc_along_1970_medial_m": 447.0234694742106,
+      "straight_from_s0_m": 360.39438289746954,
+      "nearest_our_station_s": 301.0,
+      "dist_to_our_centreline_m": 111.86776157747053,
+      "dist_to_modern_road_m": 28.459214213756656
+    },
+    "medial": {
+      "n": 215,
+      "total_arc_m": 507.2912545736106,
+      "our_last_station_nearest_1970_arc_m": 306.42950347205885,
+      "our_last_station_offset_m": 6.6303471964890255,
+      "crosses_modern_road_at_local": [
+        1254.85,
+        817.42
+      ],
+      "crosses_modern_road_at_1970_arc_m": 337.489232234696,
+      "min_dist_to_modern_road_m": 0.8648581441181893
+    }
+  },
+  "offset_1970_vs_lidar": {
+    "note": "nearest horizontal distance from each lidar station (every 10 m) to the georeferenced 1970 map-sheet medial line; the first 90 m are constrained by the tie points, beyond that the comparison is independent",
+    "all": {
+      "n": 31,
+      "median": 5.660086857852406,
+      "mean": 5.885212507127514,
+      "min": 0.6473132948387025,
+      "max": 11.637217288051913,
+      "p10": 2.3936107283755983,
+      "p90": 10.934617474977003
+    },
+    "beyond_tie_points": {
+      "n": 21,
+      "median": 6.766256219654804,
+      "mean": 7.074184778682229,
+      "min": 0.6473132948387025,
+      "max": 11.637217288051913,
+      "p10": 2.727740395121712,
+      "p90": 10.937693335168698
+    },
+    "within_2pct_envelope_frac": 0.0967741935483871,
+    "within_2pct_envelope_frac_beyond_tie_points": 0.14285714285714285,
+    "max_offset_s": 220.0,
+    "max_offset_m": 11.637217288051913,
+    "offset_at_s": [
+      {
+        "s": 0.0,
+        "offset_m": 1.2733001109353748
+      },
+      {
+        "s": 50.0,
+        "offset_m": 3.830738854474916
+      },
+      {
+        "s": 100.0,
+        "offset_m": 4.764795043740864
+      },
+      {
+        "s": 150.0,
+        "offset_m": 0.6473132948387025
+      },
+      {
+        "s": 200.0,
+        "offset_m": 7.568186171910598
+      },
+      {
+        "s": 250.0,
+        "offset_m": 10.142618911653349
+      },
+      {
+        "s": 300.0,
+        "offset_m": 6.339086299951311
+      }
+    ]
+  },
+  "width_comparison": {
+    "n_stations": 206,
+    "ratio_1970_over_lidar": {
+      "n": 206,
+      "median": 0.8647071348732887,
+      "mean": 0.8359512987837862,
+      "min": 0.27568901154236747,
+      "max": 1.2597731527364826,
+      "p10": 0.5500431694544944,
+      "p90": 1.0331071762849426
+    },
+    "width_lidar_m": {
+      "n": 206,
+      "median": 10.6775,
+      "mean": 11.544599029126212,
+      "min": 6.9998,
+      "max": 31.5976,
+      "p10": 8.39995,
+      "p90": 15.1223
+    },
+    "width_1970_m": {
+      "n": 206,
+      "median": 9.511111111111111,
+      "mean": 9.386839266450917,
+      "min": 3.7333333333333334,
+      "max": 13.333333333333334,
+      "p10": 5.777777777777778,
+      "p90": 12.533333333333333
+    },
+    "note": "1970 width = wall separation of the map-sheet plan measured perpendicular to its medial line at the point nearest each lidar station; lidar width = morphometry.csv p1-p99 horizontal extent"
+  },
+  "height_comparison": {
+    "done": false,
+    "reason": "the elevation ticks of the Fig. 3 extended section and the map-sheet elevation are unreadable at the reproduction scale (datum 'roughly 160 m'); no ceiling-floor heights digitised"
+  },
+  "fig3_1971": {
+    "source": "/home/aakapatel/Nature Journal Article Autonomous lava tube mapping/Birgir_data_and_papers_08_sep/Ellis_1971_The_survey_Raufarholshellir.pdf page 4",
+    "px_per_m_bar": 3.2519999999999984,
+    "bar_fit_residual_px": [
+      -1.0,
+      1.4,
+      -0.2,
+      0.2,
+      -0.4
+    ],
+    "fit": {
+      "method": "fixed-scale ICP of the digitised main-tube medial (first 300 m) to the lidar centreline, entrance anchored",
+      "rms_m": 3.7461823834712695,
+      "n_points": 95,
+      "entrance_residual_m": 3.973598388340089,
+      "skylight_to_fig3_medial_m": [
+        2.22,
+        1.93,
+        5.51
+      ]
+    },
+    "transform": {
+      "scale_m_per_px": 0.3075030750307505,
+      "px_per_m": 3.2519999999999984,
+      "rotation_deg": 129.34232718146663,
+      "translation_m": [
+        1324.6515075776501,
+        374.16056298623664
+      ],
+      "convention": "p_local = s * R @ (x_px, -y_px) + t"
+    },
+    "north_arrow_bearing_in_local_frame_deg": 0.628599236747922,
+    "section_road_bracket_from_entrance_m": [
+      349.0,
+      453.6
+    ],
+    "medial_total_arc_m": 733.4222606130162,
+    "refpoint_1": {
+      "tip_local": [
+        1368.5,
+        644.69
+      ],
+      "nearest_lidar_s": 59.0
+    }
+  },
+  "fig4_1971": {
+    "source": "/home/aakapatel/Nature Journal Article Autonomous lava tube mapping/Birgir_data_and_papers_08_sep/Ellis_1971_The_survey_Raufarholshellir.pdf page 5",
+    "px_per_m_bar": 4.025000000000002,
+    "plans": {
+      "A_Munger_1954": {
+        "fit": {
+          "method": "fixed-scale ICP to the lidar centreline (first 300 m of the plan), entrance cut at the sheet margin so no anchor",
+          "rms_m": 13.803340487590843,
+          "n_points": 94
+        },
+        "transform": {
+          "scale_m_per_px": 0.24844720496894396,
+          "px_per_m": 4.025000000000002,
+          "rotation_deg": 134.62362420243883,
+          "translation_m": [
+            1320.3723220053214,
+            549.3761609893139
+          ],
+          "convention": "p_local = s * R @ (x_px, -y_px) + t"
+        },
+        "north_arrow_bearing_in_local_frame_deg": -2.8522720720744696,
+        "offset_to_lidar_stations_m": {
+          "n": 31,
+          "median": 14.084414584448387,
+          "mean": 14.540780834299893,
+          "min": 1.1992095622120773,
+          "max": 41.678079794777254,
+          "p10": 4.13716245659743,
+          "p90": 22.980126582053384
+        },
+        "skylight_to_plan_medial_m": [
+          21.93,
+          16.62,
+          2.9
+        ],
+        "medial_total_arc_m": 812.4194642965462
+      },
+      "B_Cambridgeshire_1969": {
+        "fit": {
+          "method": "fixed-scale ICP to the lidar centreline (first 300 m of the plan), entrance cut at the sheet margin so no anchor",
+          "rms_m": 11.181279596451228,
+          "n_points": 97
+        },
+        "transform": {
+          "scale_m_per_px": 0.24844720496894396,
+          "px_per_m": 4.025000000000002,
+          "rotation_deg": 135.6007599842867,
+          "translation_m": [
+            1239.6235847500539,
+            443.110944692561
+          ],
+          "convention": "p_local = s * R @ (x_px, -y_px) + t"
+        },
+        "north_arrow_bearing_in_local_frame_deg": -3.8294078539223255,
+        "offset_to_lidar_stations_m": {
+          "n": 31,
+          "median": 11.229858811899128,
+          "mean": 11.650657419115207,
+          "min": 0.5706432993910922,
+          "max": 33.5366018058255,
+          "p10": 4.7278177515695425,
+          "p90": 17.505212824509588
+        },
+        "skylight_to_plan_medial_m": [
+          12.44,
+          11.04,
+          4.94
+        ],
+        "medial_total_arc_m": 752.6537271482391
+      },
+      "C_SMCC_1970": {
+        "fit": {
+          "method": "fixed-scale ICP to the lidar centreline (first 300 m of the plan), entrance cut at the sheet margin so no anchor",
+          "rms_m": 5.2559625305239015,
+          "n_points": 97
+        },
+        "transform": {
+          "scale_m_per_px": 0.24844720496894396,
+          "px_per_m": 4.025000000000002,
+          "rotation_deg": 123.04078405280355,
+          "translation_m": [
+            1060.4900675584822,
+            348.05262635471644
+          ],
+          "convention": "p_local = s * R @ (x_px, -y_px) + t"
+        },
+        "north_arrow_bearing_in_local_frame_deg": 8.730568077560829,
+        "offset_to_lidar_stations_m": {
+          "n": 31,
+          "median": 3.1713292441277323,
+          "mean": 4.465851695399655,
+          "min": 0.6059074015861617,
+          "max": 12.618151036310016,
+          "p10": 1.1524972246893734,
+          "p90": 8.623719270215474
+        },
+        "skylight_to_plan_medial_m": [
+          5.75,
+          4.27,
+          5.48
+        ],
+        "medial_total_arc_m": 786.6381639770531
+      }
+    }
+  },
+  "assumptions": {
+    "entrance_tie": "the sheet's drawn mouth line midpoint is matched to our s=0 station (1.8 m of roof above it); the 1970 prime survey point was outside the entrance, so this tie carries a few metres of definitional slack",
+    "ellis_accuracy": {
+      "horizontal_frac": 0.02,
+      "vertical_frac": 0.002,
+      "surface_height_m": 1.5
+    }
+  }
+}
