@@ -53,20 +53,21 @@ for k, (pg, box) in PANELS.items():
 
 W, H = 180, 168
 fig = plt.figure(figsize=(W * MM, H * MM))
-# layout: a (tall, left 40%), b (right 60%, top), c and d (right, bottom two rows)
-boxes = {"a": (0.005, 0.005, 0.385, 0.99), "b": (0.405, 0.50, 0.59, 0.495), "c": (0.405, 0.255, 0.59, 0.235), "d": (0.405, 0.005, 0.59, 0.235)}
+# layout: top row a (left, tall progression) and b (right, third-person + graph);
+# bottom row c and d (wide strips) side by side.
+boxes = {"a": (0.0, 0.29, 0.41, 0.71), "b": (0.43, 0.29, 0.57, 0.71), "c": (0.0, 0.0, 0.49, 0.27), "d": (0.51, 0.0, 0.49, 0.27)}
 for k, (x, y, w, h) in boxes.items():
     ax = fig.add_axes((x, y, w, h)); ax.axis("off")
     im = imgs[k]; iw, ih = im.size
-    # fit inside the box preserving aspect
+    # fit inside the box preserving aspect, anchored top-left so letters sit on the image
     box_ar = (w * W) / (h * H); im_ar = iw / ih
-    if im_ar > box_ar:  # wider than box: full width
-        ax.imshow(im, extent=(0, 1, 0.5 - 0.5 * box_ar / im_ar, 0.5 + 0.5 * box_ar / im_ar), aspect="auto", interpolation="lanczos")
-    else:
-        ax.imshow(im, extent=(0.5 - 0.5 * im_ar / box_ar, 0.5 + 0.5 * im_ar / box_ar, 0, 1), aspect="auto", interpolation="lanczos")
+    if im_ar > box_ar:      # wider than box: full width, image at the top
+        hh = box_ar / im_ar; ext = (0, 1, 1 - hh, 1)
+    else:                   # taller than box: full height, image at the left
+        ww = im_ar / box_ar; ext = (0, ww, 0, 1)
+    ax.imshow(im, extent=ext, aspect="auto", interpolation="lanczos")
     ax.set_xlim(0, 1); ax.set_ylim(0, 1)
-    fig.text(x + 0.004, y + h - 0.012, k, fontsize=8, fontweight="bold", color="white", va="top", ha="left",
-             bbox=dict(boxstyle="square,pad=0.15", fc="black", ec="none", alpha=0.6))
+    fig.text(x + 0.006, y + h - 0.008, k, fontsize=8, fontweight="bold", color="white", va="top", ha="left")
 fig.savefig(OUT / "ed4_deployments.pdf", dpi=300)
 fig.savefig(OUT / "ed4_deployments.png", dpi=300)
 print("wrote", OUT / "ed4_deployments.pdf", {k: v.size for k, v in imgs.items()})
