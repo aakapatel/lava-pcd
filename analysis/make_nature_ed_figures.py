@@ -629,7 +629,10 @@ def ed6_centreline_morphometry():
     ax_a.scatter(su, sv, s=0.2, color=C["shell"], lw=0, rasterized=True)
     ax_a.plot(cu, cv, lw=1.2, color=C["tube"], label="L1-medial centreline")
     sky = klass == "skylight"
-    ax_a.plot(cu[sky], cv[sky], lw=2.6, color=C["skylight"], label="Skylights")
+    # markers only: a line would bridge the intact gaps between the three
+    # apertures and read as one continuous skylight reach
+    ax_a.scatter(cu[sky], cv[sky], s=7, color=C["skylight"], lw=0, zorder=4,
+                 label="Skylight stations")
     for tick in range(0, int(s.max()) + 1, 50):
         j = int(np.argmin(np.abs(s - tick)))
         ax_a.annotate(f"{tick} m", (cu[j], cv[j]), fontsize=6, color="0.35",
@@ -1060,7 +1063,7 @@ def planner_rows():
          f"{pl['v_max_mps']:.1f} / {pl['v_homing_mps']:.1f} m s$^{{\\mathrm{{-1}}}}$"],
         ["Yaw rate limit", "", f"{pl['yaw_rate_max_radps']:g} rad s$^{{\\mathrm{{-1}}}}$"],
         ["Exploration time budget", "", f"{int(pl['exploration_time_budget_s']):,} s"],
-        ["Onboard map voxel size", "$v$", f"{mp['tsdf_voxel_size_m']:g} m"],
+        ["Onboard map voxel size", "$\\ell$", f"{mp['tsdf_voxel_size_m']:g} m"],
         ["Map ray integration length", "$r_{\\mathrm{map}}$", f"{mp['max_ray_length_m']:g} m"],
         ["ESDF truncation distance", "", f"{mp['esdf_max_distance_m']:.1f} m"],
     ]

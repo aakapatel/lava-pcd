@@ -34,7 +34,7 @@ ED4 deployments: while this ran, `analysis/make_nature_ed4_deployments.py` (not 
 
 ED5 registration and consistency [4]: a constellation (legend gained the "rejected 4th detection" entry; the inset caption overflowed its box at 300 dpi and was removed; skylight labels moved to the right of the ellipses after the legend's third line collided with "S2"), b S3 floor histogram, c ceiling under the two registrations (ylabel split over two lines after the letter touched it), d two-SLAM ceiling offset (sign checked in chain_flf_to_ed.py: p99 ceiling of the DLIO cloud minus the FAST-LIO cloud, per 2.5 m station, four zones; the ylabel says so), e column statistic, f classification map (y margins reduced, last station label moved to the right of the line end). PASS.
 
-ED6 centreline and morphometry [4]: a plan (full width after the across margins were cut from 30 m to 12 m; legend moved to the upper left after it collided with the 300 m label), b side view, c-h six cross-sections on one common frame (sizes now compare directly; station and area labels above each panel, top right, so no text over the sections), i sinuosity over 50 m windows, j aspect ratio eta. skeleton_3d.png dropped: with the plan at full width there is no room, and it duplicates panel a. PASS.
+ED6 centreline and morphometry [4]: a plan (full width after the across margins were cut from 30 m to 12 m; legend moved to the upper left after it collided with the 300 m label), b side view, c-h six cross-sections on one common frame (sizes now compare directly; station and area labels above each panel, top right, so no text over the sections), i sinuosity over 50 m windows, j aspect ratio eta. Verification round: the skylight stations in a were drawn with ax.plot, which bridged the intact gaps between the three apertures into one apparent 29-99 m run; now scatter markers (22 stations in three clusters, checked at 300 dpi). skeleton_3d.png dropped: with the plan at full width there is no room, and it duplicates panel a. PASS.
 
 ED7 surface-model validation [2]: a difference map with an inset colourbar that follows the equal-aspect map (the layout colourbar was taller than the map), b histogram, c orbital-quality profiles. Rechecked the x-major DEM indexing: the road in a runs from about x 1260 at y 850 to x 1320 at y 500, the same as the v9 panel. PASS.
 
@@ -42,7 +42,7 @@ ED8 1970 survey and road crossing [3]: a, b maps two rows tall at 55 mm wide, c 
 
 ED Table 1 missions [1]: 180 x 41 mm, three rules, no verticals. PASS.
 
-ED Table 2 planner parameters [2]: 180 x 69 mm; negative superscripts made upright. PASS.
+ED Table 2 planner parameters [3]: 180 x 69 mm; negative superscripts made upright; voxel-size symbol changed from v to ell (mathtext \ell, renders from NimbusSans-Italic, checked at 300 dpi) to match the Supplementary Methods. PASS.
 
 ## Data provenance of the table cells
 
