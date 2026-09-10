@@ -411,8 +411,8 @@ def site_map(fig, x0, y0, w, h):
         ins.set_xlim(-24.8 * kx, -13.2 * kx); ins.set_ylim(63.2, 66.7)
         ins.text(-19 * kx, 65.3, "Iceland\n(no offline coastline)", fontsize=5.5, ha="center")
     ins.plot(lon * kx, lat, "o", ms=3.5, mfc=C["skylight"], mec="k", mew=0.4)
-    ins.text(-13.4 * kx, 66.55, f"{abs(lat):.2f}° N\n{abs(lon):.2f}° W", fontsize=5.5,
-             va="top", ha="right", color="0.25")
+    # coordinates are given in the Methods; the inset carries only the marker
+    # (a coordinate label overlapped the coastline at page scale)
     ins.set_xticks([]); ins.set_yticks([])
     for sp in ins.spines.values():
         sp.set_visible(True); sp.set_linewidth(0.5)

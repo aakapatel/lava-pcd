@@ -68,9 +68,13 @@ No red/green pair and no rainbow scale in any vector panel.
   label "s = 301 m" from centreline.csv; 1970 map-sheet medial line drawn
   only beyond the survey end (dashed white). Iceland inset from the
   Natural Earth 50 m coastline (extract cached in
-  analysis_out_v10/iceland_coastline_ne50m.json); site at 63.94 N, 21.40 W
-  computed from the s = 0 station. Map labels carry a white halo because a
-  map has no unshaded area to put them on.
+  analysis_out_v10/iceland_coastline_ne50m.json); the site marker is the
+  s = 0 station (63.94 N, 21.40 W, printed by the script and given in the
+  Methods). The coordinate label first placed in the inset overlapped the
+  coastline at page scale (verification round, 2026-09-10) and was removed;
+  the inset now carries the coastline, "Iceland" and the marker only,
+  re-checked clean at 100 dpi. Map labels carry a white halo because a map
+  has no unshaded area to put them on.
 
 ### Fig 2, autonomous survey (rasters)
 - a: top-left and bottom-left quadrants of mission_tpv_collage.png (chamber
