@@ -1,0 +1,19 @@
+{
+  "note": "sigma_req = beta*rho*g*L^2/tau (MPa) with L = robust width, over intact stations with tau > sigma_tau; road reach = s >= 280 m",
+  "rho": 2600.0,
+  "g": 9.81,
+  "beta": 0.5,
+  "tau_threshold_m": 1.48,
+  "n_all": 248,
+  "median_all_MPa": 0.21431054251222847,
+  "p95_all_MPa": 1.564619582687155,
+  "n_road_reach": 22,
+  "min_road_reach_MPa": 0.03516955561902385,
+  "median_road_reach_MPa": 0.049206993012198344,
+  "max_road_reach_MPa": 0.07388615094176086,
+  "frac_all_below_road_median": 0.04838709677419355,
+  "width_road_reach_m": [
+    6.0742,
+    8.9581
+  ]
+}
