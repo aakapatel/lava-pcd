@@ -1,5 +1,35 @@
 # lava-pcd
 
+Analysis code for the manuscript "Autonomous interior survey of a lava tube
+for planetary habitat assessment" (Patel, Stathoulopoulos, Llewellin,
+Oskarsson, Nikolakopoulos; under review, 2026), plus the point-cloud tools
+it grew out of. Project page: https://aakapatel.github.io/lavatube-survey/.
+Data release (maps, surface model, derived products):
+https://github.com/aakapatel/lavatube-survey/releases/tag/data-v1.
+
+## Reproducing the paper
+
+1. `pip install -e .` in a Python 3.12 environment (the `.venv` used for the
+   paper is not committed).
+2. Download the data release into `maps/` (the `*_ed_ortho.pcd` interior
+   maps, the `aerial_isn16_ortho_*.pcd` surface products and the two DEM
+   crops) and unzip `analysis_outputs_baseline_and_ed.zip` into the repo
+   root (it restores `analysis_out/` and `analysis_out_ed/`, which hold the
+   registration transforms and mission statistics the pipeline reads).
+3. `bash analysis/run_v9_pipeline.sh` recomputes every number into
+   `analysis_out_v9/` (`paper_numbers.json` is the collection point), and
+   `bash analysis/make_v9_figures.sh` plus `analysis/make_nature_figures.py`,
+   `analysis/make_nature_ed_figures.py` and
+   `analysis/make_nature_ed4_deployments.py` regenerate the figures into
+   `analysis_out_v10/figures_nature/`.
+4. `analysis/behaviour_tree.py` draws the behaviour tree of Extended Data
+   Fig. 2; `analysis/zenodo_deposit.py` creates the Zenodo record.
+
+The committed `analysis_out_v9/` is the paper run, so the numbers in the
+manuscript can be checked without rerunning anything.
+
+## Point-cloud tools
+
 Tools for processing large point cloud files — convert, downsample, voxelize, crop, merge.
 
 The first capability is converting `.laz`/`.las` LiDAR clouds into **binary `.pcd`** files
