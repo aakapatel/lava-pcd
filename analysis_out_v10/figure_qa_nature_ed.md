@@ -95,3 +95,21 @@ Supplementary Methods and "Supervision" to panel b, following plan/13.
 2. The behaviour tree (ED2 b) and the platform-photo labels are unreadable at Nature size; a vector redraw of the tree (TikZ or matplotlib from the XML) is the fix.
 3. The ED3 screenshots keep their rainbow colouring and baked Times labels; if Nature objects, they need re-exporting from the visualiser with labels removed and added in the figure.
 4. Planner parameters carry the "confirm flown values" caveat from planner_params.json.
+
+## Update 2026-09-11 (v10.1): ED2 and ED Table 2 regenerated
+
+ED2 platform architecture [2 further iterations]: a shafterx2.png 85 x 56.7 mm
+at 350 dpi (labels baked in the raster now print at about 5 pt); node key
+at 6.5 pt beside the photo; b the behaviour tree as vectors from
+analysis/behaviour_tree.py, 177.8 x 98.0 mm, 6 pt Nimbus Sans, 40 nodes
+transcribed from stage_bt.png with the same child order (Groot's Root
+container omitted). Page 180 x 165 mm, PDF 1.1 MB, fonts NimbusSans
+Regular/Bold only. Checked at 110 dpi standalone and at 100 dpi on the
+built page 27: no overlaps, no clipping, every label legible. PASS.
+
+ED Table 2 [1]: platform and survey configuration (formerly ED2 c, with a
+new "Aerial platform and autonomy stack" heading row) above the planner
+parameters, 180 x 139 mm. Checked at 110 dpi and on built page 35. PASS.
+
+Open points 2 (tree) is closed; the platform-photo labels remain baked in
+(no unannotated original in the repo).

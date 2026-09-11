@@ -3,7 +3,7 @@
 Ten items, each a PDF plus a 300 dpi PNG in analysis_out_v10/figures_nature/:
 
     ed1_site_photos              skylights, interior, FPV frames (rasters)
-    ed2_platform_architecture    platform photo, behaviour tree, platform table
+    ed2_platform_architecture    platform photo, behaviour tree (vector redraw)
     ed3_planner_behaviour        planner screenshots (rasters)
     ed4_deployments              placeholder only (--only ed4); the real item
                                  comes from make_nature_ed4_deployments.py
@@ -12,7 +12,7 @@ Ten items, each a PDF plus a 300 dpi PNG in analysis_out_v10/figures_nature/:
     ed7_dem_validation           ArcticDEM check + orbital-quality profile
     ed8_survey1970               the 1970 survey and the road crossing
     ed_table1_missions           mission summary of the two long flights
-    ed_table2_planner_params     planner and safety parameters
+    ed_table2_planner_params     platform configuration + planner parameters
 
 Nature style for Extended Data (not restyled by the journal): 180 mm wide,
 <= 170 mm tall, Nimbus Sans (Helvetica clone) throughout, 7 pt text, 6 pt
@@ -61,6 +61,7 @@ from matplotlib.textpath import TextToPath  # noqa: E402
 from PIL import Image  # noqa: E402
 
 sys.path.insert(0, str(Path(__file__).parent))
+import behaviour_tree as bt  # noqa: E402
 import make_ed_figures as edf  # noqa: E402
 import orbital_dem_test as odt  # noqa: E402
 import survey1970_compare as s70  # noqa: E402
@@ -314,7 +315,7 @@ def _refit_axes(fig, old_h, new_h):
 
 
 # ----------------------------------------------------------------------
-# ED 2: platform photo, behaviour tree, platform table
+# ED 2: platform photo, behaviour tree (vector); platform table in ED Table 2
 # ----------------------------------------------------------------------
 def platform_rows():
     """ED Table 1 rows. Numeric cells that exist in a JSON are read from
@@ -326,6 +327,7 @@ def platform_rows():
     vox = pp["mapping"]["tsdf_voxel_size_m"]
     ray = pp["mapping"]["max_ray_length_m"]
     rows = [
+        ["Aerial platform and autonomy stack"],
         ["Airframe", "in-house quadrotor, about 0.8 m rotor span, roll cage"],
         ["Ranging sensor", "Ouster spinning 3D lidar (360° azimuth)"],
         ["Inertial sensing", "VectorNav IMU"],
@@ -336,7 +338,7 @@ def platform_rows():
         ["State estimation", "DLIO lidar-inertial odometry, onboard, no external fix"],
         ["Mapping", f"hashed TSDF/ESDF volumetric map, {vox:g} m voxels, {ray:g} m ray integration"],
         ["Planning", "STAGE graph-based exploration (Supplementary Methods)"],
-        ["Supervision", "behaviour tree (panel b), onboard"],
+        ["Supervision", "behaviour tree (Extended Data Fig. 2b), onboard"],
         ["Surface photogrammetric survey"],
         ["Aircraft, camera", "senseFly eBee X RTK fixed wing, S.O.D.A. camera (10.6 mm, 5472 × 3648 px)"],
         ["Acquisition", "28 August 2025, 135 m above ground, 964 images, 2.08 km$^2$, no snow"],
@@ -345,19 +347,32 @@ def platform_rows():
         ["Georeferencing", "onboard GNSS with IceCORS real-time correction, camera stations to 9.5 cm; three ground control points (Trimble R8s), 14.0 cm total RMSE, 7.6 cm in height"],
         ["Reference frame", f"ISN2016 / Lambert 2016, orthometric heights (ISH2004 geoid); delivered ellipsoidal heights differ by {dz:.2f} m at the site"],
     ]
-    return rows, (11,)
+    return rows, (0, 12)
 
 
 def ed2_platform_architecture():
+    """a, the platform photograph (85 mm, so its baked labels print at about
+    5 pt); the node key beside it. b, the behaviour tree redrawn as vectors
+    from the Groot screenshot by behaviour_tree.py, full width."""
     fig = new_fig(170.0)
     y0 = 4.0
-    _, ha = image_panel(fig, "shafterx2.png", 0, y0, 70.0, letter="a")
-    _, hb = image_panel(fig, "stage_bt.png", 75.0, y0, 105.0, letter="b")
-    y = y0 + max(ha, hb) + 6.0
-    rows, secs = platform_rows()
-    ht = draw_table(fig, 0, y, 180.0, ["Component", "Configuration"], rows,
-                    col_w=[28, 152], letter="c", section_rows=secs)
-    y += ht
+    _, ha = image_panel(fig, "shafterx2.png", 0, y0, 85.0, letter="a", max_dpi=350.0)
+    st = bt.Style()
+    axk = ax_mm(fig, 92.0, y0 + 2.0, 88.0, 16.0)
+    axk.set_xlim(0, 88.0); axk.set_ylim(16.0, 0); axk.set_aspect("equal"); axk.set_axis_off()
+    axk.text(0.0, 1.0, "Node types in b", fontsize=7, fontweight="bold", va="center")
+    bt.draw_key(axk, 0.0, 5.0, st)
+    y = y0 + ha + 5.0
+    probe = bt.build(bt.TREE, st)
+    tw, th, _ = bt.layout(probe, st)
+    if tw > 180.0:
+        raise ValueError(f"behaviour tree {tw:.1f} mm wide (> 180)")
+    hb = th + 1.0
+    axt = ax_mm(fig, 0, y, 180.0, hb)
+    bt.render(axt, 180.0, hb, st, key=False)
+    axt.text(0.0, 1.0 + 0.8 / hb, "b", transform=axt.transAxes, clip_on=False, **LETTER_KW)
+    print(f"    behaviour tree: {tw:.1f} x {th:.1f} mm (vector)")
+    y += hb
     fig.set_size_inches(W_MM * MM, y * MM)
     _refit_axes(fig, 170.0, y)
     save(fig, "ed2_platform_architecture")
@@ -1081,13 +1096,21 @@ def ed_table1_missions():
 
 
 def ed_table2_planner_params():
+    """Two booktabs tables on one page: the platform and survey
+    configuration (formerly ED Fig. 2c) above the planner parameters."""
+    fig = new_fig(170.0)
+    prow, secs = platform_rows()
+    y = 1.0
+    h1 = draw_table(fig, 0, y, 180.0, ["Component", "Configuration"], prow,
+                    col_w=[28, 152], section_rows=secs)
+    y += h1 + 5.0
     rows = planner_rows()
-    fig = new_fig(90.0)
-    h = draw_table(fig, 0, 1.0, 180.0, ["Parameter", "Symbol", "Value"], rows,
-                   col_w=[100, 30, 50], align=["left", "center", "center"],
-                   row_h=3.4)
-    fig.set_size_inches(W_MM * MM, (h + 2.0) * MM)
-    _refit_axes(fig, 90.0, h + 2.0)
+    h2 = draw_table(fig, 0, y, 180.0, ["Parameter", "Symbol", "Value"], rows,
+                    col_w=[100, 30, 50], align=["left", "center", "center"],
+                    row_h=3.4)
+    y += h2 + 1.0
+    fig.set_size_inches(W_MM * MM, y * MM)
+    _refit_axes(fig, 170.0, y)
     save(fig, "ed_table2_planner_params")
 
 
