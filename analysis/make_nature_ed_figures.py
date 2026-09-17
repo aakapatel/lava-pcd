@@ -598,15 +598,82 @@ def cons_classification(ax, s, x, y, klass):
     ax.legend(loc="lower left", ncols=4, markerscale=2.0, columnspacing=1.0)
 
 
+RIM_LABEL = {"Entrance_cave": "Entrance", "S1S": "S1 south", "S1N": "S1 north",
+             "S2S": "S2 south", "S2N": "S2 north", "S3S": "S3 south", "S3N": "S3 north"}
+RIM_ORDER = ["Entrance_cave", "S1S", "S1N", "S2S", "S2N", "S3S", "S3N"]
+
+
+def load_rim_groundtruth():
+    """Birgir's tape measurements of 2026-09-15 against the registered model
+    (analysis/skylight_groundtruth.py), in along-tube order."""
+    gt = json.load(open(OUT / "skylight_groundtruth.json"))
+    by = {p["point"]: p for p in gt["points"]}
+    return [by[k] for k in RIM_ORDER], gt["summary"]
+
+
+def _g(rec, key):
+    v = rec.get(key)
+    return np.nan if v is None else float(v)
+
+
+def rim_thickness(ax, recs):
+    """ED 5g: roof lip thickness at the seven rim points, tape vs lidar."""
+    xi = np.arange(len(recs))
+    tape = np.array([_g(r, "tape_upper") for r in recs])
+    tape2 = np.array([_g(r, "tape_lower") for r in recs])
+    for i in xi:
+        ax.plot([i - 0.3, i + 0.3], [tape[i], tape[i]], color="k", lw=1.4,
+                solid_capstyle="butt", zorder=3)
+        if np.isfinite(tape2[i]):
+            ax.plot([i - 0.3, i + 0.3], [tape2[i], tape2[i]], color="0.6", lw=1.0,
+                    ls=(0, (2, 1)), solid_capstyle="butt", zorder=3)
+    ax.plot([], [], color="k", lw=1.4, label="Tape, roof lip")
+    ax.plot([], [], color="0.6", lw=1.0, ls=(0, (2, 1)), label="Tape, terrace behind the lip")
+    ax.plot(xi, [_g(r, "tau_rim_flf") for r in recs], "o", ms=3.5, color=C["tube"],
+            label="Lidar, offline map", zorder=4)
+    ax.plot(xi, [_g(r, "tau_rim_slf") for r in recs], "^", ms=3.5, color=C["envelope"],
+            mfc="none", label="Lidar, second flight", zorder=4)
+    ax.plot(xi, [_g(r, "tau_rim_tube") for r in recs], "s", ms=3.0, color=C["dlio"],
+            label="Lidar, onboard map", zorder=4)
+    ax.plot(xi, [_g(r, "tau_flank_mean") for r in recs], "D", ms=3.0, color=C["intact"],
+            label="Pipeline $\\tau$, flanking stations", zorder=4)
+    ax.set_xticks(xi); ax.set_xticklabels([RIM_LABEL[r["point"]] for r in recs],
+                                          rotation=30, ha="right")
+    ax.set_ylabel("Roof thickness\nat the rim (m)")
+    ax.set_ylim(0, 6.5)
+    ax.legend(loc="upper left", ncols=3, columnspacing=0.8, handletextpad=0.4)
+
+
+def rim_floor(ax, recs):
+    """ED 5h: rim-to-floor height at the rim points, tape vs lidar floor."""
+    xi = np.arange(len(recs))
+    tf = np.array([_g(r, "tape_floor") for r in recs])
+    for i in xi:
+        if np.isfinite(tf[i]):
+            ax.plot([i - 0.3, i + 0.3], [tf[i], tf[i]], color="k", lw=1.4,
+                    solid_capstyle="butt", zorder=3)
+    ax.plot([], [], color="k", lw=1.4, label="Tape, rim to floor")
+    ax.plot(xi, [_g(r, "floor_depth_flf") for r in recs], "o", ms=3.5, color=C["tube"],
+            label="Lidar floor, offline", zorder=4)
+    ax.plot(xi, [_g(r, "floor_depth_slf") for r in recs], "^", ms=3.5, color=C["envelope"],
+            mfc="none", label="Lidar floor, flight 2", zorder=4)
+    ax.set_xticks(xi); ax.set_xticklabels([RIM_LABEL[r["point"]] for r in recs],
+                                          rotation=30, ha="right")
+    ax.set_ylabel("Rim-to-floor\nheight (m)")
+    ax.set_ylim(0, 19.0)
+    ax.legend(loc="upper left", ncols=2, columnspacing=0.8, handletextpad=0.4)
+
+
 def ed5_registration_consistency():
     rep = json.load(open(OUT / "registration_report.json"))
     T = np.array(json.load(open(OUT_LEGACY / "transform_ed_slice.json"))["matrix"])
     val = json.load(open(OUT / "registration_validation.json"))
     chain = json.load(open(OUT_LEGACY / "transform_flf_ed_chain.json"))
     s, x, y, z_dem, z_ceil, tau, ghost, klass = edf.load_roof()
+    recs, _ = load_rim_groundtruth()
 
-    fig = new_fig(168.0)
-    gs = fig.add_gridspec(4, 2, height_ratios=[1.25, 1.0, 0.75, 1.15],
+    fig = new_fig(170.0)
+    gs = fig.add_gridspec(5, 2, height_ratios=[1.15, 0.85, 0.7, 0.95, 0.95],
                           width_ratios=[1.55, 1])
     ax_a = fig.add_subplot(gs[0, 0]); reg_constellation(ax_a, rep, T)
     ax_b = fig.add_subplot(gs[0, 1]); reg_floor_hist(ax_b, val)
@@ -614,12 +681,14 @@ def ed5_registration_consistency():
     ax_d = fig.add_subplot(gs[2, 0]); reg_two_slam(ax_d, chain)
     ax_e = fig.add_subplot(gs[2, 1]); cons_column_stat(ax_e, s, ghost, klass)
     ax_f = fig.add_subplot(gs[3, :]); cons_classification(ax_f, s, x, y, klass)
+    ax_g = fig.add_subplot(gs[4, 0]); rim_thickness(ax_g, recs)
+    ax_h = fig.add_subplot(gs[4, 1]); rim_floor(ax_h, recs)
     for a in (ax_c, ax_d, ax_e):
         a.set_xlim(-5, 310)
     layout(fig)
     freeze_layout(fig)
     place_letters(fig, [(ax_a, "a"), (ax_b, "b"), (ax_c, "c"), (ax_d, "d"),
-                        (ax_e, "e"), (ax_f, "f")])
+                        (ax_e, "e"), (ax_f, "f"), (ax_g, "g"), (ax_h, "h")])
     save(fig, "ed5_registration_consistency")
 
 
