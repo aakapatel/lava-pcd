@@ -1,0 +1,488 @@
+{
+ "inputs": {
+  "csv": "analysis_out_v9/groundtruth_2026-09-15/20260915_Raufarholshellir_crust.csv",
+  "date_measured": "2026-09-15",
+  "measured_by": "B. V. Oskarsson",
+  "maps": {
+   "flf": "flf_10cm_ed_ortho.pcd",
+   "tube": "tube_10cm_ed_ortho.pcd",
+   "slf": "slf_10cm_ed_ortho.pcd"
+  },
+  "aerial": "aerial_isn16_ortho_crop.pcd",
+  "dem": "dem_grid_aerial_isn16_ortho_dem.npz",
+  "geotiff": "20250828_Raufarholshellir_DEM_ISN16.tif"
+ },
+ "parameters": {
+  "strip_in_m": 0.5,
+  "strip_out_m": 3.5,
+  "strip_half_m": 1.5,
+  "floor_radius_m": 3.0,
+  "n_flank": 3
+ },
+ "points": [
+  {
+   "point": "Entrance_cave",
+   "skylight": "E",
+   "x": 1377.7295207231073,
+   "y": 586.4419487901032,
+   "z_dem_cache": 168.19000244140625,
+   "z_dem_geotiff": 167.80943298339844,
+   "elev_birgir": 167.79,
+   "tape_upper": 1.7,
+   "tape_lower": 2.4,
+   "tape_floor": 4.1,
+   "outward_dir": [
+    0.996155918736064,
+    -0.08759785831661268
+   ],
+   "n_rim_flf": 1670,
+   "z_under_flf": 166.29795532226564,
+   "tau_rim_flf": 1.8920471191406136,
+   "n_rim_tube": 1120,
+   "z_under_tube": 166.14208419799806,
+   "tau_rim_tube": 2.0479182434081906,
+   "n_rim_slf": 1386,
+   "z_under_slf": 166.62962188720704,
+   "tau_rim_slf": 1.560380554199213,
+   "flank_stations_s": [
+    4.0,
+    5.0,
+    3.0
+   ],
+   "flank_dist_m": [
+    2.5463089406018913,
+    2.586823780721168,
+    2.883616288733363
+   ],
+   "tau_flank_mean": 2.017333333333333,
+   "tau_flank_min": 1.818,
+   "tau_flank_max": 2.372,
+   "floor_depth_flf": 6.1424560546875,
+   "n_floor_flf": 8944,
+   "floor_depth_tube": 5.6507110595703125,
+   "n_floor_tube": 5351,
+   "floor_depth_slf": 5.548681640625006,
+   "n_floor_slf": 7589,
+   "n_floor_photo": 1140,
+   "floor_depth_photo": 3.0500030517578125
+  },
+  {
+   "point": "S1S",
+   "skylight": "S1",
+   "x": 1374.455227940809,
+   "y": 611.6465352950618,
+   "z_dem_cache": 170.3699951171875,
+   "z_dem_geotiff": 170.2970428466797,
+   "elev_birgir": 170.29,
+   "tape_upper": 1.9,
+   "tape_lower": null,
+   "tape_floor": null,
+   "outward_dir": [
+    -0.07791401444076487,
+    -0.9969600823150596
+   ],
+   "n_rim_flf": 4954,
+   "z_under_flf": 168.61404998779298,
+   "tau_rim_flf": 1.7559451293945187,
+   "n_rim_tube": 3864,
+   "z_under_tube": 168.66316864013672,
+   "tau_rim_tube": 1.7068264770507824,
+   "n_rim_slf": 4128,
+   "z_under_slf": 168.72433639526366,
+   "tau_rim_slf": 1.6456587219238372,
+   "flank_stations_s": [
+    28.0,
+    27.0,
+    26.0
+   ],
+   "flank_dist_m": [
+    1.4729961733742527,
+    2.4185359972067713,
+    3.393721127211633
+   ],
+   "tau_flank_mean": 1.483666666666667,
+   "tau_flank_min": 1.353,
+   "tau_flank_max": 1.618,
+   "floor_depth_flf": 8.79622772216797,
+   "n_floor_flf": 19020,
+   "floor_depth_tube": 8.729775390625008,
+   "n_floor_tube": 13930,
+   "floor_depth_slf": 8.664828491210926,
+   "n_floor_slf": 15346,
+   "n_floor_photo": 0,
+   "floor_depth_photo": null
+  },
+  {
+   "point": "S1N",
+   "skylight": "S1",
+   "x": 1376.554122702917,
+   "y": 618.0966671193019,
+   "z_dem_cache": 170.60000610351562,
+   "z_dem_geotiff": 170.5810546875,
+   "elev_birgir": 170.55,
+   "tape_upper": 2.2,
+   "tape_lower": null,
+   "tape_floor": 7.3,
+   "outward_dir": [
+    0.49394818723550704,
+    0.8694913385379566
+   ],
+   "n_rim_flf": 6732,
+   "z_under_flf": 168.9269761657715,
+   "tau_rim_flf": 1.6730299377441327,
+   "n_rim_tube": 5947,
+   "z_under_tube": 168.88762481689454,
+   "tau_rim_tube": 1.7123812866210812,
+   "n_rim_slf": 7559,
+   "z_under_slf": 168.84216217041015,
+   "tau_rim_slf": 1.7578439331054767,
+   "flank_stations_s": [
+    37.0,
+    38.0,
+    39.0
+   ],
+   "flank_dist_m": [
+    1.075977876464087,
+    2.0176948383916824,
+    2.9956472558932834
+   ],
+   "tau_flank_mean": 1.2733333333333332,
+   "tau_flank_min": 0.777,
+   "tau_flank_max": 1.567,
+   "floor_depth_flf": 8.421911315917981,
+   "n_floor_flf": 17110,
+   "floor_depth_tube": 8.296670532226557,
+   "n_floor_tube": 15089,
+   "floor_depth_slf": 8.227146606445302,
+   "n_floor_slf": 18565,
+   "n_floor_photo": 42,
+   "floor_depth_photo": 1.6490089416503793
+  },
+  {
+   "point": "S2S",
+   "skylight": "S2",
+   "x": 1378.6622695683618,
+   "y": 633.9072415726259,
+   "z_dem_cache": 170.6300048828125,
+   "z_dem_geotiff": 170.55526733398438,
+   "elev_birgir": 170.59,
+   "tape_upper": 2.0,
+   "tape_lower": null,
+   "tape_floor": null,
+   "outward_dir": [
+    -0.20828133431924334,
+    -0.9780689572318475
+   ],
+   "n_rim_flf": 3453,
+   "z_under_flf": 169.21141845703124,
+   "tau_rim_flf": 1.4185864257812568,
+   "n_rim_tube": 3241,
+   "z_under_tube": 169.0430694580078,
+   "tau_rim_tube": 1.5869354248046932,
+   "n_rim_slf": 3570,
+   "z_under_slf": 169.20782287597658,
+   "tau_rim_slf": 1.422182006835925,
+   "flank_stations_s": [
+    52.0,
+    51.0,
+    53.0
+   ],
+   "flank_dist_m": [
+    1.3353866743216452,
+    1.5881602313767718,
+    1.7452401224819012
+   ],
+   "tau_flank_mean": 0.11766666666666666,
+   "tau_flank_min": 0.042,
+   "tau_flank_max": 0.223,
+   "floor_depth_flf": 9.271213989257802,
+   "n_floor_flf": 13749,
+   "floor_depth_tube": 9.272835693359383,
+   "n_floor_tube": 12863,
+   "floor_depth_slf": 9.24476379394531,
+   "n_floor_slf": 14235,
+   "n_floor_photo": 0,
+   "floor_depth_photo": null
+  },
+  {
+   "point": "S2N",
+   "skylight": "S2",
+   "x": 1380.2136508951662,
+   "y": 639.0235705841333,
+   "z_dem_cache": 170.6699981689453,
+   "z_dem_geotiff": 170.6135711669922,
+   "elev_birgir": 170.55,
+   "tape_upper": 0.9,
+   "tape_lower": null,
+   "tape_floor": 9.8,
+   "outward_dir": [
+    0.3885742803413554,
+    0.9214174015201877
+   ],
+   "n_rim_flf": 4933,
+   "z_under_flf": 169.74358947753908,
+   "tau_rim_flf": 0.9264086914062375,
+   "n_rim_tube": 4674,
+   "z_under_tube": 169.67502349853515,
+   "tau_rim_tube": 0.9949746704101585,
+   "n_rim_slf": 4135,
+   "z_under_slf": 169.6627801513672,
+   "tau_rim_slf": 1.0072180175781114,
+   "flank_stations_s": [
+    61.0,
+    53.0,
+    62.0
+   ],
+   "flank_dist_m": [
+    4.042526205196794,
+    4.409793598293766,
+    4.998400452851081
+   ],
+   "tau_flank_mean": 0.579,
+   "tau_flank_min": 0.223,
+   "tau_flank_max": 1.255,
+   "floor_depth_flf": 10.127924499511721,
+   "n_floor_flf": 16318,
+   "floor_depth_tube": 10.169506835937511,
+   "n_floor_tube": 15281,
+   "floor_depth_slf": 10.08833068847656,
+   "n_floor_slf": 15829,
+   "n_floor_photo": 0,
+   "floor_depth_photo": null
+  },
+  {
+   "point": "S3N",
+   "skylight": "S3",
+   "x": 1382.3134505095659,
+   "y": 677.1211024476215,
+   "z_dem_cache": 172.27000427246094,
+   "z_dem_geotiff": 172.1434326171875,
+   "elev_birgir": 172.15,
+   "tape_upper": 2.2,
+   "tape_lower": 3.2,
+   "tape_floor": 7.8,
+   "outward_dir": [
+    0.1912297294200764,
+    0.9815453072772831
+   ],
+   "n_rim_flf": 6781,
+   "z_under_flf": 170.166552734375,
+   "tau_rim_flf": 2.103451538085949,
+   "n_rim_tube": 7197,
+   "z_under_tube": 170.08098266601561,
+   "tau_rim_tube": 2.1890216064453227,
+   "n_rim_slf": 6918,
+   "z_under_slf": 170.0381721496582,
+   "tau_rim_slf": 2.2318321228027287,
+   "flank_stations_s": [
+    100.0,
+    101.0,
+    102.0
+   ],
+   "flank_dist_m": [
+    1.8712056382667404,
+    2.5256883784995794,
+    3.346902153179989
+   ],
+   "tau_flank_mean": 2.0993333333333335,
+   "tau_flank_min": 0.454,
+   "tau_flank_max": 3.148,
+   "floor_depth_flf": 8.207907714843742,
+   "n_floor_flf": 19054,
+   "floor_depth_tube": 8.223572998046876,
+   "n_floor_tube": 18915,
+   "floor_depth_slf": 8.330643310546861,
+   "n_floor_slf": 18680,
+   "n_floor_photo": 15,
+   "floor_depth_photo": null
+  },
+  {
+   "point": "S3S",
+   "skylight": "S3",
+   "x": 1381.653135377157,
+   "y": 665.5360233588144,
+   "z_dem_cache": 171.91000366210938,
+   "z_dem_geotiff": 171.93099975585938,
+   "elev_birgir": 171.93,
+   "tape_upper": 1.35,
+   "tape_lower": 2.5,
+   "tape_floor": null,
+   "outward_dir": [
+    0.07370180735793004,
+    -0.9972803233075925
+   ],
+   "n_rim_flf": 7087,
+   "z_under_flf": 170.28789489746094,
+   "tau_rim_flf": 1.6221087646484307,
+   "n_rim_tube": 6731,
+   "z_under_tube": 170.18771057128907,
+   "tau_rim_tube": 1.7222930908203011,
+   "n_rim_slf": 6847,
+   "z_under_slf": 170.15815277099608,
+   "tau_rim_slf": 1.7518508911132926,
+   "flank_stations_s": [
+    87.0,
+    88.0,
+    86.0
+   ],
+   "flank_dist_m": [
+    6.93839887036673,
+    6.978532986490963,
+    6.983120312295689
+   ],
+   "tau_flank_mean": 1.048,
+   "tau_flank_min": 0.981,
+   "tau_flank_max": 1.125,
+   "floor_depth_flf": 7.656974792480469,
+   "n_floor_flf": 19876,
+   "floor_depth_tube": 7.749225463867191,
+   "n_floor_tube": 18899,
+   "floor_depth_slf": 7.768915100097644,
+   "n_floor_slf": 19624,
+   "n_floor_photo": 1434,
+   "floor_depth_photo": 2.57000732421875
+  }
+ ],
+ "openings": {
+  "S1": {
+   "rim_to_rim_tape_points_m": 6.783034702290679,
+   "aerial_ellipse_2a_m": 4.558259582665613,
+   "aerial_ellipse_2b_m": 3.2170704537373505,
+   "interior_ellipse_2a_m": 5.125147770458387,
+   "aperture_station_run_m": 8.0,
+   "centroid_to_midpoint_m": 0.8003172705299585
+  },
+  "S2": {
+   "rim_to_rim_tape_points_m": 5.346363864828972,
+   "aerial_ellipse_2a_m": 2.8284271247461903,
+   "aerial_ellipse_2b_m": 1.632993161855452,
+   "interior_ellipse_2a_m": 4.898979485566356,
+   "aperture_station_run_m": 3.0,
+   "centroid_to_midpoint_m": 0.3799172311247625
+  },
+  "S3": {
+   "rim_to_rim_tape_points_m": 11.60388183187005,
+   "aerial_ellipse_2a_m": 9.336616828011282,
+   "aerial_ellipse_2b_m": 4.148950843701125,
+   "interior_ellipse_2a_m": 15.275013419253277,
+   "aperture_station_run_m": 11.0,
+   "centroid_to_midpoint_m": 0.78364133446472
+  }
+ },
+ "summary": {
+  "n_points": 7,
+  "elev_cache_minus_birgir_m": {
+   "mean": 0.11285923549106817,
+   "std": 0.12566518052871745,
+   "max_abs": 0.40000244140625796
+  },
+  "elev_geotiff_minus_birgir_m": {
+   "mean": 0.01154305594307711,
+   "std": 0.028662375924320617,
+   "max_abs": 0.06357116699217613
+  },
+  "geotiff_res_m": 0.06159509999999815,
+  "tau_rim_flf_minus_tape_upper_m": {
+   "n": 7,
+   "mean": -0.1226317705426945,
+   "median": -0.09654846191405131,
+   "rms": 0.32894534865089053,
+   "max_abs": 0.5814135742187432,
+   "within_sigma_tau": 7
+  },
+  "tau_rim_tube_minus_tape_upper_m": {
+   "n": 7,
+   "mean": -0.041378457205638645,
+   "median": -0.010978393554677446,
+   "rms": 0.3194862674447698,
+   "max_abs": 0.48761871337891893,
+   "within_sigma_tau": 7
+  },
+  "tau_rim_slf_minus_tape_upper_m": {
+   "n": 7,
+   "mean": -0.12471910749163083,
+   "median": -0.1396194458007869,
+   "rms": 0.33542123242253885,
+   "max_abs": 0.577817993164075,
+   "within_sigma_tau": 7
+  },
+  "tau_flank_mean_minus_tape_upper_m": {
+   "n": 7,
+   "mean": -0.5188095238095239,
+   "median": -0.32100000000000006,
+   "rms": 0.8349766939053326,
+   "max_abs": 1.8823333333333334,
+   "within_sigma_tau": 6
+  },
+  "floor_depth_flf_minus_tape_floor_m": {
+   "n": 4,
+   "points": [
+    "Entrance_cave",
+    "S1N",
+    "S2N",
+    "S3N"
+   ],
+   "values": [
+    2.0424560546875004,
+    1.1219113159179814,
+    0.3279244995117203,
+    0.4079077148437422
+   ],
+   "mean": 0.9750498962402361,
+   "rms": 1.19417700921215
+  },
+  "floor_depth_tube_minus_tape_floor_m": {
+   "n": 4,
+   "points": [
+    "Entrance_cave",
+    "S1N",
+    "S2N",
+    "S3N"
+   ],
+   "values": [
+    1.5507110595703129,
+    0.996670532226557,
+    0.36950683593751066,
+    0.4235729980468763
+   ],
+   "mean": 0.8351153564453142,
+   "rms": 0.9635878691849307
+  },
+  "floor_depth_slf_minus_tape_floor_m": {
+   "n": 4,
+   "points": [
+    "Entrance_cave",
+    "S1N",
+    "S2N",
+    "S3N"
+   ],
+   "values": [
+    1.448681640625006,
+    0.9271466064453024,
+    0.2883306884765595,
+    0.5306433105468615
+   ],
+   "mean": 0.7987005615234324,
+   "rms": 0.9114543645559688
+  },
+  "floor_depth_photo_minus_tape_floor_m": {
+   "n": 2,
+   "points": [
+    "Entrance_cave",
+    "S1N"
+   ],
+   "values": [
+    -1.0499969482421871,
+    -5.650991058349621
+   ],
+   "mean": -3.350494003295904,
+   "rms": 4.064246149833033
+  },
+  "sigma_tau_m": 1.5,
+  "tape_upper_range_m": [
+   0.9,
+   2.2
+  ],
+  "note": "tape_upper is the uppermost roof terrace at the rim; tape_lower the thicker terrace behind it, read by eye (B.V.O. notes). tau_rim_* is z_DEM(rim) minus the p99 of interior returns in a strip 0.5-3.5 m outward from the rim point. tau_flank is the pipeline overburden at the nearest three intact stations. floor_depth_* is z_DEM(rim) minus the p2 of interior returns (April 2025) or the p5 of photogrammetric returns (August 2025) within 3 m of the rim point; the photogrammetric value is not a floor at the rims (too few returns, rim walls) and is reported for completeness only."
+ }
+}
