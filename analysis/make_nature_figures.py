@@ -715,9 +715,11 @@ def fig4():
           f"{beta * rho * 9.81 * 20 ** 2 / 1e6:.2f} m")
 
     capitalise_labels(fig)
+    # reading order: left column a-d (plan, geometry, overburden, elevation),
+    # right column e, f (distribution, span)
     place_letters(fig, [(axa, "a", "L", (0, 0)), ([axb1, axb2], "b", "L", (0, 0)),
-                        (axc, "c", "L", (0, 0)), ([axd, ax2], "d", "R", (0, 0)),
-                        (axe, "e", "R", (0, 0)), (axf, "f", "L", (0, 0))])
+                        (axc, "c", "L", (0, 0)), (axf, "d", "L", (0, 0)),
+                        ([axd, ax2], "e", "R", (0, 0)), (axe, "f", "R", (0, 0))])
     save(fig, "fig4_geometry_cover")
 
 
