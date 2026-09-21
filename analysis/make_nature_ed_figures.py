@@ -533,7 +533,7 @@ def reg_ceiling_two_solutions(ax):
     bz_m = bz_m + float(edf._DATUM.get("dz_applied_m", 0.0))
     ax.plot(es, ed_dem, lw=0.9, color=C["surface"], label="Surface DEM")
     ax.plot(es, bz_m, lw=0.9, color=C["dlio"],
-            label="Ceiling, rim-centroid solve (4-DOF)")
+            label="Ceiling, centroid match (vertical held to gravity)")
     ax.plot(es, ez, lw=0.9, color=C["tube"], label="Ceiling, slice registration")
     ax.set_ylabel(ELEV.replace(" (", "\n("))
     ax.set_xlabel("Distance along tube $s$ (m)")

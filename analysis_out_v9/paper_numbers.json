@@ -19,6 +19,11 @@
     2.179,
     2.425
   ],
+  "scale_ruler_flf_minus_aerial_m": [
+    0.1236022172538469,
+    0.24368784814799227,
+    0.24321854692599487
+  ],
   "centreline_length_m": 301.0,
   "n_stations": 302,
   "n_valid_sections": 296,

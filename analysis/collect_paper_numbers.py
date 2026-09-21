@@ -47,6 +47,9 @@ def main() -> None:
         reg_sigma_reg_z_m=bud["sigma_reg_z_m"],
         vertical_q90_diffs_m=[e["q90_diff"] for e in vert["per_skylight"]],
         scale_ruler_diff_m=[p["diff_m"] for p in reg["scale_ruler"]],
+        # offline (FAST-LIO) map against the surface model, from run_review_stats
+        scale_ruler_flf_minus_aerial_m=(list(rev["scale_ruler"]["flf_minus_aerial"].values())
+                                        if rev and "scale_ruler" in rev else None),
         # --- survey scope (single long flight processed on the Mac) ---
         centreline_length_m=mor["total_centreline_m"],
         n_stations=mor["n_stations"],

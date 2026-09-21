@@ -243,7 +243,7 @@ def panel_c(ax):
     i300 = np.argmin(np.abs(rs - 300))
     # right-aligned inside the axes (the v8.1 build clipped this label at the
     # right edge)
-    ax.annotate("roof, coloured by $\\tau$",
+    ax.annotate("roof, coloured by overburden",
                 (300, 0.5 * (rzceil[i300] + rzdem[i300])),
                 (299, zref(248) + 7.0), ha="right",
                 fontsize=7, arrowprops=dict(arrowstyle="-", color="0.3", lw=0.6))

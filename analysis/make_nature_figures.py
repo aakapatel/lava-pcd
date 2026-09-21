@@ -644,7 +644,7 @@ def fig2():
     capitalise_labels(fig)
     clamp_fonts(fig)
     place_letters(fig, [(ax_a1, "a", None, (0, 0)), (ax_b, "b", None, (0, 0)),
-                        (ax_c, "c", None, (0, 0)), (ax_d, "d", None, (0, 0))])
+                        (ax_c, "c", None, (0, 0)), (ax_d, "d", None, (-7, 0))])
     save(fig, "fig2_survey")
 
 
@@ -905,7 +905,7 @@ def fig4():
     axe = mm_axes(fig, xr, 14, wr, 78)
     axe.scatter(span[it], tau[it], s=7, color=C["intact"], lw=0, label="intact roof")
     axe.scatter(span[sky], np.zeros(sky.sum()), s=11, marker="v", color=C["skylight"],
-                lw=0, label="skylight (failed)")
+                lw=0, label="skylight collapse")
     Ls = np.linspace(3, 33, 120)
     ymax = 16.5
     for st_mpa, ls, name in ((0.5, "--", "$\\sigma_t$ = 0.5 MPa"), (1.0, "-.", "1 MPa"),
