@@ -49,6 +49,9 @@ os.environ["FIGS_DIR"] = str(SCRATCH)
 os.environ.setdefault("ROOF_DEM_PCD", str(MAPS / "aerial_isn16_ortho_dem.pcd"))
 os.environ.setdefault("SHOWCASE_TUBE_PCD", str(MAPS / "flf_10cm_ed_ortho.pcd"))
 os.environ.setdefault("SHOWCASE_SURFACE_PCD", str(MAPS / "aerial_isn16_ortho_surface_10cm.pcd"))
+os.environ.setdefault("EDFIG_SHELL_PCD", str(MAPS / "flf_30cm_ed_ortho.pcd"))
+os.environ.setdefault("EDFIG_SECT_PCD", str(MAPS / "flf_10cm_ed_ortho.pcd"))
+os.environ.setdefault("EDFIG_AERIAL_PCD", str(MAPS / "aerial_isn16_ortho_10cm.pcd"))
 SCRATCH.mkdir(parents=True, exist_ok=True)
 FIGS.mkdir(parents=True, exist_ok=True)
 sys.path.insert(0, str(ROOT / "analysis"))
@@ -63,9 +66,16 @@ from matplotlib.ticker import FuncFormatter
 import matplotlib.patheffects as pe
 
 import make_figures as mf                      # noqa: E402  (helpers + planetary)
-import make_merged_showcase_figure as msf      # noqa: E402  (panels b, c, d)
+import make_merged_showcase_figure as msf      # noqa: E402  (plan, long section, slice)
+import make_ed_figures as edf                  # noqa: E402  (point-cloud loaders)
+# the two panels promoted from Extended Data (the skylight constellation of
+# Fig. 3a and the onboard-against-offline zones of Fig. 2d) are drawn by the
+# Extended Data script, so there is one implementation of each
+import make_nature_ed_figures as ned           # noqa: E402
 
 MM = 1.0 / 25.4
+# ned and the modules it imports set their own rcParams at import time; the
+# Nature style below is applied afterwards and is the one that takes effect
 plt.rcParams.update({
     "font.family": "Nimbus Sans",
     "font.size": 7, "axes.titlesize": 7, "axes.labelsize": 7,
@@ -74,7 +84,11 @@ plt.rcParams.update({
     "xtick.major.size": 2.5, "ytick.major.size": 2.5,
     "axes.spines.top": False, "axes.spines.right": False,
     "legend.frameon": False,
-    "pdf.fonttype": 3,          # OTF (CFF) outlines: Type 3 embeds NimbusSans cleanly
+    # Type 42 (CID, as in the Extended Data script). Type 3 cannot be written
+    # once make_nature_ed_figures has been imported: its TextToPath instance
+    # leaves the NimbusSans glyph map in a state matplotlib's Type 3 subsetter
+    # rejects ("bytes must be in range(0, 256)").
+    "pdf.fonttype": 42, "ps.fonttype": 42,
     "mathtext.fontset": "custom", "mathtext.rm": "Nimbus Sans",
     "mathtext.it": "Nimbus Sans:italic", "mathtext.bf": "Nimbus Sans:bold",
     "savefig.dpi": 300,
@@ -421,133 +435,348 @@ def site_map(fig, x0, y0, w, h):
     return ax, ins
 
 
+def photo_quadrants():
+    """The four frames of mission_tpv_collage.png (a 2 x 2 contact sheet):
+    top-left  chamber beneath a skylight with the robot in flight,
+    top-right the managed entrance section with its staircase,
+    bottom-left  a dark constriction, bottom-right  a breakdown chamber."""
+    from PIL import Image
+    Image.MAX_IMAGE_PIXELS = None
+    col = np.asarray(Image.open(MS_FIGS / "mission_tpv_collage.png").convert("RGB"))
+    h, w = col.shape[0] // 2, col.shape[1] // 2
+    return dict(robot_chamber=col[:h, :w], entrance=col[:h, w:],
+                constriction=col[h:, :w], breakdown=col[h:, w:])
+
+
+def raster_ax(fig, img, x, y, w, h=None, min_dpi=300.0, max_dpi=450.0):
+    """Place a raster at an exact size in millimetres, report its resolution
+    at that size and resample anything finer than max_dpi (never upsample)."""
+    from PIL import Image
+    ph, pw = img.shape[:2]
+    if h is None:
+        h = w * ph / pw
+    dpi = pw / (w * MM)
+    if dpi < min_dpi:
+        raise ValueError(f"raster {pw}x{ph} is {dpi:.0f} dpi at {w:.0f} mm")
+    if dpi > max_dpi:
+        f = max_dpi / dpi
+        img = np.asarray(Image.fromarray(img).resize(
+            (int(round(pw * f)), int(round(ph * f))), Image.LANCZOS))
+        dpi = img.shape[1] / (w * MM)
+    ax = mm_axes(fig, x, y, w, h)
+    ax.imshow(img, interpolation="none", aspect="auto")
+    ax.set_axis_off()
+    print(f"  raster {w:.1f} x {h:.1f} mm, {dpi:.0f} dpi")
+    return ax, h
+
+
 def fig1():
-    fig = plt.figure(figsize=(180 * MM, 110 * MM))
-    axa = mm_axes(fig, 2, 50, 94, 57)
+    """a schematic long section, b the site, c the robot in the tube,
+    d two views of the closed section."""
+    q = photo_quadrants()
+    photos = [("c", q["robot_chamber"]), ("d1", q["constriction"]),
+              ("d2", q["breakdown"])]
+    wph = 56.6
+    hph = wph * photos[0][1].shape[0] / photos[0][1].shape[1]
+    fig = plt.figure(figsize=(180 * MM, 137 * MM))
+    axp = {}
+    for i, (key, img) in enumerate(photos):
+        ax, _ = raster_ax(fig, img, 2 + i * (wph + 3.0), 5, wph, hph)
+        axp[key] = ax
+    axa = mm_axes(fig, 2, 60, 104, 62)
     anatomy_panel(axa)
-    axx = mm_axes(fig, 26, 3, 46, 42)
-    cross_section_panel(axx)
-    axb, ins = site_map(fig, 100, 5, 78, 100)
-    place_letters(fig, [(axa, "a", None, (0, -1.5)), (axb, "b", None, (0, 0))])
+    axb, _ = site_map(fig, 110, 47.5, 68, 85)
+    place_letters(fig, [(axa, "a", None, (0, 0)), (axb, "b", None, (0, 0)),
+                        (axp["c"], "c", None, (0, 0)),
+                        (axp["d1"], "d", None, (0, 0))])
     save(fig, "fig1_anatomy_site")
 
 
 # ================================================================== figure 2
-def fig2():
+def stage_frames():
+    """Two stages of the onboard map from exploration_progression.png, a 2 x 2
+    contact sheet of the same mission at four times (A top-left to D
+    bottom-right); the baked capital letter in each frame is painted out."""
     from PIL import Image
     Image.MAX_IMAGE_PIXELS = None
-    col = np.asarray(Image.open(MS_FIGS / "mission_tpv_collage.png").convert("RGB"))
     prog = np.asarray(Image.open(MS_FIGS / "exploration_progression.png").convert("RGB"))
-    graph = np.asarray(Image.open(MS_FIGS / "skylights_frontiers.png").convert("RGB")).copy()
-    H2, W2 = col.shape[0] // 2, col.shape[1] // 2
-    photo_sky = col[:H2, :W2]            # chamber beneath a skylight (snow cone)
-    photo_dark = col[H2:, :W2]           # dark constriction, robot with its lights
-    Hp, Wp = prog.shape[0] // 2, prog.shape[1] // 2
-    stage_first = prog[:Hp, :Wp].copy()
-    stage_last = prog[Hp:, Wp:].copy()
-    for st in (stage_first, stage_last):   # black out the baked letters A/D
+    h, w = prog.shape[0] // 2, prog.shape[1] // 2
+    early, later = prog[:h, :w].copy(), prog[h:, :w].copy()
+    for st in (early, later):
         st[:120, :110] = 0
-    tier3 = graph[2916:, :]                # bottom tier: graph + route
-    tier3[3005 - 2916:3140 - 2916, 3100:4750] = 0   # baked Times title removed
-    fig = plt.figure(figsize=(180 * MM, 160 * MM))
-    gap = 3.0
-    wph = (180 - 2 * 2 - gap) / 2
-    hph = wph * photo_sky.shape[0] / photo_sky.shape[1]
-    hst = wph * stage_first.shape[0] / stage_first.shape[1]
-    wgr = 176.0
-    hgr = wgr * tier3.shape[0] / tier3.shape[1]
-    ytop = 160 - 4.5
-    y_a = ytop - hph
-    y_b = y_a - 6.5 - hst
-    y_c = y_b - 6.5 - hgr
-    print(f"fig2 rows: photos {hph:.1f} mm, stages {hst:.1f} mm, graph {hgr:.1f} mm, "
-          f"bottom margin {y_c:.1f} mm")
-    axes = {}
-    for key, img, x, y, w, h in (
-            ("a1", photo_sky, 2, y_a, wph, hph), ("a2", photo_dark, 2 + wph + gap, y_a, wph, hph),
-            ("b1", stage_first, 2, y_b, wph, hst), ("b2", stage_last, 2 + wph + gap, y_b, wph, hst),
-            ("c", tier3, 2, y_c, wgr, hgr)):
-        ax = mm_axes(fig, x, y, w, h)
-        ax.imshow(img, interpolation="lanczos" if key != "c" else "bilinear")
-        ax.set_axis_off()
-        axes[key] = ax
-    # short vector labels under the rasters
-    for key, txt in (("a1", "Chamber beneath a skylight"),
-                     ("a2", "Constriction in the closed interior"),
-                     ("b1", "Early in the mission"),
-                     ("b2", "End of the recorded mission")):
-        axes[key].text(0, -0.02, txt, transform=axes[key].transAxes, fontsize=6.5,
-                       va="top", ha="left", color="0.15")
-    axes["c"].text(0.79, 0.86, "Route to the skylight frontier", transform=axes["c"].transAxes,
-                   fontsize=6.5, color="w", ha="center", va="center")
-    # dpi at final size (must stay >= 300)
-    for key, img, wmm in (("photo", photo_sky, wph), ("stage", stage_first, wph),
-                          ("graph", tier3, wgr)):
-        print(f"fig2 {key}: {img.shape[1] / (wmm / 25.4):.0f} dpi at final size")
-    place_letters(fig, [(axes["a1"], "a", None, (0, 0)), (axes["b1"], "b", None, (0, 0)),
-                        (axes["c"], "c", None, (0, 0))])
+    b = 8                       # the rules of the contact sheet
+    early, later = early[b:h - b, b:w - b], later[b:h - b, b:w - b]
+    # both frames share one crop, taken from the content of the later one, so
+    # the two stages stay in the same frame and can be compared directly
+    lit = later.mean(2) > 40
+    hh, ww = lit.shape
+    rows = np.where(lit.sum(1) > 0.004 * ww)[0]
+    cols = np.where(lit.sum(0) > 0.004 * hh)[0]
+    pad = 30
+    r0, r1 = max(int(rows[0]) - pad, 0), min(int(rows[-1]) + pad, hh - 1)
+    c0, c1 = max(int(cols[0]) - pad, 0), min(int(cols[-1]) + pad, ww - 1)
+    return (np.ascontiguousarray(early[r0:r1 + 1, c0:c1 + 1]),
+            np.ascontiguousarray(later[r0:r1 + 1, c0:c1 + 1]))
+
+
+def gain_top_view():
+    """The top view of vertices_information_gain_instance.png: the executed
+    trajectory, the sampled viewpoints and the highest-gain subset. The frame
+    below it (the same instant in side view) and the leader that crosses into
+    it are dropped, and the frame is cropped to its content."""
+    from PIL import Image
+    Image.MAX_IMAGE_PIXELS = None
+    a = np.asarray(Image.open(MS_FIGS / "vertices_information_gain_instance.png")
+                   .convert("RGB")).copy()
+    split = 3483                      # the rule between the two views
+    a = a[:split]
+    a[2900:, 8600:] = 0               # leader pointing down into the side view
+    lit = a.mean(2) > 12
+    rr, cc = np.where(lit.any(1))[0], np.where(lit.any(0))[0]
+    pad = 20
+    r0, r1 = max(rr[0] - pad, 0), min(rr[-1] + pad, a.shape[0] - 1)
+    c0, c1 = max(cc[0] - pad, 0), min(cc[-1] + pad, a.shape[1] - 1)
+    return a[r0:r1 + 1, c0:c1 + 1]
+
+
+def reconstruction_data():
+    """Points of the final onboard-flight reconstruction in the centreline
+    principal frame. The 30 cm working copy of the principal flight in the
+    registered frame; a few hundred stray returns tens of metres off the
+    conduit are dropped for display (no number on the figure comes from them)."""
+    from scipy.spatial import cKDTree
+    shell = edf.load_xyz(Path(os.environ["EDFIG_SHELL_PCD"]))
+    d, _ = cKDTree(np.column_stack([msf.cx, msf.cy])).query(shell[:, :2],
+                                                            workers=-1)
+    keep = d < 30.0
+    print(f"fig2 c: {int((~keep).sum())} of {len(shell):,} points lie more "
+          f"than 30 m from the centreline and are not drawn")
+    shell = shell[keep]
+    u, v = msf.rot(shell[:, 0], shell[:, 1])
+    return u, v, shell[:, 2]
+
+
+def reconstruction_plan(fig, x, y, w, h, data, pad=8.0):
+    """Plan view of the final reconstruction, coloured by elevation, with a
+    50 m scale bar. Frame: the centreline principal axis, as in the other
+    along-tube panels."""
+    u, v, z = data
+    cu, cv = msf.rot(msf.cx, msf.cy)
+    ax = mm_axes(fig, x, y, w, h)
+    lo, hi = np.percentile(z, [1.0, 99.0])
+    sc = ax.scatter(u, v, c=z, s=0.12, lw=0, cmap="viridis", vmin=lo, vmax=hi,
+                    rasterized=True)
+    ax.set_aspect("equal")
+    half_u = 0.5 * (u.max() - u.min()) + pad
+    mid_u = 0.5 * (u.max() + u.min())
+    half_v = half_u * h / w
+    mid_v = 0.5 * (v.max() + v.min())
+    if v.max() - v.min() > 2 * half_v:
+        raise ValueError(f"fig2 c: the map spans {v.max() - v.min():.0f} m "
+                         f"across, the panel only {2 * half_v:.0f} m")
+    ax.set_xlim(mid_u - half_u, mid_u + half_u)
+    ax.set_ylim(mid_v - half_v, mid_v + half_v)
+    ax.set_xticks([]); ax.set_yticks([])
+    for sp in ax.spines.values():
+        sp.set_visible(False)
+    smax = float(msf.cs.max())
+    ax.annotate("Entrance, $s$ = 0 m", (cu[0], cv[0]), xytext=(-2, 7),
+                textcoords="offset points", fontsize=6.5, ha="left",
+                va="bottom", color="0.15", path_effects=halo(1.5))
+    ax.annotate(f"End of the mapped conduit, $s$ = {smax:.0f} m",
+                (cu[-1], cv[-1]), xytext=(-2, 7), textcoords="offset points",
+                fontsize=6.5, ha="right", va="bottom", color="0.15",
+                path_effects=halo(1.5))
+    x0 = mid_u - half_u + 8.0
+    y0 = mid_v - half_v + 6.0
+    ax.plot([x0, x0 + 50], [y0, y0], color="k", lw=1.6, solid_capstyle="butt")
+    ax.text(x0 + 25, y0 + 2.5, "50 m", ha="center", va="bottom", fontsize=6.5,
+            path_effects=halo(1.5))
+    cax = mm_axes(fig, x + 4, y + h - 8.0, 32, 2.6)
+    cb = fig.colorbar(sc, cax=cax, orientation="horizontal")
+    cb.set_label(ELEV_LABEL, fontsize=6, labelpad=2)
+    cb.ax.tick_params(labelsize=6, pad=1.5)
+    cb.outline.set_linewidth(0.4)
+    cb.ax.xaxis.set_ticks_position("top")
+    cb.ax.xaxis.set_label_position("top")
+    print(f"fig2 c: {len(u):,} points drawn, elevation {z.min():.1f} to "
+          f"{z.max():.1f} m (colour scale clipped to the 1st and 99th "
+          f"percentiles, {lo:.1f} to {hi:.1f} m), mapped length {smax:.0f} m")
+    return ax, cax
+
+
+def fig2():
+    """a map growth, b viewpoint selection, c the final reconstruction,
+    d onboard against offline ceiling by 80 m zone."""
+    early, later = stage_frames()
+    gain = gain_top_view()
+    chain = json.loads((ROOT / "analysis_out" /
+                        "transform_flf_ed_chain.json").read_text())
+    fig = plt.figure(figsize=(180 * MM, 170 * MM))
+    # a: two stages of the onboard map
+    wst = 87.0
+    hst = wst * early.shape[0] / early.shape[1]
+    y_a = 170 - 5 - hst
+    ax_a1, _ = raster_ax(fig, early, 2, y_a, wst, hst)
+    ax_a2, _ = raster_ax(fig, later, 91, y_a, wst, hst)
+    for ax, txt in ((ax_a1, "Early in the mission"), (ax_a2, "Later in the mission")):
+        ax.text(0, -0.03, txt, transform=ax.transAxes, fontsize=6.5, va="top",
+                ha="left", color="0.15")
+    # c keeps the true plan-view proportions of the map; d has a fixed
+    # height at the foot of the page; b takes whatever is left
+    data = reconstruction_data()
+    w_c, pad_c = 132.0, 12.0
+    h_c = w_c * (data[1].max() - data[1].min()) / \
+        (data[0].max() - data[0].min() + 2 * pad_c)
+    h_d, y_d = 22.0, 9.0
+    y_c = y_d + h_d + 12.0
+    y_b_min = y_c + h_c + 5.0
+    ratio = gain.shape[0] / gain.shape[1]
+    wgn = min(176.0, (y_a - 7.0 - y_b_min) / ratio)
+    hgn = wgn * ratio
+    y_b = y_a - 7.0 - hgn
+    ax_b, _ = raster_ax(fig, gain, 2.0, y_b, wgn, hgn)
+    ax_c, cax = reconstruction_plan(fig, 2.0, y_c, w_c, h_c, data, pad=pad_c)
+    ax_d = mm_axes(fig, 22, y_d, 140, h_d)
+    ned.reg_two_slam(ax_d, chain)
+    ax_d.set_xlim(-5, 310)
+    ax_d.set_ylabel("Ceiling, onboard minus\noffline map (m)")
+    capitalise_labels(fig)
+    clamp_fonts(fig)
+    place_letters(fig, [(ax_a1, "a", None, (0, 0)), (ax_b, "b", None, (0, 0)),
+                        (ax_c, "c", None, (0, 0)), (ax_d, "d", None, (0, 0))])
     save(fig, "fig2_survey")
 
 
 # ================================================================== figure 3
-def fig3():
-    fig = plt.figure(figsize=(180 * MM, 170 * MM))
-    # a: oblique render, trimmed
-    hero = plt.imread(OUT / "renders/showcase_oblique.png")
-    nz = (hero[..., :3].min(-1) < 0.97)
+def showcase_overlay(fig, x, y, w, view="oblique", ticks=(0, 100, 200, 300)):
+    """The archived cutaway render with the three skylights ringed and
+    along-tube stations marked. Marker positions come from the camera
+    recovered by analysis/showcase_camera.py, which is validated against the
+    render itself (see analysis_out_v10/showcase_camera.json)."""
+    cam_file = OUT10 / "showcase_camera.json"
+    if not cam_file.exists():
+        raise FileNotFoundError(
+            f"{cam_file} missing; run analysis/showcase_camera.py first")
+    cams = json.loads(cam_file.read_text())
+    cam = cams["views"][view]
+    if cam.get("check_cover_fraction", 0.0) < 0.9:
+        raise ValueError(f"camera for {view} not validated: {cam}")
+    img = plt.imread(OUT / f"renders/showcase_{view}.png")
+    nz = (img[..., :3].min(-1) < 0.97)
     rws, cls = np.where(nz.any(1))[0], np.where(nz.any(0))[0]
-    hero = hero[rws[0]:rws[-1] + 1, cls[0]:cls[-1] + 1]
-    wa = 110.0
-    ha = wa * hero.shape[0] / hero.shape[1]
-    axa = mm_axes(fig, 3, 170 - 4 - ha, wa, ha)
-    axa.imshow(hero, interpolation="bilinear")
-    axa.set_axis_off()
-    print(f"fig3 hero: {hero.shape[1] / (wa / 25.4):.0f} dpi at final size, {ha:.1f} mm tall")
-    # shared colour scale beside the render
-    cax = mm_axes(fig, 132, 170 - 4 - ha + 24, 34, 3.2)
-    cb = matplotlib.colorbar.Colorbar(cax, cmap=msf.TAU_CMAP, norm=msf.TAU_NORM,
-                                          orientation="horizontal", ticks=[0, 4, 8, 12, 16])
-    cb.set_label("Overburden (m)", fontsize=7)
-    cb.ax.tick_params(labelsize=6)
-    cb.outline.set_linewidth(0.4)
-    cax.text(0, 2.6, "Colour of the interior in a, b and c", transform=cax.transAxes,
-             fontsize=6, color="0.3", va="bottom")
+    r0, c0 = int(rws[0]), int(cls[0])
+    img = img[r0:rws[-1] + 1, c0:cls[-1] + 1]
 
-    # b: plan view (reused), trimmed vertically, its own colourbar dropped
-    before = set(fig.axes)
-    axb = mm_axes(fig, 4, 48, 172, 55)
-    msf.panel_b(axb)
-    for extra in set(fig.axes) - before - {axb}:
-        extra.remove()
-    crx, cry = msf.rot(msf.cx, msf.cy)
-    axb.set_ylim(cry.min() - 24, cry.max() + 15)
-    axb.set_xlim(crx.min() - 20, crx.max() + 20)
-    for t in axb.texts:                     # labels over the hillshade get a halo
-        if t.get_text() == "50 m":
-            t.set_fontsize(6.5)
-        if t.get_text().isdigit() or t.get_text().startswith("S"):
-            t.set_path_effects(halo(1.5))
-    axb.legend(loc="lower right", frameon=True, facecolor="w", edgecolor="none",
-               framealpha=0.85, fontsize=6.5, handletextpad=0.4, borderaxespad=0.3)
-    # c: long section, d: transverse slice (reused)
-    axc = mm_axes(fig, 12, 8, 104, 33)
-    msf.panel_c(axc)
-    axc.set_ylabel(ELEV_LABEL.replace(" (", "\n("))
-    axc.set_xlabel("Along-tube distance $s$ (m)")
-    for t in axc.texts:                     # exaggeration note off the shaded void
-        if t.get_text().startswith("vertical exaggeration"):
-            t.set_position((1.0, -0.36)); t.set_va("top")
-    axd = mm_axes(fig, 132, 8, 44, 33)
-    msf.panel_d(axd)
+    from importlib import import_module
+    sc = import_module("showcase_camera")
+
+    def px(P):
+        a, b, d = sc.project(cam, P)
+        return a - c0, b - r0, d
+
+    cl = list(csv.DictReader(open(OUT / "centreline.csv")))
+    P = np.array([[float(r_["x"]), float(r_["y"]), float(r_["z"])] for r_ in cl])
+    cs = np.array([float(r_["s"]) for r_ in cl])
+    tx, ty, _ = px(P)
+    hx, hy, _ = px(np.array([h_["centroid"] for h_ in HOLES]))
+    # trim the terrain beyond the model: keep the tube and a margin of a
+    # tenth of the frame on each side
+    m = 0.10 * img.shape[1]
+    x_lo = max(int(min(tx.min(), hx.min()) - m), 0)
+    x_hi = min(int(max(tx.max(), hx.max()) + m), img.shape[1] - 1)
+    img = img[:, x_lo:x_hi + 1]
+    tx, hx = tx - x_lo, hx - x_lo
+    h = w * img.shape[0] / img.shape[1]
+    ax = mm_axes(fig, x, y, w, h)
+    ax.imshow(img, interpolation="bilinear")
+    ax.set_axis_off()
+    ax.set_xlim(0, img.shape[1]); ax.set_ylim(img.shape[0], 0)
+    print(f"fig3 render: {img.shape[1] / (w / 25.4):.0f} dpi at {w:.0f} mm, "
+          f"{h:.1f} mm tall")
+
+    # three skylights, ringed at their photogrammetric rim centroids; the
+    # label always sits above the ring so it stays inside the frame
+    for j, (a, b) in enumerate(zip(hx, hy)):
+        ax.add_patch(Circle((a, b), 95, fill=False, ec=C["skylight"], lw=1.0))
+        ax.annotate(f"S{j+1}", (a, b), xytext=(8, 6), textcoords="offset points",
+                    fontsize=7, fontweight="bold", color=C["skylight"],
+                    ha="left", va="bottom", path_effects=halo(1.6))
+    # along-tube stations, so the perspective render carries a distance scale
+    for t in ticks:
+        i = int(np.argmin(np.abs(cs - t)))
+        if not (0 <= tx[i] < img.shape[1] and 0 <= ty[i] < img.shape[0]):
+            print(f"fig3 render: station s = {t} m is outside the frame")
+            continue
+        ax.plot(tx[i], ty[i], "o", ms=2.4, mfc="w", mec="k", mew=0.5)
+        ax.annotate(f"$s$ = {t} m", (tx[i], ty[i]), xytext=(5, -5),
+                    textcoords="offset points", fontsize=6, color="0.1",
+                    ha="left", va="top", path_effects=halo(1.5))
+    return ax, h
+
+
+def repeatability_panel(ax):
+    """Flight 1 minus flight 2 ceiling at every one-metre station, from
+    analysis/flight2_station_offsets.py; the summary printed on the panel is
+    the archived analysis_out_v9/flight2_repeatability.json."""
+    rows = list(csv.DictReader(open(OUT10 / "flight2_station_offsets.csv")))
+    s = np.array([float(r_["s"]) for r_ in rows])
+    dz = np.array([float(r_["dz"]) if r_["dz"] else np.nan for r_ in rows])
+    rep = json.loads((OUT / "flight2_repeatability.json").read_text())
+    ok = np.isfinite(dz)
+    assert int(ok.sum()) == rep["n_stations"], (ok.sum(), rep["n_stations"])
+    ax.axhline(0.0, color="0.5", lw=0.6, ls="--")
+    ax.axhspan(-rep["rms"], rep["rms"], color=C["envelope"], alpha=0.10, lw=0,
+               label=f"±RMS ({rep['rms']:.2f} m)")
+    ax.plot(s[ok], dz[ok], lw=0.8, color=C["tube"])
+    ax.axhline(rep["median"], color=C["skylight"], lw=0.8,
+               label=f"Median {rep['median']:.2f} m")
+    ax.set_xlim(-5, 310)
+    ax.set_ylim(-1.6, 1.6)
+    ax.set_xlabel("Distance along tube $s$ (m)")
+    ax.set_ylabel("Ceiling difference,\nflight 1 minus flight 2 (m)")
+    ax.legend(loc="upper left", ncol=2, handletextpad=0.5, columnspacing=1.2,
+              handlelength=1.6, borderaxespad=0.2)
+    print(f"fig3 c: {int(ok.sum())} stations, median {rep['median']:.3f} m, "
+          f"RMS {rep['rms']:.3f} m, 5-95% {rep['p5']:.2f} to {rep['p95']:.2f} m")
+
+
+def fig3():
+    """a the skylight constellation, b the registered model, c the
+    flight-to-flight repeatability, d a long section of the registered model."""
+    rep = json.loads((OUT / "registration_report.json").read_text())
+    T = np.array(json.loads((ROOT / "analysis_out" /
+                             "transform_ed_slice.json").read_text())["matrix"])
+    fig = plt.figure(figsize=(180 * MM, 170 * MM))
+    axa = mm_axes(fig, 17, 106, 66, 44)
+    ned.reg_constellation(axa, rep, T)
+    axa.legend(loc="upper left", fontsize=5.5, ncols=1, handletextpad=0.4,
+               borderaxespad=0.2, labelspacing=0.25)
+    axb, hb = showcase_overlay(fig, 96, 103, 80)
+    if 103 + hb > 166.0:
+        raise ValueError(f"fig3 b reaches {103 + hb:.1f} mm, no room for its letter")
+    cax = mm_axes(fig, 100, 95, 40, 2.8)
+    cb = matplotlib.colorbar.Colorbar(cax, cmap=msf.TAU_CMAP, norm=msf.TAU_NORM,
+                                      orientation="horizontal",
+                                      ticks=[0, 4, 8, 12, 16])
+    cb.set_label("Overburden of the interior in b and d (m)", fontsize=6,
+                 labelpad=2)
+    cb.ax.tick_params(labelsize=6, pad=1.5)
+    cb.ax.xaxis.set_ticks_position("bottom")
+    cb.ax.xaxis.set_label_position("top")
+    cb.outline.set_linewidth(0.4)
+    axc = mm_axes(fig, 20, 64, 154, 28)
+    repeatability_panel(axc)
+    axd = mm_axes(fig, 20, 8, 154, 44)
+    msf.panel_c(axd)
     axd.set_ylabel(ELEV_LABEL.replace(" (", "\n("))
-    axd.set_xlabel("Across-tube distance (m)")
-    for t in axd.texts:                     # surface label sat on the surface points
-        if t.get_text().startswith("surface"):
-            x_, y_ = t.get_position()
-            t.set_position((x_, y_ - 3.2))
+    axd.set_xlabel("Along-tube distance $s$ (m)")
+    for t in axd.texts:
+        if t.get_text().startswith("vertical exaggeration"):
+            t.set_position((1.0, -0.30)); t.set_va("top")
     capitalise_labels(fig)
     clamp_fonts(fig)
-    place_letters(fig, [(axa, "a", None, (0, 0)), (axb, "b", None, (0, -1)),
+    place_letters(fig, [(axa, "a", None, (0, 0)), (axb, "b", None, (0, 0)),
                         (axc, "c", None, (0, 0)), (axd, "d", None, (0, 0))])
     save(fig, "fig3_merged_model")
 
@@ -567,9 +796,6 @@ def fig4():
     A = np.array([float(r["area"]) for r in ok])
     W = np.array([float(r["width"]) for r in ok])
     Hh = np.array([float(r["height"]) for r in ok])
-    cl = list(csv.DictReader(open(OUT / "centreline.csv")))
-    P = np.array([[float(r["x"]), float(r["y"]), float(r["z"])] for r in cl])
-    cs = np.array([float(r["s"]) for r in cl])
     env = REV["envelope"]
     beta, rho = env["beta"], env["rho_mid"]
     print(f"fig4: n intact {it.sum()}, excluded {excl.sum()}, skylight {sky.sum()}, "
@@ -593,7 +819,7 @@ def fig4():
     u, v = uv[:, 0], uv[:, 1]
     if u[-1] < u[0]:
         u, v = -u, -v
-    axa = mm_axes(fig, xl, 141, wl, 26)
+    axa = mm_axes(fig, xl, 134, wl, 30)
     axa.plot(u, v, color=C["tube"], lw=1.4)
     for lo, hi in bands:
         m = (s >= lo) & (s <= hi)
@@ -615,12 +841,12 @@ def fig4():
     axa.text(u[0] - 1, v[0] - 4.5, "Entrance", fontsize=6, ha="left", va="top", color="0.3")
 
     # b: area, then width and height, two strips
-    axb1 = mm_axes(fig, xl, 111, wl, 18)
+    axb1 = mm_axes(fig, xl, 100, wl, 23)
     bands_on(axb1)
     axb1.plot(ms_, A, lw=0.8, color=C["tube"])
     axb1.set_ylabel("Area (m$^2$)")
     axb1.set_xlim(0, smax); axb1.tick_params(labelbottom=False)
-    axb2 = mm_axes(fig, xl, 90, wl, 18)
+    axb2 = mm_axes(fig, xl, 72, wl, 23)
     bands_on(axb2)
     axb2.plot(ms_, W, lw=0.8, color=C["tube"])
     axb2.plot(ms_, Hh, lw=0.8, color=C["intact"])
@@ -634,7 +860,7 @@ def fig4():
                   fontsize=6, color=C["intact"], ha="center")
 
     # c: overburden profile with the systematic band
-    axc = mm_axes(fig, xl, 44, wl, 40)
+    axc = mm_axes(fig, xl, 14, wl, 46)
     bands_on(axc, ymax=0.84)                # key sits in the top strip, off the bands
     # band on the station grid, broken where stations are not intact
     tau_g = np.full(len(s), np.nan)
@@ -650,22 +876,14 @@ def fig4():
     axc.set_ylim(-1.6, 19.5)
     axc.set_yticks([0, 5, 10, 15])
     axc.set_ylabel("Overburden $\\tau$ (m)")
-    axc.tick_params(labelbottom=False)
+    axc.set_xlabel("Along-tube distance $s$ (m)")
     axc.legend(loc="upper right", ncol=3, handletextpad=0.5, borderaxespad=0.2,
                columnspacing=1.2, handlelength=1.5)
-
-    # f: centreline elevation
-    axf = mm_axes(fig, xl, 10, wl, 26)
-    bands_on(axf)
-    axf.plot(cs, P[:, 2], lw=0.9, color=C["tube"])
-    axf.set_xlim(0, smax)
-    axf.set_ylabel(ELEV_LABEL.replace(" (", "\n("))
-    axf.set_xlabel("Along-tube distance $s$ (m)")
-    for ax in (axb1, axb2, axc, axf):
+    for ax in (axb1, axb2, axc):
         ax.spines["left"].set_position(("outward", 2))
 
     # d: distribution with the shielding-mass axis on top
-    axd = mm_axes(fig, xr, 118, wr, 40)
+    axd = mm_axes(fig, xr, 108, wr, 42)
     axd.hist(tau[it], bins=16, color=C["intact"], alpha=0.9)
     med = np.median(tau[it])
     axd.axvline(med, color="k", lw=0.8)
@@ -684,7 +902,7 @@ def fig4():
           f"(paper_numbers shielding.median {PN['shielding']['median']})")
 
     # e: overburden against span with the clamped-strip curves
-    axe = mm_axes(fig, xr, 30, wr, 64)
+    axe = mm_axes(fig, xr, 14, wr, 78)
     axe.scatter(span[it], tau[it], s=7, color=C["intact"], lw=0, label="intact roof")
     axe.scatter(span[sky], np.zeros(sky.sum()), s=11, marker="v", color=C["skylight"],
                 lw=0, label="skylight (failed)")
@@ -715,11 +933,11 @@ def fig4():
           f"{beta * rho * 9.81 * 20 ** 2 / 1e6:.2f} m")
 
     capitalise_labels(fig)
-    # reading order: left column a-d (plan, geometry, overburden, elevation),
-    # right column e, f (distribution, span)
+    # reading order: left column a-c (plan, geometry, overburden),
+    # right column d, e (distribution, span)
     place_letters(fig, [(axa, "a", "L", (0, 0)), ([axb1, axb2], "b", "L", (0, 0)),
-                        (axc, "c", "L", (0, 0)), (axf, "d", "L", (0, 0)),
-                        ([axd, ax2], "e", "R", (0, 0)), (axe, "f", "R", (0, 0))])
+                        (axc, "c", "L", (0, 0)),
+                        ([axd, ax2], "d", "R", (0, 0)), (axe, "e", "R", (0, 0))])
     save(fig, "fig4_geometry_cover")
 
 

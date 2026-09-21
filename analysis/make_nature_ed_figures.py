@@ -48,6 +48,7 @@ os.environ.setdefault("ROOF_DEM_PCD", "maps/aerial_isn16_ortho_dem.pcd")
 os.environ.setdefault("EDFIG_SHELL_PCD", str(ROOT / "maps/flf_30cm_ed_ortho.pcd"))
 os.environ.setdefault("EDFIG_SECT_PCD", str(ROOT / "maps/flf_10cm_ed_ortho.pcd"))
 os.environ.setdefault("EDFIG_AERIAL_PCD", str(ROOT / "maps/aerial_isn16_ortho_10cm.pcd"))
+os.environ.setdefault("SHOWCASE_TUBE_PCD", str(ROOT / "maps/flf_10cm_ed_ortho.pcd"))
 
 import matplotlib  # noqa: E402
 
@@ -56,7 +57,8 @@ import matplotlib.pyplot as plt  # noqa: E402
 import numpy as np  # noqa: E402
 from matplotlib.font_manager import FontProperties  # noqa: E402
 from matplotlib.lines import Line2D  # noqa: E402
-from matplotlib.patches import Ellipse  # noqa: E402
+import matplotlib.patheffects as pe  # noqa: E402
+from matplotlib.patches import Ellipse, Rectangle  # noqa: E402
 from matplotlib.textpath import TextToPath  # noqa: E402
 from PIL import Image  # noqa: E402
 
@@ -382,19 +384,18 @@ def ed2_platform_architecture():
 # ED 3: planner behaviour (rasters)
 # ----------------------------------------------------------------------
 def ed3_planner_behaviour():
+    """Two panels. The information-gain viewpoint scoring that used to open
+    this item is now Figure 2b, so what were b and c are now a and b."""
     fig = new_fig(170.0)
     y = 4.0
-    _, h = image_panel(fig, "vertices_information_gain_instance.png", 0, y,
-                       180.0, letter="a")
-    y += h + 6.0
     ib = load_png("inaccessible_frontier_instance.png").shape
     ic = load_png("global_graph_views.png").shape
     rb, rc_ = ib[1] / ib[0], ic[1] / ic[0]
     hrow = (180.0 - 4.0) / (rb + rc_)
     _, _ = image_panel(fig, "inaccessible_frontier_instance.png", 0, y,
-                       rb * hrow, letter="b")
+                       rb * hrow, letter="a", max_dpi=450.0)
     _, _ = image_panel(fig, "global_graph_views.png", rb * hrow + 4.0, y,
-                       rc_ * hrow, letter="c")
+                       rc_ * hrow, letter="b", max_dpi=450.0)
     y += hrow
     fig.set_size_inches(W_MM * MM, y * MM)
     _refit_axes(fig, 170.0, y)
@@ -640,7 +641,7 @@ def rim_thickness(ax, recs):
     ax.set_xticks(xi); ax.set_xticklabels([RIM_LABEL[r["point"]] for r in recs],
                                           rotation=30, ha="right")
     ax.set_ylabel("Roof thickness\nat the rim (m)")
-    ax.set_ylim(0, 6.5)
+    ax.set_ylim(0, 9.0)
     ax.legend(loc="upper left", ncols=3, columnspacing=0.8, handletextpad=0.4)
 
 
@@ -652,43 +653,91 @@ def rim_floor(ax, recs):
         if np.isfinite(tf[i]):
             ax.plot([i - 0.3, i + 0.3], [tf[i], tf[i]], color="k", lw=1.4,
                     solid_capstyle="butt", zorder=3)
-    ax.plot([], [], color="k", lw=1.4, label="Tape, rim to floor")
+    ax.plot([], [], color="k", lw=1.4, label="Tape")
     ax.plot(xi, [_g(r, "floor_depth_flf") for r in recs], "o", ms=3.5, color=C["tube"],
-            label="Lidar floor, offline", zorder=4)
+            label="Lidar, offline", zorder=4)
     ax.plot(xi, [_g(r, "floor_depth_slf") for r in recs], "^", ms=3.5, color=C["envelope"],
-            mfc="none", label="Lidar floor, flight 2", zorder=4)
+            mfc="none", label="Lidar, flight 2", zorder=4)
     ax.set_xticks(xi); ax.set_xticklabels([RIM_LABEL[r["point"]] for r in recs],
                                           rotation=30, ha="right")
     ax.set_ylabel("Rim-to-floor\nheight (m)")
-    ax.set_ylim(0, 19.0)
-    ax.legend(loc="upper left", ncols=2, columnspacing=0.8, handletextpad=0.4)
+    ax.set_ylim(0, 22.0)
+    ax.legend(loc="upper center", ncols=3, fontsize=5.5, columnspacing=0.8,
+              handletextpad=0.3, handlelength=1.2, borderaxespad=0.1)
+
+
+def overburden_plan(ax):
+    """Overburden per one-metre cell over the DEM hillshade, with the
+    centreline and the three skylights. Drawn by
+    make_merged_showcase_figure.panel_b; promoted here from Figure 3, which
+    now carries the registered model itself."""
+    import make_merged_showcase_figure as msf
+    fig = ax.figure
+    before = set(fig.axes)
+    msf.panel_b(ax)
+    # panel_b appends its own colour bar with plt.colorbar(im, ax=ax), which
+    # splits the gridspec cell and breaks the constrained layout of this
+    # page; the bar is redrawn below as an inset instead
+    for extra in set(fig.axes) - before - {ax}:
+        extra.remove()
+    im = ax.images[-1]
+    crx, cry = msf.rot(msf.cx, msf.cy)
+    ax.set_xlim(crx.min() - 20, crx.max() + 20)
+    ax.set_ylim(cry.min() - 24, cry.max() + 15)
+    for txt in ax.texts:
+        if txt.get_fontsize() > 7:
+            txt.set_fontsize(7)
+        if txt.get_text().isdigit() or txt.get_text().startswith("S"):
+            txt.set_path_effects([pe.withStroke(linewidth=1.5, foreground="w")])
+    lg = ax.get_legend()
+    if lg is not None:
+        lg.set_frame_on(True)
+        lg.get_frame().set_facecolor("w")
+        lg.get_frame().set_edgecolor("none")
+        lg.get_frame().set_alpha(0.85)
+    ax.add_patch(Rectangle((0.005, 0.755, ), 0.28, 0.24, transform=ax.transAxes,
+                           fc="w", ec="none", alpha=0.85, zorder=4))
+    cax = ax.inset_axes([0.03, 0.925, 0.22, 0.05], zorder=5)
+    cb = fig.colorbar(im, cax=cax, orientation="horizontal",
+                      ticks=[0, 4, 8, 12, 16])
+    cb.set_label("Overburden $\\tau$ (m)", fontsize=6.5, labelpad=2)
+    cb.ax.tick_params(labelsize=6, pad=1.5)
+    cb.outline.set_linewidth(0.4)
 
 
 def ed5_registration_consistency():
+    """Seven panels. The skylight constellation (old a) is now Figure 3a and
+    the onboard-against-offline ceiling zones (old d) are now Figure 2d; the
+    overburden plan view that was Figure 3b opens the item instead."""
     rep = json.load(open(OUT / "registration_report.json"))
-    T = np.array(json.load(open(OUT_LEGACY / "transform_ed_slice.json"))["matrix"])
     val = json.load(open(OUT / "registration_validation.json"))
-    chain = json.load(open(OUT_LEGACY / "transform_flf_ed_chain.json"))
     s, x, y, z_dem, z_ceil, tau, ghost, klass = edf.load_roof()
     recs, _ = load_rim_groundtruth()
 
+    # the plan view keeps its true proportions, so it is placed in
+    # millimetres (constrained layout only manages the gridspec below it)
+    import make_merged_showcase_figure as msf
+    crx, cry = msf.rot(msf.cx, msf.cy)
+    w_a = 128.0
+    h_a = w_a * ((cry.max() - cry.min()) + 39.0) / ((crx.max() - crx.min()) + 40.0)
     fig = new_fig(170.0)
-    gs = fig.add_gridspec(5, 2, height_ratios=[1.15, 0.85, 0.7, 0.95, 0.95],
-                          width_ratios=[1.55, 1])
-    ax_a = fig.add_subplot(gs[0, 0]); reg_constellation(ax_a, rep, T)
-    ax_b = fig.add_subplot(gs[0, 1]); reg_floor_hist(ax_b, val)
-    ax_c = fig.add_subplot(gs[1, :]); reg_ceiling_two_solutions(ax_c)
-    ax_d = fig.add_subplot(gs[2, 0]); reg_two_slam(ax_d, chain)
-    ax_e = fig.add_subplot(gs[2, 1]); cons_column_stat(ax_e, s, ghost, klass)
-    ax_f = fig.add_subplot(gs[3, :]); cons_classification(ax_f, s, x, y, klass)
-    ax_g = fig.add_subplot(gs[4, 0]); rim_thickness(ax_g, recs)
-    ax_h = fig.add_subplot(gs[4, 1]); rim_floor(ax_h, recs)
-    for a in (ax_c, ax_d, ax_e):
+    ax_a = ax_mm(fig, (W_MM - w_a) / 2, 4.0, w_a, h_a)
+    overburden_plan(ax_a)
+    gs = fig.add_gridspec(4, 2, height_ratios=[0.8, 0.68, 0.9, 0.95],
+                          width_ratios=[1.4, 1])
+    ax_b = fig.add_subplot(gs[0, :]); reg_ceiling_two_solutions(ax_b)
+    ax_c = fig.add_subplot(gs[1, 0]); reg_floor_hist(ax_c, val)
+    ax_d = fig.add_subplot(gs[1, 1]); cons_column_stat(ax_d, s, ghost, klass)
+    ax_e = fig.add_subplot(gs[2, :]); cons_classification(ax_e, s, x, y, klass)
+    ax_f = fig.add_subplot(gs[3, 0]); rim_thickness(ax_f, recs)
+    ax_g = fig.add_subplot(gs[3, 1]); rim_floor(ax_g, recs)
+    for a in (ax_b, ax_d):
         a.set_xlim(-5, 310)
-    layout(fig)
+    print(f"  ed5 a: plan view {w_a:.0f} x {h_a:.1f} mm")
+    layout(fig, top_mm=4.0 + h_a + 7.0)
     freeze_layout(fig)
     place_letters(fig, [(ax_a, "a"), (ax_b, "b"), (ax_c, "c"), (ax_d, "d"),
-                        (ax_e, "e"), (ax_f, "f"), (ax_g, "g"), (ax_h, "h")])
+                        (ax_e, "e"), (ax_f, "f"), (ax_g, "g")])
     save(fig, "ed5_registration_consistency")
 
 

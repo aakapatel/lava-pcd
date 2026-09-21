@@ -1,0 +1,110 @@
+{
+  "source": "analysis/showcase_camera.py",
+  "surface": "/home/aakapatel/Nature Journal Article Autonomous lava tube mapping/lavatube_maps_data_analysis/maps/aerial_isn16_ortho_surface_10cm.pcd",
+  "tube": "/home/aakapatel/Nature Journal Article Autonomous lava tube mapping/lavatube_maps_data_analysis/maps/flf_10cm_ed_ortho.pcd",
+  "cutaway_m": 8.0,
+  "bbox_min": [
+    1200.7196044921875,
+    500.17303466796875,
+    117.76582336425781
+  ],
+  "bbox_max": [
+    1520.7193603515625,
+    881.6729125976562,
+    252.832763671875
+  ],
+  "lookat": [
+    1354.5753459405964,
+    726.7862296706508,
+    163.25977567224595
+  ],
+  "views": {
+    "oblique": {
+      "front": [
+        0.5494782433855661,
+        -0.5494782433855661,
+        0.6294023515143756
+      ],
+      "right": [
+        0.7071067811865476,
+        0.7071067811865476,
+        -0.0
+      ],
+      "up": [
+        -0.445054670850574,
+        0.445054670850574,
+        0.7770795840248118
+      ],
+      "eye": [
+        1448.9768426237447,
+        632.3847329875024,
+        271.3923991456704
+      ],
+      "distance": 171.80206463044127,
+      "extent": 381.4998779296875,
+      "width": 3840,
+      "height": 2160,
+      "fov_deg": 60.0,
+      "check_render": "showcase_oblique.png",
+      "check_cover_fraction": 0.9781592475215585
+    },
+    "topdown": {
+      "front": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "right": [
+        1.0,
+        0.0,
+        0.0
+      ],
+      "up": [
+        0.0,
+        1.0,
+        0.0
+      ],
+      "eye": [
+        1354.5753459405964,
+        726.7862296706508,
+        427.57064433446334
+      ],
+      "distance": 264.3108686622174,
+      "extent": 381.4998779296875,
+      "width": 3840,
+      "height": 2160,
+      "fov_deg": 60.0,
+      "check_render": "showcase_topdown.png",
+      "check_cover_fraction": 0.9853538123971476
+    },
+    "side": {
+      "front": [
+        0.9194025824190802,
+        -0.17988311395155915,
+        0.34977272157247613
+      ],
+      "right": [
+        0.1920116063856562,
+        0.9813926548600208,
+        -0.0
+      ],
+      "up": [
+        -0.3432643798216272,
+        0.067160422139014,
+        0.9368345869169131
+      ],
+      "eye": [
+        1488.2297983058065,
+        700.6364455122401,
+        214.10657820248892
+      ],
+      "distance": 145.37097776421953,
+      "extent": 381.4998779296875,
+      "width": 3840,
+      "height": 2160,
+      "fov_deg": 60.0,
+      "check_render": "showcase_side.png",
+      "check_cover_fraction": 0.9646685903241433
+    }
+  }
+}
